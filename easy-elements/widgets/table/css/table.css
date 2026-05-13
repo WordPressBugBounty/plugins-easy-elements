@@ -1,0 +1,84 @@
+:root {
+  --e-global-color-primary: #FFD012;
+  --e-global-color-secondary: #0B3665;
+}
+
+.easyel-table.table {
+  overflow: hidden;
+  width: 100%;
+}
+
+.easyel-tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  line-height: 0;
+  top: 3px;
+  left: 4px;
+}
+.easyel-tooltip svg {
+  height: 1em;
+  width: 1em;
+}
+
+.easyel-tooltip .easyel-tooltip-content {
+  position: absolute;
+  bottom: 125%; /* show above icon */
+  left: 50%;
+  transform: translateX(-50%);
+  background: #121212;
+  color: #fff;
+  padding: 5px 8px;
+  font-size: 13px;
+  border-radius: 4px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 9999;
+}
+
+.easyel-tooltip.show .easyel-tooltip-content {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(-5px);
+}
+
+.easyel-header-icon {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  line-height: 0;
+  top: 4px;
+  left: 0;
+  margin-right: 10px;
+}
+.easyel-header-icon svg {
+  width: 15px;
+  height: auto;
+  fill: currentColor;
+}
+
+.easyel-table-body td.data-flex {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.easyel-table-body .easyel-table-image {
+  width: 100%;
+  max-width: 40px;
+  height: 40px;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
+@media (max-width: 880px) {
+  .easyel-table.table {
+    display: block;
+    overflow: scroll;
+  }
+  .table.easyel-table .easyel-table-body td {
+    min-width: 150px;
+  }
+}

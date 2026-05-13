@@ -1,0 +1,55 @@
+/**
+ * Easy Elements — Mini Cart (Free)
+ *
+ * The Free widget renders a cart icon that links to the WooCommerce cart page,
+ * with an optional count badge. All styles for the dropdown / off-canvas /
+ * modal panel, items list, footer, buttons and empty-cart message are
+ * shipped by the Pro add-on.
+ */
+
+.eel-mini-cart {
+    position: relative;
+    display: inline-block;
+    padding: 12px 28px 12px 26px;
+    border: 1px solid #E2E2E2;
+    box-shadow: 0 6px 17px 0 rgba(0, 0, 0, 0.06);
+    border-radius: 6px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+
+    &:hover {
+        border-color: #629d23;
+    }
+}
+
+.eel-mini-cart-toggle {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+}
+
+.eel-mini-cart-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.3s ease;
+}
+
+.eel-cart-count {
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    background-color: #ff0000;
+    color: #ffffff;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 1;
+    box-sizing: border-box;
+}

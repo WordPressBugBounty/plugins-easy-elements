@@ -1,0 +1,51 @@
+.easy-elements-pro-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #fffcfc;
+    border: 1px solid #fff7f7;
+    border-radius: 6px;
+    padding: 20px;
+    margin: 0 auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.02);
+    text-align: center;
+}
+
+.easy-elements-pro-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff5e62, #ff9966);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.easy-elements-pro-icon svg {
+    width: 28px;
+    height: 28px;
+}
+
+.easy-elements-pro-text {
+    font-size: 14px;
+    color: #333;
+    margin: 0 0 12px 0;
+    line-height: 20px;
+}
+
+.easy-elements-pro-btn {
+    text-decoration: none;
+    background: #ff5e62;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 20px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+.easy-elements-pro-btn:hover {
+    color: #fff;
+}

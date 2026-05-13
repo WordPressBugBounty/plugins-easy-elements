@@ -1,0 +1,204 @@
+:root {
+  --e-global-color-primary: #EAA638;
+  --e-global-color-secondary: #0B3665;
+  --e-global-color-text: #7A8986;
+}
+
+.eel-fea-list-wrapper {
+  position: relative;
+}
+
+.eel-fea-list-wrapper.eel-fea-list-connector::before {
+  content: "";
+  width: 0px;
+  height: 85%;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #f4f4f4;
+  position: absolute;
+  border-inline-end-style: none;
+  left: 26px;
+  bottom: 50%;
+  transform: translateY(50%);
+  z-index: -1;
+  display: block;
+}
+
+.eel-fea-list-wrapper.eel-fea-list-connector.eel-fea-list-dir-right::before {
+  left: inherit;
+  right: 26px;
+}
+
+.eel-fea-list {
+  display: flex;
+  margin-bottom: 25px;
+  gap: 20px;
+}
+
+.eel-fea-list:last-child {
+  margin-bottom: 0 !important;
+}
+
+.eel-fea-list-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.eel-fea-list-icon {
+  background-size: cover !important;
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+}
+
+.eel-fea-list-icon {
+  min-width: 55px;
+  min-height: 55px;
+}
+
+.eel-fea-list-icon-view-frame .eel-fea-list-icon,
+.eel-fea-list-icon-view-stracked .eel-fea-list-icon {
+  background: #f4f4f4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.eel-fea-list-icon-view-frame .eel-fea-list-icon {
+  border: 1px solid #f4f4f4;
+  background: #fff;
+}
+
+.eel-fea-list-icon-shape-rounded .eel-fea-list-icon {
+  border-radius: 4px;
+}
+
+.eel-fea-list-icon-shape-square .eel-fea-list-icon {
+  border-radius: 0;
+}
+
+.eel-fea-list-icon-shape-circle .eel-fea-list-icon {
+  border-radius: 100px;
+}
+
+.eel-fea-list-icon-shape-sq_rotate .eel-fea-list-icon {
+  transform: rotate(45deg);
+}
+
+.eel-fea-list-icon-shape-sq_rotate .eel-fea-list-icon svg,
+.eel-fea-list-icon-shape-sq_rotate .eel-fea-list-icon i,
+.eel-fea-list-icon-shape-sq_rotate .eel-fea-list-icon .eel-fea-list-number {
+  transform: rotate(-45deg);
+}
+
+.eel-fea-list-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.eel-fea-list-icon i {
+  font-size: 30px;
+}
+
+.eel-fea-list-number {
+  font-size: 20px;
+  font-weight: 500;
+  color: #000000;
+}
+
+.eel-fea-list-title {
+  font-size: 22px;
+  line-height: 1.2;
+  margin: 0;
+  color: #000000;
+}
+
+.eel-fea-list-desc {
+  color: #777777;
+  margin: 0;
+}
+
+.eel-fea-list-dir-left {
+  flex-direction: row;
+  text-align: left;
+}
+
+.eel-fea-list-dir-right {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+
+/* connector left */
+.eel-fea-list-connector-left .eel-fea-list {
+  padding-left: 30px;
+}
+
+.eel-fea-list-connector-left.eel-fea-list-dir-right .eel-fea-list {
+  padding-right: 30px;
+}
+
+.eel-fea-list-wrapper.eel-fea-list-connector.eel-fea-list-connector-left::before {
+  height: calc(100% - 55px);
+  bottom: inherit;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0;
+}
+
+.eel-fea-list-wrapper.eel-fea-list-connector.eel-fea-list-connector-left.eel-fea-list-dir-right::before {
+  left: inherit;
+  right: 0;
+}
+
+.eel-fea-list-connector-left .eel-fea-list-icon {
+  overflow: inherit;
+}
+
+.eel-fea-list-connector-left .eel-fea-list-icon::after {
+  content: "";
+  width: 30px;
+  height: 0px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #f4f4f4;
+  position: absolute;
+  border-inline-end-style: none;
+  left: -30px;
+  z-index: -1;
+  display: block;
+}
+
+.eel-fea-list-connector-left.eel-fea-list-dir-right .eel-fea-list-icon::after {
+  left: inherit;
+  right: -30px;
+}
+
+.eel-fea-list-icon-shape-sq_rotate .eel-fea-list-icon::after {
+  width: 20px;
+  left: -15px;
+  top: 110%;
+  transform: rotate(-45deg);
+}
+
+.eel-fea-list-icon-shape-sq_rotate .eel-fea-list-connector-left.eel-fea-list-dir-right .eel-fea-list-icon::after {
+  left: inherit;
+  right: -15px;
+  top: -14%;
+}
+
+.eel-fea-list-icon.eel-fea-list-type-image {
+  position: relative;
+}
+
+.eel-fea-list-icon.eel-fea-list-type-image img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  height: 100%;
+  width: 100%;
+  transform: translate(-50%, -50%);
+  -o-object-fit: cover;
+     object-fit: cover;
+}

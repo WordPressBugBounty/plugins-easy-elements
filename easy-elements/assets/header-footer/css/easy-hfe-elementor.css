@@ -1,0 +1,31 @@
+.footer-width-fixer {
+    width: 100%;
+}
+
+
+.easy-template-genesis.easy-header .site-header .wrap,
+.easy-template-genesis.ehf-footer .site-footer .wrap,
+.easy-template-generatepress.easy-header .site-header .inside-header {
+    width: 100%;
+    padding: 0;
+    max-width: 100%;
+}
+
+
+.easy-template-generatepress.easy-header .site-header,
+.easy-template-generatepress.ehf-footer .site-footer {
+    width: 100%;
+    padding: 0;
+    max-width: 100%;
+    background-color: transparent !important; 
+}
+
+.easy-ehf-hidden {
+    display: none
+}
+
+
+.easy-header #masthead {
+	z-index: 99;
+    position: relative;
+}

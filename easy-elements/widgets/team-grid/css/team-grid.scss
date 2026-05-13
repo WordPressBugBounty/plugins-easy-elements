@@ -1,0 +1,407 @@
+:root {
+    --e-global-color-primary: #5933FF;
+}
+
+.eel-team-grid {
+    .grid-item {
+        box-sizing: border-box;
+
+        .ee--team-img {
+            position: relative;
+            overflow: hidden;
+            border-radius: 16px;
+            transition: all .5s ease;
+
+            .eel-team-img-area {
+                position: relative;
+                z-index: 1;
+                overflow: hidden;
+
+                .eel-team-img-box {
+                    overflow: hidden;
+                    border-radius: 16px;
+                    margin: 0 auto;
+                }
+
+                .eel-team-img {
+                    width: 100%;
+                    height: auto;
+                    display: block;
+                    margin: 0 auto;
+                    position: relative;
+                    transition: all .5s ease;
+                    z-index: 0;
+                    object-fit: cover;
+                }
+
+                .eel-image-below-bg {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    border-radius: 10px;
+                    z-index: -1;
+                }
+            }
+
+            .eel-image-overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                border-radius: inherit;
+                transition: background 0.3s, opacity 0.3s;
+                z-index: 1;
+            }
+
+            .eel-name-deg-wrap {
+                background: #fff;
+                padding: 26px 24px 24px 24px;
+                border-radius: 8px;
+                text-align: center;
+
+                &.inside {
+                    position: absolute;
+                    bottom: 24px;
+                    left: 24px;
+                    right: 24px;
+                    z-index: 2;
+                }
+
+                .eel-name {
+                    margin: 0 0 5px;
+                }
+            }
+
+            &:hover {
+                img {
+                    transform: scale(1.1);
+                }
+            }
+        }
+    }
+
+    &.skin1 {
+        .ee--team-img {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            gap: 20px;
+            background: #F1F2FA;
+
+            .eel-team-left {
+                width: 50%;
+            }
+
+            .eel-team-right {
+                width: 50%;
+
+                .eel-name-deg-wrap {
+                    background: transparent;
+                    padding: 0px 0px 20px;
+                    border-radius: 0;
+                    text-align: left;
+                    color: #000;
+                }
+
+                .eel-team-grid-social.default {
+                    border-top: 1px solid #D9D9D9;
+
+                    ul {
+                        justify-content: flex-start;
+                    }
+                }
+            }
+        }
+    }
+
+    &.skin2 {
+        .eel-team-img-area {
+            padding: 20px 20px 0;
+
+            .eel-image-below-bg {
+                height: 80%;
+                background: var(--e-global-color-primary);
+            }
+        }
+    }
+
+}
+
+// Team Grid Social 
+.eel-team-grid-social {
+    position: relative;
+
+    .eel-team-social-hover {
+        transition: all 0.3s ease;
+    }
+
+    .eel-team-social-hover a,
+    ul li a:not(.eel-popup-trigger) {
+        background: var(--e-global-color-primary);
+        color: #fff;
+        transition: all .5s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 100%;
+
+        svg {
+            fill: currentColor;
+            height: 1em;
+        }
+
+        path {
+            fill: currentColor;
+        }
+
+        &:hover {
+            background: #000;
+            transform: translateY(-5px);
+        }
+    }
+
+    ul {
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 1em;
+        margin: 0;
+        padding: 0;
+    }
+
+    &.hover_show {
+        ul {
+            position: absolute;
+            transition: all 0.8s ease;
+            opacity: 0;
+        }
+
+        &:hover {
+            .eel-team-social-hover {
+                opacity: 0;
+                visibility: hidden;
+            }
+
+            ul {
+                z-index: 2;
+                opacity: 1;
+            }
+        }
+    }
+
+    &.default {
+        padding-top: 20px;
+    }
+
+    &.posi_left,
+    &.posi_right,
+    &.posi_botttom_left,
+    &.posi_botttom_right {
+        position: absolute;
+        z-index: 1;
+
+        ul {
+            flex-direction: column;
+            gap: 10px;
+        }
+    }
+
+    &.posi_left,
+    &.posi_right {
+        top: 16px;
+
+        &.hover_show ul {
+            transform: translateY(-100%);
+        }
+
+        &.hover_show:hover ul {
+            transform: translateY(-40%);
+        }
+    }
+
+    &.posi_botttom_left,
+    &.posi_botttom_right {
+        bottom: 16px;
+
+        &.hover_show ul {
+            transform: translateY(50px)
+        }
+
+        &.hover_show:hover ul {
+            transform: translateY(-100%)
+        }
+    }
+
+    &.posi_left,
+    &.posi_botttom_left {
+        left: 16px;
+    }
+
+    &.posi_right,
+    &.posi_botttom_right {
+        right: 16px;
+    }
+}
+
+// Team Popup CSS 
+.eel-popup-modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: auto;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.eel-popup-content {
+    background: #fff;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 40px 50px;
+    border-radius: 8px;
+    max-width: 550px;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.2);
+}
+
+.eel-popup-close {
+    position: absolute;
+    top: 10px;
+    right: 16px;
+    font-size: 24px;
+    color: #888;
+    cursor: pointer;
+}
+
+.eel-popup-details {
+    font-size: 15px;
+    color: #333;
+    line-height: 1.6;
+    margin-top: 10px;
+    user-select: none;
+}
+
+.eel-popup-header {
+    margin-bottom: 12px;
+}
+
+.eel-popup-name .eel-name {
+    font-size: 18px;
+    color: #222;
+    margin-bottom: 2px;
+    margin: 0 0 5px;
+}
+
+.eel-popup-designation {
+    font-size: 15px;
+    color: #888;
+    margin-bottom: 6px;
+    user-select: none;
+}
+
+.eel-team-grid {
+    &.skin3 {
+        .eel-team-img-box {
+            .eel-image-content {
+                position: absolute;
+                padding: 30px;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                top: 0;
+                display: flex;
+                border-radius: inherit;
+                align-items: end;
+                overflow: hidden;
+                .eel-description{
+                    position: relative;
+                    z-index: 2;
+                    opacity: 0;
+                    transition: opacity 0.4s ease;
+                }
+                &::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.6);
+                    opacity: 0; 
+                    transition: opacity .4s ease;
+                }
+            }
+
+            &:hover {
+                .eel-image-content {
+                    .eel-description{
+                        opacity: 1;
+                    }
+                }
+            }
+        }
+
+        .eel-team-deg-content {
+            .eel-name-deg-wrap {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                width: 100%;
+            }
+        }
+    }
+
+    /* Skin 04 - Hover Overlay (structural/positioning only — overridable styles are outside) */
+    &.skin4 {
+        .grid-item {
+            .ee--team-img {
+                position: relative;
+                overflow: hidden;
+
+                .eel-team-hover-content {
+                    position: absolute;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    z-index: 3;
+                    opacity: 0;
+                    pointer-events: none;
+                }
+
+                &:hover {
+                    .eel-team-hover-content {
+                        opacity: 1;
+                        pointer-events: auto;
+                    }
+                }
+            }
+
+        }
+    }
+}
+
+/* skin4 overridable defaults — 4-class specificity so Elementor inline controls (skin4_overlay_*) win */
+.eel-team-grid.skin4 .ee--team-img .eel-team-hover-content {
+    background: rgba(17, 17, 17, 0.75);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: opacity 0.4s ease;
+    color: #fff;
+}
+
+/* skin4 .eel-name-deg-wrap reset — kept at 4-class specificity so Elementor wrap_* controls can win */
+.eel-team-grid.skin4 .ee--team-img .eel-name-deg-wrap {
+    background: transparent;
+}
+.eel-team-grid.skin4 .ee--team-img .eel-name-deg-wrap .eel-name {
+    margin: 0 0 4px;
+}

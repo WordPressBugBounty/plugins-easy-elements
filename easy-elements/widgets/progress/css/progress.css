@@ -1,0 +1,60 @@
+.rt-progress-bar .progress-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.rt-progress-bar .progress-top .title {
+  color: var(--e-global-color-primary);
+  font-weight: 500;
+  margin-bottom: 15px;
+}
+.rt-progress-bar .progress-top .percent {
+  color: var(--e-global-color-primary);
+  font-weight: 500;
+}
+.rt-progress-bar .progress {
+  height: 8px;
+  background: #f2f2f2;
+  overflow: hidden;
+}
+.rt-progress-bar .progress .progress-bar {
+  width: 0%;
+  height: 100%;
+  background: var(--e-global-color-primary);
+  transition: width 1.5s ease;
+}
+
+.progress-style2 {
+  position: relative;
+}
+.progress-style2 .title {
+  position: absolute;
+  margin: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 30px;
+  font-size: 16px;
+  text-transform: uppercase;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--e-global-color-secondary);
+}
+.progress-style2 .progress {
+  height: 40px;
+  background: linear-gradient(90deg, rgba(32, 40, 45, 0.1607843137) 0%, rgba(242, 242, 242, 0.0196078431) 100%);
+  opacity: 1;
+  border-radius: 40px;
+  background-color: transparent;
+}
+.progress-style2 .progress span {
+  position: absolute;
+  right: 25px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: var(--e-global-color-secondary);
+  font-weight: 700;
+}
+.progress-style2 .progress .progress-bar {
+  background-color: transparent;
+}

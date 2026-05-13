@@ -1,0 +1,84 @@
+:root {
+  --e-global-color-primary: #FFD012;
+  --e-global-color-secondary: #0B3665;
+}
+
+.eel-cnt-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.eel-cnt-number-wrap {
+  font-size: 70px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--e-global-color-secondary);
+  display: flex;
+  place-items: center;
+}
+
+.eel-cnt-title {
+  font-size: 16px;
+  font-weight: 400;
+  display: inline-block;
+  margin: 0;
+}
+
+.eel-cnt-icon {
+  place-items: center;
+  display: grid;
+}
+
+.eel-cnt-icon svg {
+  width: 60px !important;
+  height: 60px !important;
+  fill: var(--e-global-color-secondary);
+}
+
+.eel-cnt-icon i {
+  font-size: 40px;
+}
+
+/* left */
+.eel-cnt-icon-pos-left .eel-cnt-wrap {
+  flex-direction: row;
+  text-align: left;
+  justify-content: flex-start;
+}
+
+.eel-cnt-icon-pos-left .eel-cnt-icon {
+  margin-right: 12px;
+}
+
+/* right */
+.eel-cnt-icon-pos-right .eel-cnt-wrap {
+  flex-direction: row-reverse;
+  text-align: right;
+  justify-content: flex-end;
+}
+
+.eel-cnt-icon-pos-right .eel-cnt-icon {
+  margin-left: 12px;
+}
+
+/* top */
+.eel-cnt-icon-pos-top .eel-cnt-wrap {
+  flex-direction: column;
+  text-align: center;
+}
+
+.eel-cnt-icon-pos-top .eel-cnt-icon {
+  margin-bottom: 12px;
+}
+
+/* bottom */
+.eel-cnt-icon-pos-bottom .eel-cnt-wrap {
+  flex-direction: column-reverse;
+  text-align: center;
+}
+
+.eel-cnt-icon-pos-bottom .eel-cnt-icon {
+  margin-top: 12px;
+}

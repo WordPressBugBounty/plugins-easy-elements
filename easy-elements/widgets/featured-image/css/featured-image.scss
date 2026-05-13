@@ -1,0 +1,101 @@
+.eel-featured-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.eel-featured-image-inner{
+    overflow: hidden;
+    img{
+        display: block;
+        object-fit: cover;
+    }
+}
+
+.eel-featured-image-editor-preview {
+    box-shadow: none;
+    background: #f8fbff;
+    border: 1px dashed #0073e6;
+    border-radius: 14px;
+    position: relative;
+}
+
+.eel-featured-image-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 240px;
+    width: 100%;
+    background: linear-gradient(135deg, #f8fbff 80%, #e3f0ff 100%);
+    border: 2.5px dashed #7fd7ff;
+    border-radius: 16px;
+    color: #0073e6;
+    padding: 40px 16px 32px 16px;
+    box-sizing: border-box;
+    text-align: center;
+    gap: 18px;
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+.eel-featured-image-placeholder-icon {
+    display: block;
+    margin: 0 auto 10px auto;
+    filter: drop-shadow(0 2px 8px #b3d4fc33);
+}
+.eel-featured-image-placeholder-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #0073e6;
+    opacity: 0.98;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+}
+.eel-featured-image-placeholder-desc {
+    font-size: 1rem;
+    color: #4a6fa1;
+    opacity: 0.85;
+    margin-bottom: 10px;
+}
+.eel-featured-image-placeholder-btn {
+    display: inline-block;
+    background: #000;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 8px 22px;
+    border-radius: 22px;
+    text-decoration: none;
+    box-shadow: 0 2px 8px 0 #0073e622;
+    margin-top: 8px;
+    transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+    border: none;
+    cursor: pointer;
+    pointer-events: none;
+    opacity: 0.85;
+}
+.eel-featured-image-editor-preview .eel-featured-image-placeholder-btn {
+    pointer-events: auto;
+    opacity: 1;
+}
+
+@media (max-width: 600px) {
+    .eel-featured-image-placeholder {
+        min-height: 140px;
+        padding: 18px 4px 12px 4px;
+        gap: 10px;
+    }
+    .eel-featured-image-placeholder-title {
+        font-size: 1.05rem;
+    }
+    .eel-featured-image-placeholder-desc {
+        font-size: 0.92rem;
+    }
+    .eel-featured-image-placeholder-btn {
+        font-size: 0.95rem;
+        padding: 7px 14px;
+    }
+    .eel-featured-image-img {
+        border-radius: 10px;
+    }
+}

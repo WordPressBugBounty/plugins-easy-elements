@@ -1,0 +1,31 @@
+{
+    "name": "easyel/easy-elements",
+    "description": "Easy Elements WordPress Plugin",
+    "type": "wordpress-plugin",
+    "autoload": {
+        "psr-4": {
+            "Easyel\\EasyElements\\": "includes/",
+            "Easyel\\EasyElements\\Widgets\\": "widgets/"
+        },
+        "files": [ "includes/helper-functions.php" ]
+    },
+    "authors": [
+        {
+            "name": "Themewant",
+            "email": "support@themewant.com"
+        }
+    ],
+    "require": {
+        "ext-simplexml": "*",
+        "ext-json": "*",
+        "ext-dom": "*",
+        "ext-xmlreader": "*",
+        "appsero/client": "^2.0"
+    },
+    "config": {
+        "allow-plugins": {
+        "dealerdirect/phpcodesniffer-composer-installer": true,
+        "phpstan/extension-installer": true
+        }
+    }
+}

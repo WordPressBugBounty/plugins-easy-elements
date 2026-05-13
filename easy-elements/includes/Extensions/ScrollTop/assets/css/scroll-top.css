@@ -1,0 +1,54 @@
+.easyel-scroll-top-btn {
+    position: fixed;
+    bottom: 30px;
+    z-index: 99999;
+    width: var(--easyel-scroll-top-size, 45px);
+    height: var(--easyel-scroll-top-size, 45px);
+    background-color: var(--easyel-scroll-top-bg, #333);
+    color: var(--easyel-scroll-top-color, #fff);
+    border-radius: var(--easyel-scroll-top-radius, 50%);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease, background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    padding: 0;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.easyel-scroll-top-btn.easyel-scroll-top-visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.easyel-scroll-top-btn:hover {
+    background-color: var(--easyel-scroll-top-hover-bg, #000);
+    color: var(--easyel-scroll-top-hover-color, #fff);
+    border-color: var(--easyel-scroll-top-hover-border, #ccc);
+}
+
+.easyel-scroll-top-btn svg {
+    width: 40%;
+    height: 40%;
+    pointer-events: none;
+}
+
+.easyel-scroll-top-btn i {
+    font-size: calc(var(--easyel-scroll-top-size, 45px) * 0.4);
+    line-height: 1;
+    color: inherit;
+    pointer-events: none;
+}
+
+.easyel-scroll-top-btn img {
+    width: 60%;
+    height: 60%;
+    object-fit: contain;
+    pointer-events: none;
+    border-radius: 0;
+}

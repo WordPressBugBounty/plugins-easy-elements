@@ -1,0 +1,43 @@
+:root {
+    --e-global-color-primary: #FFD012;
+    --e-global-color-secondary: #0B3665;
+}
+.eel-pagination {
+    ul {
+        display: flex;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        justify-content: space-between;
+        li{
+            a{
+                color: var(--e-global-color-secondary);
+                &:hover{
+                    opacity: 0.8;
+                }
+            }
+        }
+    }
+}
+
+.eel-nav-label {
+    display: inline-flex;
+    font-size: 14px;
+    align-items: center;
+    gap: 4px;
+    color:#999;
+    i{
+        font-size: 16px;
+    }
+}
+
+.eel-nav-title {
+    display: block;
+    font-size: 1em;
+    color: var(--e-global-color-secondary);
+    font-weight: 600;
+}
+.eel-pagination ul li+li a{
+    display: block;
+    text-align: right
+}

@@ -1,0 +1,148 @@
+.eel-authentication-form {
+	.eel-authentication-form-field {
+		width: 100%;		
+		.eel-form-field-icon {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		&.eel-authentication-form-submit-field,
+		&.eel-authentication-form-checkbox-field,
+		&.eel-authentication-form-static-field,
+		&.eel-authentication-form-cta-field {
+			.eel-form-control-wrap {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				flex-direction: row;
+				flex-wrap: wrap;
+				p {
+					margin-bottom: 0;
+				}
+			}
+		}
+		&.eel-authentication-form-cta-field {
+			width: 100% !important;
+		}
+		.eel-error-msg {
+			color: red;
+		}
+	}
+	
+	.eel-submit-button { 
+		width: 100%;
+		background: #5933FF;
+		color: #fff;
+		border: none;
+		cursor: pointer;
+		transition: all 0.3s ease;
+		padding: 10px 20px;
+		border-radius: 6px;
+		&:hover {
+			background: #380bff;
+			color: #fff;
+		}
+		.eel-form-btn-icon{
+			position: relative;
+			top: 4px;
+		}
+		.eel-form-ajax-loader {
+			display: none;
+			img {
+				height: 30px;
+				width: auto;
+			}
+			&.show {
+				display: inline-flex;
+			}
+		}
+	}
+	.eel-form-status {
+		p {
+			display: none;
+			margin-bottom: 0;
+			&.eel-form-error-msg {
+				color: red;
+			}
+			&.eel-form-success-msg {
+				color: green;
+			}
+		}
+	}
+}
+
+.eel-form-control-wrap{	
+	label{
+		margin-bottom: 10px;
+		display: inline-block;
+	}
+	input{
+		border: none;
+		&:focus {
+			outline: none;
+		}
+	}
+}
+
+.eel-input-has-icon .eel-authentication-form-field:not(.eel-authentication-form-submit-field, .eel-authentication-form-cta-field)
+.eel-authentication-form-field-inner {
+    width: 100%;
+    border: 1px solid #ddd;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-size: 14px;
+    line-height: 1.4;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: flex-start;
+	.eel-form-control-wrap input{
+		padding: 0;
+		border: none;
+		outline: none;
+	}
+	.eel-form-field-icon.eel-user-icon{
+		margin-right: 8px;
+	}
+}
+
+/* Focus state */
+.eel-input-has-icon .eel-authentication-form-field:not(.eel-authentication-form-submit-field, .eel-authentication-form-cta-field)
+.eel-authentication-form-field-inner:focus {
+    border-color: #0073e6;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 115, 230, 0.15);
+}
+
+
+form:not(.eel-input-has-icon) .eel-authentication-form-field:not(.eel-authentication-form-submit-field, .eel-authentication-form-cta-field)
+.eel-form-control {
+    width: 100%;
+    border: 1px solid #ddd;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-size: 14px;
+    line-height: 1.4;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: flex-start;
+	.eel-form-control-wrap input{
+		padding: 0;
+		border: none;
+		outline: none;
+	}
+	.eel-form-field-icon.eel-user-icon{
+		margin-right: 8px;
+	}
+}
+
+/* Focus state */
+form:not(.eel-input-has-icon) .eel-authentication-form-field:not(.eel-authentication-form-submit-field, .eel-authentication-form-cta-field)
+.eel-form-control:focus {
+    border-color: #0073e6;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 115, 230, 0.15);
+}

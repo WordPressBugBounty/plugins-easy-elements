@@ -1,0 +1,71 @@
+:root {
+    --e-global-color-primary: #FFD012;
+    --e-global-color-secondary: #0B3665;
+}
+
+
+#reply-title{
+    font-size: 24px;
+}
+
+.eel-post-comments-widget input, .eel-post-comments-widget textarea{
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: .5rem 1rem;
+    outline: none;
+}
+
+.eel-post-comments-widget label{
+    margin-bottom: 12px;
+}
+
+#comments .comment-metadata, #comments .reply{
+    font-size: 14px;
+}
+
+.comment-reply-link{
+    font-weight: 600;
+}
+
+@media (max-width: 767px) {
+    .comments-area .comment-list li.comment .comment-body {
+        padding-left: 0;
+    }
+
+    .comments-area .comment-list li.comment .comment-author img {
+        float: none;
+        position: relative;
+    }
+    .comment-author cite{
+        display: block;
+    }
+    .comments-area .comment-list li.comment ol.children li {
+        margin-left: 0;
+    }
+}
+
+.comment-form-cookies-consent{
+    font-size: 14px;
+    input[type="checkbox"]{
+        width: auto !important;
+        position: relative;
+        margin-left: 0;
+    }
+    label{
+        display: inline-block;
+    }
+}
+
+.comment-form-cookies-consent label {
+  display: inline-block !important;
+  margin-bottom: 5px;
+}
+
+
+.eel-post-comments-widget label {
+    display: none;
+}
+
+.eel-post-comments-widget.label--yes label{
+    display: block;
+}

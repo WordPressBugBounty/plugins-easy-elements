@@ -1,0 +1,110 @@
+:root {    
+    --e-global-color-primary: #EAA638;
+    --e-global-color-secondary: #0B3665; 
+    --e-global-color-text: #7A8986;
+}
+.eel-icon-box-wrap .grid-wrap {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.eel-icon-box-wrap .eel-icon-item {
+    display: flex;
+    flex-wrap: wrap;
+}
+.eel-icon-box-wrap .eel-icon-item{    
+    box-sizing: border-box;
+    padding: 15px;
+}
+.eel-icon-box-wrap .eel-icon-item .ee--icon-box{
+    box-sizing: border-box;
+    position: relative;
+}
+.eel-icon-box-wrap .ee--icon-box {
+    padding: 32px;
+}
+
+.eel-icon-box-wrap .ee--icon-box {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    border-radius: 16px;
+    background: #FFFFFF;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    box-shadow: 0px 24px 48px -24px rgba(0, 0, 0, 0.16);
+}
+
+.eel-process-number{
+    position: absolute;
+    bottom: 10px;
+    right: 26px;
+    font-weight: 400;
+    font-size: 80px;
+    line-height: 90%;
+    letter-spacing: -0.02em;
+    background: linear-gradient(180deg, var(--e-global-color-primary) 0%, rgba(255, 255, 255, 0.24) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+    opacity: .5;
+}
+
+.ee--icon-box{
+    width: 100%;
+    svg{
+        height: 1em;
+    }
+    .icon-box-title{
+        color: var(--e-global-color-secondary);
+        margin-bottom: 14px;
+        a{
+            color: currentColor;
+        }
+    }
+    .eel-icon{
+        min-width: 60px;
+        height: 60px;
+        background: var(--e-global-color-primary);
+        display:inline-grid;
+        place-content: center;
+        margin: 0 auto 40px;
+        border-radius: 16px;
+        font-size: 20px;
+    }
+    .icon-box-description{
+        font-size: 18px;
+        color: var(--e-global-color-text);
+        a{
+            color: currentColor;
+        }
+    }
+    &.right,
+    &.left{
+        display: flex;
+        gap: 20px;
+        .eel-icon{
+            margin-bottom: 0;
+            margin-top: 4px;
+        }
+    }
+    &.left{
+        .eel-process-number{
+            bottom: unset;
+            top: 15px;
+            opacity: 1;
+        }
+    }
+    &.right{
+        .eel-icon{
+            order: 2;
+        }
+        .eel-process-number {
+            left: 26px;
+            right: auto;
+            bottom: 18px;
+            opacity: 1;
+        }
+    }
+}
