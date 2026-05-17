@@ -5,6 +5,15 @@
         init: function() {
             this.login();
             this.register();
+            this.formSwitcher();
+        },
+        formSwitcher: function () {
+            $(document).on('click', '.eel-authentication-toggle-wrap .eel-form-switcher', function(e) {
+                e.preventDefault();
+                const target = $(this).data('switch-to');
+                const wrap = $(this).closest('.eel-authentication-toggle-wrap');
+                wrap.attr('data-active-form', target);
+            });
         },
         login: function () {
             $(document).on('submit', '.eel-login-form', function(e) {
@@ -13,7 +22,7 @@
                 const form = $(this);
                 const user = form.find('input#eel_username').val();
                 const pwd = form.find('input#eel_password').val();
-                const remember = form.find('input#eel_rememberme').val();
+                const remember = form.find('input#eel_rememberme').is(':checked') ? 1 : 0;
                 const ajaxLoader = form.find('.eel-form-ajax-loader');
                 const errEl = form.find('.eel-form-status');
                 const loginRedirectUrl = form.find('input[name="login_redirect_link"]').val();
@@ -33,11 +42,15 @@
                 
                 $.post(eelLoginRegister.ajaxurl, data)
                 .done(function(response) {
-                    console.log('response', response);
 
                     ajaxLoader.removeClass('show');
                     if (!response.success) {
-                        errEl.find('.eel-form-error-msg').css('display', 'block');
+                        const serverMsg = response && response.data && response.data.msg ? response.data.msg : '';
+                        const errMsgEl = errEl.find('.eel-form-error-msg');
+                        if (serverMsg) {
+                            errMsgEl.text(serverMsg);
+                        }
+                        errMsgEl.css('display', 'block');
                     }else{
                         errEl.find('.eel-form-success-msg').css('display', 'block');
                         setTimeout(() => {
@@ -214,7 +227,12 @@
 
                     ajaxLoader.removeClass('show');
                     if (!response.success) {
-                        errEl.find('.eel-form-error-msg').css('display', 'block');
+                        const serverMsg = response && response.data && response.data.msg ? response.data.msg : '';
+                        const errMsgEl = errEl.find('.eel-form-error-msg');
+                        if (serverMsg) {
+                            errMsgEl.text(serverMsg);
+                        }
+                        errMsgEl.css('display', 'block');
                     }else{
                         errEl.find('.eel-form-success-msg').css('display', 'block');
                         setTimeout(() => {

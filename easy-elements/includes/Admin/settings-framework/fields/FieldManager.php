@@ -69,7 +69,13 @@ class Easyel_FieldManager {
 
     public function easyel_save_settings_callback() {
 
-        // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( ['msg' => 'Unauthorized'], 403 );
+        }
+
+        check_ajax_referer( 'easy_elements_settings_nonce', 'nonce' );
+
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
         $posted = $_POST['settings'] ?? [];
         $settings = map_deep( wp_unslash( $posted ), 'sanitize_text_field' );
 

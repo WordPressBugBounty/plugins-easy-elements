@@ -177,14 +177,24 @@
     }
 }
 
+.eel--read-more-icon{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    box-sizing: border-box;
+}
+
 .eel--read-more-icon.after{
     margin-left: 6px;
     top: 1px;
+    margin-right: 0;
 }
 
 .eel--read-more-icon.before{
     margin-right: 6px;
     top: 1px;
+    margin-left: 0;
 }
 
 .eel-post-grid-wrap{

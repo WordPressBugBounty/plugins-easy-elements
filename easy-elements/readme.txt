@@ -4,7 +4,7 @@ Tags: elementor, elementor widgets, custom elements, elementor addons, page buil
 Requires at least: 6.3
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.4.4
+Stable tag: 1.4.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -226,6 +226,16 @@ Free version includes Logo Grid & Pro version includes Logo Slider.
 
 
 == Changelog ==
+
+= 1.4.5 – 05/17/26 =
+* Added: New Team Grid layout added.
+* Added: Heading widget watermark settings added.
+* Fixed: Gallery widget issue fixes.
+* Fixed: Counter widget issue fixes.
+* Fixed: Blog Grid issue fixes.
+* Fixed: Register form security issue fixes.
+* Fixed: Admin user capabilities issue fixes
+
 
 = 1.4.4 – 05/07/26 =
 * Added: Copywrite new widget added.

@@ -146,3 +146,14 @@ form:not(.eel-input-has-icon) .eel-authentication-form-field:not(.eel-authentica
     outline: none;
     box-shadow: 0 0 0 2px rgba(0, 115, 230, 0.15);
 }
+
+.eel-authentication-toggle-wrap {
+	&[data-active-form="login"] .eel-register-form,
+	&[data-active-form="register"] .eel-login-form {
+		display: none;
+	}
+	.eel-form-switcher {
+		cursor: pointer;
+		user-select: none;
+	}
+}

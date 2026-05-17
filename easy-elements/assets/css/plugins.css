@@ -5,11 +5,6 @@
  *
  * Copyright (c) 2016 Daniel Eden
  */
-.animated {
-  animation-duration: 0.8s;
-  animation-fill-mode: both;
-}
-
 .animated.infinite {
   animation-iteration-count: infinite;
 }

@@ -87,10 +87,15 @@
   width: 100%;
 }
 
+.e-e-heading.has-watermark {
+  position: relative;
+  z-index: 1;
+}
+
 .eel-watermark {
   position: absolute;
   bottom: 10px;
-  right: 10px;
+  left: 10px;
   font-size: 120px;
   font-weight: bold;
   color: transparent;

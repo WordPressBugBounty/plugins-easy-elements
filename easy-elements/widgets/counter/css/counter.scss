@@ -79,5 +79,53 @@
     margin-top: 12px;
 }
 
+/* Title position (number vs title layout) */
+.eel-cnt-content {
+    display: flex;
+    flex-direction: column;
+}
+.eel-cnt-title-pos-top .eel-cnt-content {
+    flex-direction: column-reverse;
+}
+.eel-cnt-title-pos-left .eel-cnt-content {
+    flex-direction: row-reverse;
+    align-items: center;
+}
+.eel-cnt-title-pos-right .eel-cnt-content {
+    flex-direction: row;
+    align-items: center;
+}
+.eel-cnt-title-pos-left .eel-cnt-title,
+.eel-cnt-title-pos-right .eel-cnt-title {
+    margin-top: 0;
+}
+
+/* Odometer */
+.eel-cnt-odometer-wrap {
+    display: inline-flex;
+    align-items: flex-end;
+    line-height: 1;
+}
+.eel-cnt-odometer-digit {
+    display: inline-block;
+    overflow: hidden;
+    height: 1em;
+    line-height: 1em;
+    vertical-align: bottom;
+}
+.eel-cnt-odometer-roll {
+    display: block;
+    will-change: transform;
+}
+.eel-cnt-odometer-num {
+    display: block;
+    height: 1em;
+    line-height: 1em;
+}
+.eel-cnt-odometer-sep {
+    display: inline-block;
+    line-height: 1em;
+}
+
 
 

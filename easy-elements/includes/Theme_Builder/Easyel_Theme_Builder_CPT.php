@@ -91,6 +91,10 @@ class Easyel_Theme_Builder_CPT {
 
         check_ajax_referer( 'easyel_ajax_nonce', 'nonce' );
 
+        if ( ! current_user_can( 'edit_posts' ) ) {
+            wp_send_json_error( ['msg' => 'Unauthorized'], 403 );
+        }
+
         $type   = isset($_POST['type']) ? sanitize_text_field( wp_unslash($_POST['type']) ) : '';
         $search = isset($_POST['search']) ? sanitize_text_field( wp_unslash($_POST['search']) ) : '';
 
@@ -758,6 +762,12 @@ class Easyel_Theme_Builder_CPT {
 
     public function easyel_get_archives_func() {
 
+        check_ajax_referer( 'easyel_ajax_nonce', 'nonce' );
+
+        if ( ! current_user_can( 'edit_posts' ) ) {
+            wp_send_json_error( ['msg' => 'Unauthorized'], 403 );
+        }
+
         /**
          * --------------------------------------------------
          * Base archive structure
@@ -989,6 +999,12 @@ class Easyel_Theme_Builder_CPT {
     }
 
     public function easyel_get_singulars_func() {
+
+        check_ajax_referer( 'easyel_ajax_nonce', 'nonce' );
+
+        if ( ! current_user_can( 'edit_posts' ) ) {
+            wp_send_json_error( ['msg' => 'Unauthorized'], 403 );
+        }
 
         $singulars = [];
 

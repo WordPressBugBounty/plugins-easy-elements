@@ -115,6 +115,19 @@ class Easyel__Gallery_Widget extends \Elementor\Widget_Base {
         );
 
         $this->add_control(
+            'show_description',
+            [
+                'label' => esc_html__( 'Show Description', 'easy-elements' ),
+                'type' => Controls_Manager::SWITCHER,
+                'label_on' => esc_html__( 'Show', 'easy-elements' ),
+                'label_off' => esc_html__( 'Hide', 'easy-elements' ),
+                'default' => '',
+                'description' => esc_html__( 'Pulls from each image\'s Description field in the Media Library. Hidden automatically when empty.', 'easy-elements' ),
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_control(
             'enable_popup',
             [
                 'label' => esc_html__( 'Enable Lightbox', 'easy-elements' ),
@@ -264,6 +277,122 @@ class Easyel__Gallery_Widget extends \Elementor\Widget_Base {
             [
                 'label' => esc_html__('Caption', 'easy-elements'),
                 'tab'   => \Elementor\Controls_Manager::TAB_STYLE,
+                'conditions' => [
+                    'relation' => 'or',
+                    'terms' => [
+                        [
+                            'name'     => 'show_caption',
+                            'operator' => '==',
+                            'value'    => 'yes',
+                        ],
+                        [
+                            'name'     => 'show_description',
+                            'operator' => '==',
+                            'value'    => 'yes',
+                        ],
+                    ],
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'container_heading',
+            [
+                'label' => esc_html__('Container', 'easy-elements'),
+                'type'  => Controls_Manager::HEADING,
+            ]
+        );
+
+        $this->add_responsive_control(
+            'caption_padding',
+            [
+                'label' => esc_html__('Padding', 'easy-elements'),
+                'type' => Controls_Manager::DIMENSIONS,
+                'size_units' => [ 'px', '%', 'em' ],
+                'selectors' => [
+                    '{{WRAPPER}} .eel-gallery-caption' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'caption_border_radius',
+            [
+                'label' => esc_html__('Border Radius', 'easy-elements'),
+                'type' => Controls_Manager::DIMENSIONS,
+                'size_units' => [ 'px', '%' ],
+                'selectors' => [
+                    '{{WRAPPER}} .eel-gallery-caption' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'caption_width',
+            [
+                'label' => esc_html__('Width', 'easy-elements'),
+                'type' => Controls_Manager::SLIDER,
+                'size_units' => [ 'px', '%' ],
+                'range' => [
+                    'px' => [ 'min' => 50, 'max' => 1000, 'step' => 1 ],
+                    '%'  => [ 'min' => 10, 'max' => 100, 'step' => 1 ],
+                ],
+                'selectors' => [
+                    '{{WRAPPER}} .eel-gallery-caption' => 'width: {{SIZE}}{{UNIT}}; margin: 0 auto; left: 0; right: 0;',
+                ],
+            ]
+        );
+
+
+
+        $this->add_responsive_control(
+            'caption_move_up',
+            [
+                'label' => esc_html__('Move Up', 'easy-elements'),
+                'type' => Controls_Manager::SLIDER,
+                'size_units' => [ 'px', '%' ],
+                'range' => [
+                    'px' => [ 'min' => 0, 'max' => 500, 'step' => 1 ],
+                    '%'  => [ 'min' => 0, 'max' => 100, 'step' => 1 ],
+                ],
+                'description' => esc_html__('Lift the caption block upward over the image.', 'easy-elements'),
+                'selectors' => [
+                    '{{WRAPPER}} .eel-gallery-caption' => 'transform: translateY(-{{SIZE}}{{UNIT}});',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'caption_align',
+            [
+                'label' => esc_html__('Alignment', 'easy-elements'),
+                'type' => Controls_Manager::CHOOSE,
+                'options' => [
+                    'left'   => [
+                        'title' => esc_html__('Left', 'easy-elements'),
+                        'icon'  => 'eicon-text-align-left',
+                    ],
+                    'center' => [
+                        'title' => esc_html__('Center', 'easy-elements'),
+                        'icon'  => 'eicon-text-align-center',
+                    ],
+                    'right'  => [
+                        'title' => esc_html__('Right', 'easy-elements'),
+                        'icon'  => 'eicon-text-align-right',
+                    ],
+                ],
+                'selectors' => [
+                    '{{WRAPPER}} .eel-gallery-caption' => 'text-align: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'caption_heading',
+            [
+                'label' => esc_html__('Caption', 'easy-elements'),
+                'type'  => Controls_Manager::HEADING,
+                'separator' => 'before',
                 'condition' => [
                     'show_caption' => 'yes',
                 ],
@@ -279,6 +408,9 @@ class Easyel__Gallery_Widget extends \Elementor\Widget_Base {
                 'selectors' => [
                     '{{WRAPPER}} .eel-gallery-caption' => 'color: {{VALUE}};',
                 ],
+                'condition' => [
+                    'show_caption' => 'yes',
+                ],
             ]
         );
 
@@ -291,6 +423,9 @@ class Easyel__Gallery_Widget extends \Elementor\Widget_Base {
                 'selectors' => [
                     '{{WRAPPER}} .eel-gallery-caption' => 'background-color: {{VALUE}};',
                 ],
+                'condition' => [
+                    'show_caption' => 'yes',
+                ],
             ]
         );
 
@@ -301,6 +436,75 @@ class Easyel__Gallery_Widget extends \Elementor\Widget_Base {
                 'name' => 'caption_typography',
                 'label' => esc_html__('Typography', 'easy-elements'),
                 'selector' => '{{WRAPPER}} .eel-gallery-caption',
+                'condition' => [
+                    'show_caption' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'description_heading',
+            [
+                'label' => esc_html__('Description', 'easy-elements'),
+                'type'  => Controls_Manager::HEADING,
+                'separator' => 'before',
+                'condition' => [
+                    'show_description' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'description_color',
+            [
+                'label' => esc_html__('Color', 'easy-elements'),
+                'type' => \Elementor\Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .eel-gallery-description' => 'color: {{VALUE}};',
+                ],
+                'condition' => [
+                    'show_description' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Background::get_type(),
+            [
+                'name' => 'description_background',
+                'label' => esc_html__('Background', 'easy-elements'),
+                'types' => [ 'classic', 'gradient' ],
+                'selector' => '{{WRAPPER}} .eel-gallery-description',
+                'condition' => [
+                    'show_description' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Typography::get_type(),
+            [
+                'name' => 'description_typography',
+                'label' => esc_html__('Typography', 'easy-elements'),
+                'selector' => '{{WRAPPER}} .eel-gallery-description',
+                'condition' => [
+                    'show_description' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'description_margin',
+            [
+                'label' => esc_html__('Margin', 'easy-elements'),
+                'type' => Controls_Manager::DIMENSIONS,
+                'size_units' => [ 'px', '%', 'em' ],
+                'selectors' => [
+                    '{{WRAPPER}} .eel-gallery-description' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+                'condition' => [
+                    'show_description' => 'yes',
+                ],
             ]
         );
 
@@ -472,9 +676,21 @@ class Easyel__Gallery_Widget extends \Elementor\Widget_Base {
             echo '</div>'; // .eel-gallery-image-wrap
             echo '</a>';
 
-            // === Caption ===
-            if ( ! empty( $caption ) ) {
-                echo '<div class="eel-gallery-caption">' . esc_html( $caption ) . '</div>';
+            // === Caption + Description ===
+            $description = '';
+            if ( isset( $settings['show_description'] ) && $settings['show_description'] === 'yes' ) {
+                $description = get_post_field( 'post_content', $image['id'] );
+            }
+
+            if ( ! empty( $caption ) || ! empty( $description ) ) {
+                echo '<div class="eel-gallery-caption">';
+                if ( ! empty( $caption ) ) {
+                    echo esc_html( $caption );
+                }
+                if ( ! empty( $description ) ) {
+                    echo '<div class="eel-gallery-description">' . wp_kses_post( $description ) . '</div>';
+                }
+                echo '</div>';
             }
 
             echo '</div>'; // .eel-gallery-item

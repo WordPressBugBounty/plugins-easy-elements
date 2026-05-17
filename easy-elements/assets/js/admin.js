@@ -502,6 +502,9 @@
             $('.easyel-nav-tab').click(function (e) {
                 const tab = $(this).data('tab');
 
+                // No data-tab → treat as a real link (e.g. Starter Templates page).
+                if (!tab) return;
+
                 e.preventDefault();
                 activateTab(tab);
                 history.replaceState(null, null, '#' + tab);

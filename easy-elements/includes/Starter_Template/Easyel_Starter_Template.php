@@ -8,11 +8,14 @@ class Easyel_Starter_Template {
 	protected static $instance = null;
 
 	const API_ENDPOINT   = 'https://wpeasyelements.com/demotemplate/wp-json/rtTemplates/v1/starter-templates';
-	const TRANSIENT_KEY  = 'easyel_starter_templates_cache';
+	const TRANSIENT_KEY  = 'easyel_starter_templates_cache_v2';
 
     public function __construct() {
         add_action( 'admin_menu', array( $this, 'admin_menus' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'templates_css' ) );
+		add_action( 'in_admin_header', array( $this, 'suppress_admin_notices' ), 1 );
+		add_filter( 'admin_body_class', array( $this, 'add_body_class' ) );
+		add_action( 'admin_head', array( $this, 'fullscreen_head_style' ) );
 
 		$this->required_plugins = $this->required_plugins();
 		$this->recommeneded_theme = $this->recommeneded_theme();
@@ -24,6 +27,35 @@ class Easyel_Starter_Template {
         add_action( 'wp_ajax_easyel_import_content', array( $this, 'import_content' ) );
         add_action( 'wp_ajax_easyel_sync_library', array( $this, 'ajax_sync_library' ) );
     }
+
+	public function suppress_admin_notices() {
+		if ( ! $this->is_starter_screen() ) {
+			return;
+		}
+		remove_all_actions( 'admin_notices' );
+		remove_all_actions( 'all_admin_notices' );
+		remove_all_actions( 'user_admin_notices' );
+		remove_all_actions( 'network_admin_notices' );
+	}
+
+	public function add_body_class( $classes ) {
+		if ( $this->is_starter_screen() ) {
+			$classes .= ' easyel-starter-fullscreen';
+		}
+		return $classes;
+	}
+
+	public function fullscreen_head_style() {
+		if ( ! $this->is_starter_screen() ) {
+			return;
+		}
+		echo '<style>html.wp-toolbar{padding-top:0 !important;}</style>';
+	}
+
+	private function is_starter_screen() {
+		$screen = get_current_screen();
+		return $screen && 'easy-elements_page_starter-templates-dashboard' === $screen->id;
+	}
 
 	/**
      * Get instance
@@ -145,23 +177,33 @@ class Easyel_Starter_Template {
 	}
 
 	public function get_all() {
+		$payload = $this->get_cached_payload();
+		return $payload['templates'];
+	}
+
+	public function get_category_tree() {
+		$payload = $this->get_cached_payload();
+		return $this->normalize_api_tree( $payload['categories_tree'] );
+	}
+
+	private function get_cached_payload() {
 		$cached = get_transient( self::TRANSIENT_KEY );
 
-		if ( is_array( $cached ) && ! empty( $cached ) ) {
+		if ( is_array( $cached ) && isset( $cached['templates'] ) ) {
 			return $cached;
 		}
 
-		$templates = $this->fetch_from_api();
-		set_transient( self::TRANSIENT_KEY, $templates, DAY_IN_SECONDS );
-		return $templates;
+		$payload = $this->fetch_from_api();
+		set_transient( self::TRANSIENT_KEY, $payload, DAY_IN_SECONDS );
+		return $payload;
 	}
 
 	public function sync_library() {
 		delete_transient( self::TRANSIENT_KEY );
 
-		$templates = $this->fetch_from_api();
-		set_transient( self::TRANSIENT_KEY, $templates, DAY_IN_SECONDS );
-		return $templates;
+		$payload = $this->fetch_from_api();
+		set_transient( self::TRANSIENT_KEY, $payload, DAY_IN_SECONDS );
+		return $payload['templates'];
 	}
 
 	public function ajax_sync_library() {
@@ -181,36 +223,102 @@ class Easyel_Starter_Template {
 	}
 
 	private function fetch_from_api() {
+		$empty = array( 'templates' => array(), 'categories_tree' => array() );
+
 		$response = wp_remote_get( self::API_ENDPOINT, array( 'timeout' => 20 ) );
 
 		if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
-			return array();
+			return $empty;
 		}
 
 		$body = json_decode( wp_remote_retrieve_body( $response ), true );
 
 		if ( ! is_array( $body ) || empty( $body['starter_templates'] ) ) {
-			return array();
+			return $empty;
 		}
 
-		return $this->normalize_api_data( $body['starter_templates'] );
+		$tree_raw  = isset( $body['categories_tree'] ) && is_array( $body['categories_tree'] )
+			? $body['categories_tree']
+			: array();
+		$alias_map = $this->build_child_alias_map( $tree_raw );
+
+		return array(
+			'templates'       => $this->normalize_api_data( $body['starter_templates'], $alias_map ),
+			'categories_tree' => $tree_raw,
+		);
 	}
 
-	private function normalize_api_data( array $items ) {
+	/**
+	 * Build a sanitized-name → [slug,...] map from tree children.
+	 *
+	 * The API can return the same logical category twice — once as a top-level
+	 * entry and once as a child under a parent. Cards reference one slug, the
+	 * mega-menu uses the other. The alias map lets us tag each card with both.
+	 */
+	private function build_child_alias_map( array $api_tree ) {
+		$map = array();
+		foreach ( $api_tree as $parent ) {
+			if ( empty( $parent['children'] ) || ! is_array( $parent['children'] ) ) {
+				continue;
+			}
+			foreach ( $parent['children'] as $child ) {
+				if ( empty( $child['slug'] ) ) {
+					continue;
+				}
+				$slug = sanitize_title( $child['slug'] );
+				$name = isset( $child['name'] ) ? (string) $child['name'] : '';
+				if ( '' !== $name ) {
+					$key = sanitize_title( $name );
+					if ( $key && $key !== $slug ) {
+						$map[ $key ][] = $slug;
+					}
+				}
+			}
+		}
+		return $map;
+	}
+
+	private function normalize_api_data( array $items, array $alias_map = array() ) {
 		$notice = esc_html__( 'Caution: For importing demo data please click on "Import Demo Data" button. During demo data installation please do not refresh the page.', 'easy-elements' );
 		$normalized = array();
 
 		foreach ( $items as $item ) {
-			$categories = array();
+			$categories       = array();
+			$category_labels  = array();
 			foreach ( (array) ( $item['categories'] ?? array() ) as $cat ) {
-				if ( ! empty( $cat['name'] ) ) {
-					$categories[] = str_replace( ' ', '-', strtolower( $cat['name'] ) );
+				$name = '';
+				$slug = '';
+				if ( is_array( $cat ) ) {
+					$name = (string) ( $cat['name'] ?? '' );
+					$slug = ! empty( $cat['slug'] ) ? sanitize_title( (string) $cat['slug'] ) : '';
+				} else {
+					$name = (string) $cat;
+				}
+				if ( '' === $name && '' === $slug ) {
+					continue;
+				}
+				if ( '' === $slug ) {
+					$slug = sanitize_title( $name );
+				}
+
+				$slugs    = array( $slug );
+				$name_key = sanitize_title( $name );
+				if ( $name_key && isset( $alias_map[ $name_key ] ) ) {
+					$slugs = array_merge( $slugs, $alias_map[ $name_key ] );
+				}
+
+				foreach ( array_unique( array_filter( $slugs ) ) as $resolved_slug ) {
+					$categories[] = $resolved_slug;
+				}
+				if ( '' !== $name ) {
+					$category_labels[] = $name;
 				}
 			}
 
 			$normalized[] = array(
 				'import_file_name'                => $item['title'] ?? '',
-				'categories'                      => $categories,
+				'categories'                      => array_values( array_unique( $categories ) ),
+				'category_labels'                 => array_values( array_unique( $category_labels ) ),
 				'default_homepage'                => 'Home',
 				'import_file_url'                 => $item['xml'] ?? '',
 				'import_file_kit_url'             => $item['kit'] ?? '',
@@ -224,6 +332,72 @@ class Easyel_Starter_Template {
 		}
 
 		return $normalized;
+	}
+
+	/**
+	 * Convert raw API tree (id, slug, name, count, children) to the shape
+	 * used by the template: [ slug, label, count, children: [...] ].
+	 * Drops top-level entries that duplicate a child of another parent.
+	 */
+	private function normalize_api_tree( array $api_tree ) {
+		if ( empty( $api_tree ) ) {
+			return array();
+		}
+
+		$child_keys = array();
+		foreach ( $api_tree as $parent ) {
+			if ( empty( $parent['children'] ) || ! is_array( $parent['children'] ) ) {
+				continue;
+			}
+			foreach ( $parent['children'] as $child ) {
+				if ( ! empty( $child['slug'] ) ) {
+					$child_keys[ sanitize_title( $child['slug'] ) ] = true;
+				}
+				if ( ! empty( $child['name'] ) ) {
+					$child_keys[ sanitize_title( $child['name'] ) ] = true;
+				}
+			}
+		}
+
+		$out = array();
+		foreach ( $api_tree as $parent ) {
+			if ( empty( $parent['slug'] ) ) {
+				continue;
+			}
+			$parent_slug  = sanitize_title( $parent['slug'] );
+			$parent_name  = isset( $parent['name'] ) ? (string) $parent['name'] : '';
+			$has_children = ! empty( $parent['children'] ) && is_array( $parent['children'] );
+
+			if ( ! $has_children ) {
+				$name_key = $parent_name ? sanitize_title( $parent_name ) : '';
+				if ( isset( $child_keys[ $parent_slug ] )
+					|| ( $name_key && isset( $child_keys[ $name_key ] ) )
+				) {
+					continue;
+				}
+			}
+
+			$children = array();
+			if ( $has_children ) {
+				foreach ( $parent['children'] as $child ) {
+					if ( empty( $child['slug'] ) ) {
+						continue;
+					}
+					$children[] = array(
+						'slug'  => sanitize_title( $child['slug'] ),
+						'label' => isset( $child['name'] ) ? (string) $child['name'] : '',
+						'count' => isset( $child['count'] ) ? (int) $child['count'] : 0,
+					);
+				}
+			}
+			$out[] = array(
+				'slug'     => $parent_slug,
+				'label'    => $parent_name,
+				'count'    => isset( $parent['count'] ) ? (int) $parent['count'] : 0,
+				'children' => $children,
+			);
+		}
+		return $out;
 	}
 
 	public function required_plugins() {
@@ -325,15 +499,7 @@ class Easyel_Starter_Template {
 		$free_count  = count( array_filter( $templates, function( $t ) { return empty( $t['is_pro'] ); } ) );
 		$pro_count   = count( array_filter( $templates, function( $t ) { return ! empty( $t['is_pro'] ); } ) );
 
-		// Build unique category slugs with template counts
-		$cat_counts = array();
-		foreach ( $templates as $template ) {
-			foreach ( $template['categories'] as $cat ) {
-				$cat = strtolower( $cat );
-				$cat_counts[ $cat ] = isset( $cat_counts[ $cat ] ) ? $cat_counts[ $cat ] + 1 : 1;
-			}
-		}
-		ksort( $cat_counts );
+		$category_tree = $this->get_category_tree();
 	
 		$is_activated_plugins = true;
 
@@ -367,15 +533,32 @@ class Easyel_Starter_Template {
 			} 
 		}
 
+		$dashboard_url = admin_url( 'admin.php?page=easy-elements-dashboard' );
 		?>
-		<div class="wrap"><h1><?php echo esc_html__( 'Starter Templates', 'easy-elements' ); ?></h1>
+		<div class="wrap easyel-starter-wrap">
+			<header class="easyel-topbar">
+				<div class="easyel-topbar-left">
+					<a href="<?php echo esc_url( $dashboard_url ); ?>" class="easyel-brand" aria-label="<?php echo esc_attr__( 'Easy Elements', 'easy-elements' ); ?>">
+						<span class="easyel-brand-mark" aria-hidden="true">
+							<svg viewBox="0 0 32 32" fill="none">
+								<rect x="2" y="2" width="12" height="12" rx="3" fill="#7455ff"/>
+								<rect x="18" y="2" width="12" height="12" rx="3" fill="#9d84ff"/>
+								<rect x="2" y="18" width="12" height="12" rx="3" fill="#9d84ff"/>
+								<rect x="18" y="18" width="12" height="12" rx="3" fill="#7455ff"/>
+							</svg>
+						</span>
+						<span class="easyel-brand-text">
+							<strong><?php echo esc_html__( 'Easy Elements', 'easy-elements' ); ?></strong>
+							<span><?php echo esc_html__( 'Starter Templates', 'easy-elements' ); ?></span>
+						</span>
+					</a>
+				</div>
 
-			<div class="easyel-templates-header">
-				<div class="easyel-header-right">
-					<div class="easyel-templates-search">
-						<span class="dashicons dashicons-search" aria-hidden="true"></span>
-						<input type="search" id="easyel-search-input" placeholder="<?php echo esc_attr__( 'Search templates…', 'easy-elements' ); ?>" autocomplete="off">
-					</div>
+				<div class="easyel-topbar-right">
+					<a href="<?php echo esc_url( $dashboard_url ); ?>" class="easyel-exit-btn" title="<?php echo esc_attr__( 'Exit to Dashboard', 'easy-elements' ); ?>">
+						<span class="dashicons dashicons-arrow-left-alt2" aria-hidden="true"></span>
+						<span><?php echo esc_html__( 'Exit to Dashboard', 'easy-elements' ); ?></span>
+					</a>
 
 					<button type="button" class="easyel-icon-btn" id="easyel-favorites-toggle" title="<?php echo esc_attr__( 'Show favourites', 'easy-elements' ); ?>" aria-pressed="false">
 						<span class="dashicons dashicons-heart" aria-hidden="true"></span>
@@ -394,21 +577,88 @@ class Easyel_Starter_Template {
 						<span class="dashicons dashicons-arrow-down-alt2" aria-hidden="true"></span>
 					</div>
 				</div>
-			</div>
+			</header>
+
+			<section class="easyel-hero">
+				<span class="easyel-hero-eyebrow"><?php echo esc_html__( 'Template Library', 'easy-elements' ); ?></span>
+				<h1 class="easyel-hero-title"><?php echo esc_html__( 'Easy Starter Templates', 'easy-elements' ); ?></h1>
+				<p class="easyel-hero-subtitle"><?php echo esc_html__( 'Discover beautiful, ready-to-use templates for your next project — import in one click and start customising in seconds.', 'easy-elements' ); ?></p>
+
+				<div class="easyel-hero-search">
+					<span class="dashicons dashicons-search" aria-hidden="true"></span>
+					<input type="search" id="easyel-search-input" placeholder="<?php echo esc_attr__( 'What kind of website are you building?', 'easy-elements' ); ?>" autocomplete="off">
+				</div>
+			</section>
 
 			<div class="easyel-grid-wrapper">
-				<?php if ( ! empty( $cat_counts ) ) : ?>
-				<nav class="easyel-grid-filters" aria-label="<?php echo esc_attr__( 'Template categories', 'easy-elements' ); ?>">
-					<button type="button" class="easyel-tab is-active" data-category="all">
-						<?php echo esc_html__( 'All Templates', 'easy-elements' ); ?>
-						<span class="easyel-tab-count"><?php echo esc_html( $total_count ); ?></span>
+				<?php if ( ! empty( $category_tree ) ) : ?>
+				<nav class="easyel-mega" aria-label="<?php echo esc_attr__( 'Template categories', 'easy-elements' ); ?>">
+					<ul class="easyel-mega-list" id="easyel-mega-list">
+						<?php foreach ( $category_tree as $cat ) :
+							$has_children = ! empty( $cat['children'] );
+							?>
+							<?php if ( $has_children ) : ?>
+								<li class="easyel-mega-item has-children" data-parent="<?php echo esc_attr( $cat['slug'] ); ?>">
+									<button type="button" class="easyel-mega-trigger" aria-haspopup="true" aria-expanded="false">
+										<span class="easyel-mega-trigger-label"><?php echo esc_html( $cat['label'] ); ?></span>
+										<svg class="easyel-mega-arrow" viewBox="0 0 11 6" fill="none" aria-hidden="true">
+											<path fill-rule="evenodd" clip-rule="evenodd" d="M10.7812 1.22462L6.02812 5.78989C5.73645 6.07004 5.26355 6.07004 4.97188 5.78989L0.218757 1.22462C-0.0729189 0.944468 -0.0729189 0.490259 0.218757 0.210111C0.510432 -0.0700375 0.983331 -0.0700374 1.27501 0.210111L5.5 4.26813L9.72499 0.210111C10.0167 -0.0700371 10.4896 -0.070037 10.7812 0.210111C11.0729 0.490259 11.0729 0.944468 10.7812 1.22462Z" fill="currentColor"/>
+										</svg>
+										<span class="easyel-mega-trigger-active" aria-hidden="true"></span>
+									</button>
+
+									<div class="easyel-mega-panel" role="menu">
+										<div class="easyel-mega-panel-head">
+											<span class="easyel-mega-panel-title"><?php echo esc_html( $cat['label'] ); ?></span>
+										</div>
+										<ul class="easyel-mega-children">
+											<?php foreach ( $cat['children'] as $child ) : ?>
+												<li>
+													<button
+														type="button"
+														class="easyel-mega-child easyel-cat-item"
+														role="menuitemcheckbox"
+														aria-checked="false"
+														data-cat="<?php echo esc_attr( $child['slug'] ); ?>"
+														data-parent="<?php echo esc_attr( $cat['slug'] ); ?>"
+													>
+														<span class="easyel-cat-check" aria-hidden="true">
+															<span class="dashicons dashicons-yes"></span>
+														</span>
+														<span class="easyel-cat-name"><?php echo esc_html( $child['label'] ); ?></span>
+													</button>
+												</li>
+											<?php endforeach; ?>
+										</ul>
+										<button
+											type="button"
+											class="easyel-mega-deselect-all"
+											data-parent="<?php echo esc_attr( $cat['slug'] ); ?>"
+											hidden
+										>
+											<span><?php esc_html_e( 'Uncheck all', 'easy-elements' ); ?></span>
+										</button>
+									</div>
+								</li>
+							<?php else : ?>
+								<li class="easyel-mega-item is-leaf">
+									<button
+										type="button"
+										class="easyel-mega-trigger easyel-mega-leaf easyel-cat-item"
+										data-cat="<?php echo esc_attr( $cat['slug'] ); ?>"
+									>
+										<span class="easyel-mega-trigger-label"><?php echo esc_html( $cat['label'] ); ?></span>
+									</button>
+								</li>
+							<?php endif; ?>
+						<?php endforeach; ?>
+					</ul>
+
+					<button type="button" class="easyel-mega-reset" id="easyel-cat-reset" hidden>
+						<span class="dashicons dashicons-no-alt" aria-hidden="true"></span>
+						<span class="easyel-mega-reset-label"><?php esc_html_e( 'Reset', 'easy-elements' ); ?></span>
+						<span class="easyel-mega-reset-count" id="easyel-mega-reset-count">0</span>
 					</button>
-					<?php foreach ( $cat_counts as $cat_slug => $cat_count ) : ?>
-					<button type="button" class="easyel-tab" data-category="<?php echo esc_attr( $cat_slug ); ?>">
-						<?php echo esc_html( ucwords( str_replace( '-', ' ', $cat_slug ) ) ); ?>
-						<span class="easyel-tab-count"><?php echo esc_html( $cat_count ); ?></span>
-					</button>
-					<?php endforeach; ?>
 				</nav>
 				<?php endif; ?>
 				<?php
@@ -472,7 +722,7 @@ class Easyel_Starter_Template {
 								</div>
 								<div class="easyel-meta">
 									<span class="easyel-title"><?php echo esc_html($title) ?></span>
-									<span class="easyel-groups"><?php echo esc_html( implode( ', ', array_map( function( $c ) { return ucwords( str_replace( '-', ' ', $c ) ); }, $template['categories'] ) ) ); ?></span>
+									<span class="easyel-groups"><?php echo esc_html( implode( ', ', ! empty( $template['category_labels'] ) ? $template['category_labels'] : array_map( function( $c ) { return ucwords( str_replace( '-', ' ', $c ) ); }, $template['categories'] ) ) ); ?></span>
 								</div>
 							</div>
 						</div>

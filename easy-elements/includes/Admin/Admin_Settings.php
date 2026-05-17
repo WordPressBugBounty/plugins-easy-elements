@@ -69,6 +69,10 @@ class Admin_Settings {
 
     public function easyel_save_user_data_callback() {
 
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( ['msg' => 'Unauthorized'], 403 );
+        }
+
         check_ajax_referer('easy_elements_nonce', 'security');
 
         // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
@@ -478,6 +482,7 @@ class Admin_Settings {
                         <a href="#widget" class="easyel-nav-tab" data-tab="widget"><i class="easyelIcon-widgets"></i><?php esc_html_e('All Widgets','easy-elements'); ?></a>
                         <a href="#extensions" class="easyel-nav-tab" data-tab="extensions"><i class="easyelIcon-extension"></i><?php esc_html_e('All Extensions','easy-elements'); ?></a>
                         <a href="#userData" class="easyel-nav-tab" data-tab="userData"><i class="easyelIcon-setting"></i><?php esc_html_e('API Settings','easy-elements'); ?></a>
+                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=starter-templates-dashboard' ) ); ?>" class="easyel-nav-tab"><i class="easyelIcon-monitor"></i><?php esc_html_e('Starter Templates','easy-elements'); ?></a>
                         <?php if ( defined( 'EASY_ELEMENTS_PRO_ACTIVE' ) && EASY_ELEMENTS_PRO_ACTIVE ) : ?>
                         <a href="#activate_license" class="easyel-nav-tab" data-tab="activate_license"><i class="easyelIcon-license-pro"></i><?php esc_html_e('Activate License','easy-elements'); ?></a>
                         <?php endif; ?>
@@ -1545,6 +1550,16 @@ class Admin_Settings {
                 'description' => 'Showcase WooCommerce product categories in a slider.',
                 'demo_url'    => 'https://wpeasyelements.com/product-categories-slider/',
                 'docx_url'    => 'https://wpeasyelements.com/docs/product-categories-slider/',
+                'is_pro'      => true,
+                'group'       => 'WooCommerce Widgets',
+                'tab'         => 'widget',
+            ],
+            'product_category_tab' => [
+                'icon'        => 'easyelIcon-process-grid',
+                'title'       => 'Product Category Tab',
+                'description' => 'Tabbed WooCommerce categories with a banner and product cards per tab.',
+                'demo_url'    => 'https://wpeasyelements.com/product-category-tab/',
+                'docx_url'    => 'https://wpeasyelements.com/docs/product-category-tab/',
                 'is_pro'      => true,
                 'group'       => 'WooCommerce Widgets',
                 'tab'         => 'widget',

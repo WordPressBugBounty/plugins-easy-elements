@@ -1350,7 +1350,7 @@ class Easyel_Login_Register_Widget extends \Elementor\Widget_Base {
 		$this->end_controls_section();
 	}
 
-	public function render_login_form($settings = []) {
+	public function render_login_form($settings = [], $is_toggle = false) {
 		
 		if ( is_user_logged_in() ) {
 			$already_logged_in_message = !empty($settings['already_logged_in_message']) ? $settings['already_logged_in_message'] : 'You are already logged in. Goto Homepage';
@@ -1386,7 +1386,8 @@ class Easyel_Login_Register_Widget extends \Elementor\Widget_Base {
 		$login_fields = !empty($settings['login_fields']) ? $settings['login_fields'] : '';
 	
 		?>
-		<form method="post" class="eel-authentication-form eel-login-form <?php echo esc_attr( $show_icons ); ?>">
+		<form method="post" class="eel-authentication-form eel-login-form <?php echo esc_attr( $show_icons ); ?>" <?php echo $is_toggle ? 'data-form-name="login"' : ''; ?>>
+			<?php wp_nonce_field( 'easy_elements_nonce', 'eel_login_nonce' ); ?>
 			<input type="hidden" name="login_redirect_link" value="<?php echo esc_url( $redirect_link_after_login )?>">
 			<input type="hidden" name="empty_error_msg" value="<?php echo esc_attr( $empty_error_message )?>">
 			<?php 
@@ -1495,17 +1496,17 @@ class Easyel_Login_Register_Widget extends \Elementor\Widget_Base {
 				</div>
 			</div>
 							
-			<?php 
+			<?php
 				if(!empty($cta_text)) { ?>
 				<div class="eel-authentication-form-field eel-authentication-form-cta-field">
 					<div class="eel-authentication-form-field-inner">
-						<div class="eel-form-control-wrap">
+						<div class="eel-form-control-wrap <?php echo $is_toggle ? 'eel-form-switcher' : ''; ?>" <?php echo $is_toggle ? 'data-switch-to="register"' : ''; ?>>
 							<?php echo wp_kses_post( $cta_text ); ?>
 						</div>
 					</div>
 				</div>
 			<?php } ?>
-		
+
 			<div class="eel-form-status">
 				<?php 
 					if($show_error_message == 'yes') {
@@ -1526,7 +1527,7 @@ class Easyel_Login_Register_Widget extends \Elementor\Widget_Base {
 		
 	}
 
-	public function render_register_form($settings = []) {
+	public function render_register_form($settings = [], $is_toggle = false) {
 		$show_ajax_loader = !empty($settings['show_ajax_loader']) ? $settings['show_ajax_loader'] : 'yes';
 		$show_label = !empty($settings['show_label']) ? $settings['show_label'] : '';
 		$show_icon = !empty($settings['show_icon']) ? $settings['show_icon'] : '';
@@ -1551,16 +1552,18 @@ class Easyel_Login_Register_Widget extends \Elementor\Widget_Base {
 		$cta_text = !empty($settings['cta_text']) ? $settings['cta_text'] : '';
 
 		$register_fields = !empty($settings['register_fields']) ? $settings['register_fields'] : '';
-		$role = !empty($settings['role']) ? $settings['role'] : 'subscriber';
 		$auto_login_after_registration = !empty($settings['auto_login_after_registration']) ? $settings['auto_login_after_registration'] : 'yes';
 
 		
 	
 		?>
-		<form method="post" class="eel-authentication-form eel-register-form <?php echo esc_attr( $show_icons ); ?>">
+		<form method="post" class="eel-authentication-form eel-register-form <?php echo esc_attr( $show_icons ); ?>" <?php echo $is_toggle ? 'data-form-name="register"' : ''; ?>>
+			<?php
+			wp_nonce_field( 'easy_elements_nonce', 'eel_register_nonce' );
+			$auto_login_value = ( $auto_login_after_registration === 'yes' ) ? 'yes' : 'no';
+			?>
 			<input type="hidden" name="register_redirect_link" value="<?php echo esc_url( $redirect_link_after_register )?>">
-			<input type="hidden" name="role" value="<?php echo esc_attr( $role )?>">
-			<input type="hidden" name="auto_login_after_registration" value="<?php echo esc_attr( $auto_login_after_registration )?>">
+			<input type="hidden" name="auto_login_after_registration" value="<?php echo esc_attr( $auto_login_value )?>">
 			<input type="hidden" name="empty_error_msg" value="<?php echo esc_attr( $empty_error_message )?>">
 			<input type="hidden" name="min_length_error_msg" value="<?php echo esc_attr( $min_length_error_message )?>">
 			<input type="hidden" name="max_length_error_msg" value="<?php echo esc_attr( $max_length_error_message )?>">
@@ -1673,12 +1676,13 @@ class Easyel_Login_Register_Widget extends \Elementor\Widget_Base {
 					</div>
 				</div>
 			</div>
-			<?php 
-				if(!empty($cta_text)) { ?>
+			<?php
+				$register_cta_text = $is_toggle ? esc_html__( 'Already have an account? Login', 'easy-elements' ) : $cta_text;
+				if(!empty($register_cta_text)) { ?>
 				<div class="eel-authentication-form-field eel-authentication-form-cta-field">
 					<div class="eel-authentication-form-field-inner">
-						<div class="eel-form-control-wrap">
-							<?php echo wp_kses_post( $cta_text ); ?>
+						<div class="eel-form-control-wrap <?php echo $is_toggle ? 'eel-form-switcher' : ''; ?>" <?php echo $is_toggle ? 'data-switch-to="login"' : ''; ?>>
+							<?php echo wp_kses_post( $register_cta_text ); ?>
 						</div>
 					</div>
 				</div>
@@ -1720,10 +1724,16 @@ class Easyel_Login_Register_Widget extends \Elementor\Widget_Base {
 		}elseif($form_type == 'register') {
 			$this->render_register_form($settings);
 		}else{
-			$this->render_login_form($settings);
-			$this->render_register_form($settings);
+			?>
+			<div class="eel-authentication-toggle-wrap" data-active-form="login">
+				<?php
+				$this->render_login_form($settings, true);
+				$this->render_register_form($settings, true);
+				?>
+			</div>
+			<?php
 		}
-		
+
 	}
 
 }

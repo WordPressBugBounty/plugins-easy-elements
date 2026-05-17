@@ -2,6 +2,8 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+
+$easyel_skin4_hover_overlay = $settings['skin4_hover_overlay'] ?? 'overlay1';
 ?>
 <div class="grid-item">
 	<div class="ee--team-img">
@@ -32,7 +34,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</a>
 		<?php endif; ?>
 
-		<div class="eel-team-hover-content">
+		<div class="eel-team-hover-content <?php echo esc_attr( $easyel_skin4_hover_overlay ); ?>">
 			<div class="eel-name-deg-wrap">
 				<?php if ( ! empty( $name ) ) :
 					echo wp_kses_post( $name );

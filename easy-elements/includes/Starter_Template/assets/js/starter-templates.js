@@ -2,7 +2,7 @@ class StarterTemplates {
     constructor() {
         this.currentTemplate = {};
         this.previewTemplate = {};
-        this.currentCategory = 'all';
+        this.selectedCategories = [];
         this.searchQuery    = '';
         this.typeFilter     = 'all';
         this.showFavourites = false;
@@ -157,19 +157,19 @@ class StarterTemplates {
         if (!this.grid) return;
 
         const search     = this.searchQuery.toLowerCase();
-        const category   = this.currentCategory;
+        const selected   = this.selectedCategories;
         const typeFilter = this.typeFilter;
         const showFav    = this.showFavourites;
         const favourites = this.favourites;
 
         this.filteredItems = this.allItems.filter(item => {
-            const cats  = (item.getAttribute('data-category') || '').split(' ');
+            const cats  = (item.getAttribute('data-category') || '').split(' ').filter(Boolean);
             const title = (item.getAttribute('data-title') || '').toLowerCase();
             const type  = item.getAttribute('data-type') || 'free';
 
             return (!search || title.includes(search))
                 && (typeFilter === 'all' || type === typeFilter)
-                && (category === 'all' || cats.includes(category))
+                && (!selected.length || selected.some(c => cats.includes(c)))
                 && (!showFav || favourites.includes(item.getAttribute('data-title')));
         });
 
@@ -222,15 +222,208 @@ class StarterTemplates {
     }
 
     initCategoryFilters() {
-        const btns = document.querySelectorAll('.easyel-grid-filters .easyel-tab');
-        btns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                btns.forEach(b => b.classList.remove('is-active'));
-                btn.classList.add('is-active');
-                this.currentCategory = btn.getAttribute('data-category');
+        const mega = document.querySelector('.easyel-mega');
+        if (!mega) return;
+
+        // Parent trigger (has children): toggle the bucket of parent slug + every child slug.
+        // Cards tagged with either the parent or any child match, so this acts as "select all in group".
+        mega.addEventListener('click', (e) => {
+            const trigger = e.target.closest('.easyel-mega-item.has-children > .easyel-mega-trigger');
+            if (!trigger) return;
+            e.preventDefault();
+            e.stopPropagation();
+
+            const item = trigger.closest('.easyel-mega-item');
+            const parentSlug = item.getAttribute('data-parent');
+            const childBtns = item.querySelectorAll('.easyel-mega-child.easyel-cat-item');
+            const childSlugs = Array.from(childBtns).map(c => c.getAttribute('data-cat'));
+            const bucket = parentSlug ? [parentSlug].concat(childSlugs) : childSlugs;
+            if (!bucket.length) return;
+
+            const anyActive = (parentSlug && this.selectedCategories.indexOf(parentSlug) !== -1)
+                || Array.from(childBtns).some(c => c.classList.contains('is-active'));
+
+            this.selectedCategories = this.selectedCategories.filter(c => bucket.indexOf(c) === -1);
+
+            if (anyActive) {
+                childBtns.forEach(c => {
+                    c.classList.remove('is-active');
+                    c.setAttribute('aria-checked', 'false');
+                });
+            } else {
+                bucket.forEach(slug => this.selectedCategories.push(slug));
+                childBtns.forEach(c => {
+                    c.classList.add('is-active');
+                    c.setAttribute('aria-checked', 'true');
+                });
+            }
+
+            this.updateMegaState();
+            this.applyFilters();
+        });
+
+        // Child row click: additive toggle. Leaf parents (no children) act as a single-select chip.
+        mega.addEventListener('click', (e) => {
+            const item = e.target.closest('.easyel-cat-item');
+            if (!item) return;
+            // Skip — the parent trigger handler above already handles has-children parents
+            if (item.matches('.easyel-mega-item.has-children > .easyel-mega-trigger')) return;
+
+            e.preventDefault();
+            e.stopPropagation();
+            const cat = item.getAttribute('data-cat');
+            if (!cat) return;
+
+            const isLeaf = item.classList.contains('easyel-mega-leaf');
+            const idx = this.selectedCategories.indexOf(cat);
+            const wasActive = idx !== -1;
+
+            if (isLeaf) {
+                document.querySelectorAll('.easyel-cat-item.is-active').forEach(el => {
+                    el.classList.remove('is-active');
+                    el.setAttribute('aria-checked', 'false');
+                });
+                if (wasActive) {
+                    this.selectedCategories = [];
+                } else {
+                    this.selectedCategories = [cat];
+                    document.querySelectorAll(`.easyel-cat-item[data-cat="${cat}"]`).forEach(el => {
+                        el.classList.add('is-active');
+                        el.setAttribute('aria-checked', 'true');
+                    });
+                }
+            } else {
+                if (wasActive) {
+                    this.selectedCategories.splice(idx, 1);
+                    document.querySelectorAll(`.easyel-cat-item[data-cat="${cat}"]`).forEach(el => {
+                        el.classList.remove('is-active');
+                        el.setAttribute('aria-checked', 'false');
+                    });
+                } else {
+                    this.selectedCategories.push(cat);
+                    document.querySelectorAll(`.easyel-cat-item[data-cat="${cat}"]`).forEach(el => {
+                        el.classList.add('is-active');
+                        el.setAttribute('aria-checked', 'true');
+                    });
+                }
+            }
+
+            this.updateMegaState();
+            this.applyFilters();
+        });
+
+        // Per-panel "Uncheck all" — clears every selected child under that parent.
+        mega.addEventListener('click', (e) => {
+            const btn = e.target.closest('.easyel-mega-deselect-all');
+            if (!btn) return;
+            e.preventDefault();
+            e.stopPropagation();
+
+            const parent = btn.getAttribute('data-parent');
+            if (!parent) return;
+
+            const children = document.querySelectorAll(`.easyel-cat-item[data-parent="${parent}"]`);
+            const slugs = Array.from(children).map(c => c.getAttribute('data-cat'));
+
+            this.selectedCategories = this.selectedCategories.filter(c => slugs.indexOf(c) === -1 && c !== parent);
+
+            children.forEach(c => {
+                c.classList.remove('is-active');
+                c.setAttribute('aria-checked', 'false');
+            });
+
+            this.updateMegaState();
+            this.applyFilters();
+        });
+
+        const reset = document.getElementById('easyel-cat-reset');
+        if (reset) {
+            reset.addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.querySelectorAll('.easyel-cat-item.is-active').forEach(el => {
+                    el.classList.remove('is-active');
+                    el.setAttribute('aria-checked', 'false');
+                });
+                this.selectedCategories = [];
+                this.updateMegaState();
                 this.applyFilters();
             });
+        }
+
+        this.updateMegaState();
+        this.initMegaPanelPositioning();
+    }
+
+    initMegaPanelPositioning() {
+        const items = document.querySelectorAll('.easyel-mega-item.has-children');
+        if (!items.length) return;
+
+        const positionAll = () => items.forEach(item => this.positionMegaPanel(item));
+
+        items.forEach(item => {
+            item.addEventListener('mouseenter', () => this.positionMegaPanel(item));
+            item.addEventListener('focusin', () => this.positionMegaPanel(item));
         });
+
+        // Initial pass + recalc on resize (debounced).
+        positionAll();
+        let resizeTimer = null;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(positionAll, 100);
+        });
+    }
+
+    positionMegaPanel(item) {
+        const panel = item.querySelector('.easyel-mega-panel');
+        if (!panel) return;
+
+        item.classList.remove('is-right-aligned');
+
+        const itemRect = item.getBoundingClientRect();
+        // panel.offsetWidth is reliable even while visibility:hidden because the
+        // element still participates in layout. min-width fallback for safety.
+        const panelWidth = panel.offsetWidth || 360;
+        const viewportWidth = document.documentElement.clientWidth;
+        const safety = 16;
+
+        // Default left-aligned: panel.left === item.left. Would it overflow right?
+        const leftAlignedRight = itemRect.left + panelWidth;
+
+        if (leftAlignedRight + safety > viewportWidth) {
+            // Try right-align (panel.right === item.right). Does it fit on the left?
+            const rightAlignedLeft = itemRect.right - panelWidth;
+            if (rightAlignedLeft >= safety) {
+                item.classList.add('is-right-aligned');
+            }
+            // else: panel is wider than the viewport — leave left-aligned so it stays
+            // visible from the left edge instead of disappearing off-screen on the right.
+        }
+    }
+
+    updateMegaState() {
+        document.querySelectorAll('.easyel-mega-item').forEach(item => {
+            const active = item.querySelectorAll('.easyel-cat-item.is-active').length;
+            item.classList.toggle('has-selected', active > 0);
+
+            const deselect = item.querySelector('.easyel-mega-deselect-all');
+            if (deselect) {
+                if (active > 0) deselect.removeAttribute('hidden');
+                else deselect.setAttribute('hidden', '');
+            }
+        });
+
+        const reset = document.getElementById('easyel-cat-reset');
+        const resetCount = document.getElementById('easyel-mega-reset-count');
+        const count = this.selectedCategories.length;
+        if (reset) {
+            if (count > 0) {
+                reset.removeAttribute('hidden');
+                if (resetCount) resetCount.textContent = String(count);
+            } else {
+                reset.setAttribute('hidden', '');
+            }
+        }
     }
 
     initSearch() {

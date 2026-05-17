@@ -452,29 +452,56 @@
 			var $img = $scope.find('.elementor-widget-container img').first();
 			if (!$img.length || !$img.attr('src')) return;
 
-			var $container = $img.closest('.elementor-widget-container');
+			var $container = $scope.find('.elementor-widget-container');
 
-			// Destroy previous instance if re-rendering in editor
-			var $oldJarallax = $container.find('.jarallax');
-			if ($oldJarallax.length) {
-				$oldJarallax.each(function () {
-					jarallax(this, 'destroy');
-				});
-				$oldJarallax.remove();
+			// If already wrapped from a previous run (editor re-render), unwrap to start clean
+			if ($img.parent('.eele-img-jarallax-wrap').length) {
+				try { jarallax($img.parent()[0], 'destroy'); } catch (e) {}
+				$img.unwrap();
+				$img.removeClass('jarallax-img');
 			}
 
-			var $div = $('<div>', { 'class': 'jarallax eele-jarallax-bg', 'data-speed': 0.5 });
-			var $jarallaxImg = $('<img>', { 'class': 'jarallax-img', src: $img.attr('src'), alt: $img.attr('alt') || '', decoding: 'async' });
-			$div.append($jarallaxImg);
-			$container.css('position', 'relative').append($div);
+			// Clean up any leftover empty jarallax bg divs from older buggy code
+			$container.find('> .eele-jarallax-bg, > a > .eele-jarallax-bg').each(function () {
+				try { jarallax(this, 'destroy'); } catch (e) {}
+			}).remove();
 
-			jarallax($div[0], {
-				speed: 0.5,
-				imgPosition: '50% 50%',
-				imgRepeat: 'no-repeat',
-				imgSize: 'cover',
-				zIndex: -100
-			});
+			// Wrap the original image so it becomes the parallax source itself.
+			// Do NOT add `eele-jarallax-bg` — that class has global CSS
+			// (position:absolute; z-index:-1) for container background parallax,
+			// which would hide the image entirely.
+			$img.addClass('jarallax-img');
+			$img.wrap('<div class="jarallax jarallax-container eele-img-jarallax-wrap"></div>');
+			var $div = $img.parent();
+
+			function initParallax() {
+				// Give the wrapper a size so it doesn't collapse once jarallax positions
+				// the img absolutely. User-set width/height (via panel) uses !important
+				// and will still override these fallbacks.
+				var nW = $img[0].naturalWidth;
+				var nH = $img[0].naturalHeight;
+				if (nW && nH) {
+					if (!$div[0].style.width)  $div.css('width', '100%');
+					if (!$div[0].style.height) $div.css('aspect-ratio', nW + ' / ' + nH);
+				} else if (!$div[0].style.height) {
+					var fallbackH = $div[0].getBoundingClientRect().height;
+					if (fallbackH > 0) $div.css('height', fallbackH + 'px');
+				}
+
+				jarallax($div[0], {
+					speed: 0.5,
+					imgPosition: '50% 50%',
+					imgRepeat: 'no-repeat',
+					imgSize: 'cover',
+					zIndex: 0
+				});
+			}
+
+			if ($img[0].complete && $img[0].naturalWidth > 0) {
+				initParallax();
+			} else {
+				$img.one('load', initParallax);
+			}
 		};
 
 		elementorFrontend.hooks.addAction("frontend/element_ready/global", EasyJarallax);

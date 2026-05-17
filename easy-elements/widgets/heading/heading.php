@@ -60,24 +60,26 @@ class Easyel_Heading_Widget extends \Elementor\Widget_Base {
 		$this->add_control(
 		    'show_border_title',
 		    [
-		        'label' => esc_html__( 'Show Border', 'easy-elements' ),
+		        'label' => esc_html__( 'Show Title Side Border', 'easy-elements' ),
 		        'type' => \Elementor\Controls_Manager::SWITCHER,
-		        'label_on' => esc_html__( 'Show', 'easy-elements' ),
-		        'label_off' => esc_html__( 'Hide', 'easy-elements' ),
+		        'label_on' => esc_html__( 'On', 'easy-elements' ),
+		        'label_off' => esc_html__( 'Off', 'easy-elements' ),
 		        'return_value' => 'yes',
 		        'default' => '',
+		        'description' => esc_html__( 'Adds a colored vertical bar on the left or right side of the title.', 'easy-elements' ),
 		    ]
 		);
 
 		$this->add_control(
 			'show_gradient_title',
 			[
-				'label' => esc_html__( 'Gradient Text', 'easy-elements' ),
+				'label' => esc_html__( 'Enable Gradient Text', 'easy-elements' ),
 				'type' => \Elementor\Controls_Manager::SWITCHER,
-				'label_on' => esc_html__( 'Show', 'easy-elements' ),
-				'label_off' => esc_html__( 'Hide', 'easy-elements' ),
+				'label_on' => esc_html__( 'On', 'easy-elements' ),
+				'label_off' => esc_html__( 'Off', 'easy-elements' ),
 				'return_value' => 'yes',
 				'default' => '',
+				'description' => esc_html__( 'Fill the title text with a gradient. Configure colors in Style > Heading.', 'easy-elements' ),
 			]
 		);
 
@@ -88,11 +90,12 @@ class Easyel_Heading_Widget extends \Elementor\Widget_Base {
 		        'type' => \Elementor\Controls_Manager::SELECT,
 		        'default' => 'eel_title_start',
 		        'options' => [
-		            'eel_title_start'     => esc_html__( 'Only Start Title', 'easy-elements' ),
-		            'eel_title_end'   => esc_html__( 'Only Title End', 'easy-elements' ),
-		            'eel_full_title_start'   => esc_html__( 'Full Title Part Start', 'easy-elements' ),
-		            'eel_full_title_end'   => esc_html__( 'Full Title Part End', 'easy-elements' ),
+		            'eel_title_start'      => esc_html__( 'Left of Title (text width)', 'easy-elements' ),
+		            'eel_title_end'        => esc_html__( 'Right of Title (text width)', 'easy-elements' ),
+		            'eel_full_title_start' => esc_html__( 'Left of Title (full width)', 'easy-elements' ),
+		            'eel_full_title_end'   => esc_html__( 'Right of Title (full width)', 'easy-elements' ),
 		        ],
+		        'description' => esc_html__( 'Choose which side the side border sits, and whether it spans only the text or the full container width.', 'easy-elements' ),
 		        'condition' => [
 		            'show_border_title' => 'yes',
 		        ],
@@ -169,8 +172,9 @@ class Easyel_Heading_Widget extends \Elementor\Widget_Base {
 			'description',
 			[
 				'label' => esc_html__('Description', 'easy-elements'),
-				'type'  => Controls_Manager::TEXTAREA,				
+				'type'  => Controls_Manager::TEXTAREA,
 				'label_block' => true,
+				'description' => esc_html__( 'Optional. A short paragraph displayed below the heading.', 'easy-elements' ),
 			]
 		);
 
@@ -222,6 +226,7 @@ class Easyel_Heading_Widget extends \Elementor\Widget_Base {
 		        'label' => esc_html__( 'Sub Heading', 'easy-elements' ),
 		        'type' => \Elementor\Controls_Manager::TEXTAREA,
 		        'label_block' => true,
+		        'description' => esc_html__( 'A small line of text above the main heading. Often used for category, tag, or eyebrow text.', 'easy-elements' ),
 		    ]
 		);
 
@@ -413,23 +418,24 @@ class Easyel_Heading_Widget extends \Elementor\Widget_Base {
 		$this->add_control(
 		    'icon_direction',
 		    [
-		        'label' => esc_html__( 'Direction', 'easy-elements' ),
+		        'label' => esc_html__( 'Icon / Image Position', 'easy-elements' ),
 		        'type' => \Elementor\Controls_Manager::CHOOSE,
 		        'default' => 'top',
-		        'options' => [                    
+		        'options' => [
 		            'left' => [
-		                'title' => esc_html__( 'Left', 'easy-elements' ),
+		                'title' => esc_html__( 'Left of Text', 'easy-elements' ),
 		                'icon'  => 'eicon-h-align-left',
 		            ],
 		            'top' => [
-		                'title' => esc_html__( 'Top', 'easy-elements' ),
+		                'title' => esc_html__( 'Above Text', 'easy-elements' ),
 		                'icon'  => 'eicon-v-align-top',
 		            ],
 		            'right' => [
-		                'title' => esc_html__( 'Right', 'easy-elements' ),
+		                'title' => esc_html__( 'Right of Text', 'easy-elements' ),
 		                'icon'  => 'eicon-h-align-right',
 		            ],
 		        ],
+		        'description' => esc_html__( 'Place the icon/image relative to the sub heading text. Also controls how the sub heading wraps.', 'easy-elements' ),
 		        'toggle' => false,
 		    ]
 		);
@@ -641,144 +647,20 @@ class Easyel_Heading_Widget extends \Elementor\Widget_Base {
 		    'water_mark_section',
 		    [
 		        'label' => esc_html__('WaterMark Settings', 'easy-elements'),
-		        'tab' => \Elementor\Controls_Manager::TAB_CONTENT,
+		        'tab'   => \Elementor\Controls_Manager::TAB_CONTENT,
 		    ]
 		);
 
 		$this->add_control(
 		    'water_mark',
 		    [
-		        'label' => esc_html__('WaterMark Text', 'easy-elements'),
-		        'type' => \Elementor\Controls_Manager::TEXTAREA,
-		        'label_block' => 'true',
+		        'label'       => esc_html__('WaterMark Text', 'easy-elements'),
+		        'type'        => \Elementor\Controls_Manager::TEXTAREA,
+		        'label_block' => true,
 		    ]
 		);
-
-		$this->add_control(
-		    'water_mark_font_size',
-		    [
-		        'label' => esc_html__('Font Size', 'easy-elements'),
-		        'type' => \Elementor\Controls_Manager::SLIDER,
-		        'size_units' => ['px', 'em', 'rem', '%'],
-		        'range' => [
-		            'px' => ['min' => 10, 'max' => 300],
-		            'em' => ['min' => 0.5, 'max' => 20],
-		            'rem' => ['min' => 0.5, 'max' => 20],
-		            '%' => ['min' => 10, 'max' => 500],
-		        ],
-		        'default' => [
-		            'size' => '',
-		            'unit' => 'px',
-		        ],
-		        'selectors' => [
-		            '{{WRAPPER}} .eel-watermark' => 'font-size: {{SIZE}}{{UNIT}};',
-		        ],
-		    ]
-		);
-
-		$this->add_control(
-		    '_mark_color',
-		    [
-		        'label' => esc_html__('Text Color', 'easy-elements'),
-		        'type' => \Elementor\Controls_Manager::COLOR,
-		        'default' => '',
-		        'selectors' => [
-		            '{{WRAPPER}} .eel-watermark' => 'color: {{VALUE}};',
-		        ],
-		    ]
-		);
-
-		$this->add_control(
-		    'water_mark_color',
-		    [
-		        'label' => esc_html__('Stroke Color', 'easy-elements'),
-		        'type' => \Elementor\Controls_Manager::COLOR,
-		        'default' => 'rgba(0, 0, 0, 0.3)',
-		        'selectors' => [
-		            '{{WRAPPER}} .eel-watermark' => '-webkit-text-stroke-color: {{VALUE}}; text-stroke-color: {{VALUE}};',
-		        ],
-		    ]
-		);
-
-		$this->add_control(
-		    'water_mark_stroke_width',
-		    [
-		        'label' => esc_html__('Stroke Width (px)', 'easy-elements'),
-		        'type' => \Elementor\Controls_Manager::SLIDER,
-		        'default' => [
-		            'size' => 1,
-		            'unit' => 'px',
-		        ],
-		        'range' => [
-		            'px' => [
-		                'min' => 0,
-		                'max' => 10,
-		            ],
-		        ],
-		        'selectors' => [
-		            '{{WRAPPER}} .eel-watermark' => '-webkit-text-stroke-width: {{SIZE}}{{UNIT}}; text-stroke-width: {{SIZE}}{{UNIT}};',
-		        ],
-		    ]
-		);
-
-		$this->add_responsive_control(
-		    'water_mark_top',
-		    [
-		        'label' => esc_html__('Top / Bottom', 'easy-elements'),
-		        'type' => \Elementor\Controls_Manager::SLIDER,
-		        'size_units' => ['px', '%', 'em'],
-		        'range' => [
-		            'px' => ['min' => -500, 'max' => 500],
-		            '%' => ['min' => -100, 'max' => 100],
-		            'em' => ['min' => -50, 'max' => 50],
-		        ],
-		        'selectors' => [
-		            '{{WRAPPER}} .eel-watermark' => 'top: {{SIZE}}{{UNIT}};',
-		        ],
-		    ]
-		);
-
-		$this->add_responsive_control(
-		    'water_mark_left',
-		    [
-		        'label' => esc_html__('Left / Right', 'easy-elements'),
-		        'type' => \Elementor\Controls_Manager::SLIDER,
-		        'size_units' => ['px', '%', 'em'],
-		        'range' => [
-		            'px' => ['min' => -500, 'max' => 500],
-		            '%' => ['min' => 0, 'max' => 100],
-		            'em' => ['min' => 0, 'max' => 50],
-		        ],
-		        'selectors' => [
-		            '{{WRAPPER}} .eel-watermark' => 'left: {{SIZE}}{{UNIT}};',
-		        ],
-		    ]
-		);
-
-		$this->add_responsive_control(
-		    'water_mark_z_index',
-		    [
-		        'label' => esc_html__('Z-Index', 'easy-elements'),
-		        'type' => \Elementor\Controls_Manager::SLIDER,
-		        'default' => [
-		            'size' => -1,
-		        ],
-		        'range' => [
-		            'px' => [
-		                'min' => -10,
-		                'max' => 9999,
-		            ],
-		        ],
-		        'description' => esc_html__('Use a negative value (e.g. -1) to keep the watermark behind the heading.', 'easy-elements'),
-		        'selectors' => [
-		            '{{WRAPPER}} .eel-watermark' => 'z-index: {{SIZE}};',
-		        ],
-		    ]
-		);
-
 
 		$this->end_controls_section();
-
 
 
 		// Heading
@@ -841,16 +723,29 @@ class Easyel_Heading_Widget extends \Elementor\Widget_Base {
 		$this->add_control(
 			'title_opacity',
 			[
-				'label'     => esc_html__('Opacity', 'easy-elements'),
-				'type'      => Controls_Manager::SLIDER,
-				'selectors' => [
+				'label'      => esc_html__('Opacity', 'easy-elements'),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => ['%'],
+				'range'      => [
+					'%' => [ 'min' => 0, 'max' => 1, 'step' => 0.01 ],
+				],
+				'default'    => [
+		            'size' => 1,
+		            'unit' => '%',
+		        ],
+				'selectors'  => [
 					'{{WRAPPER}} .e-e-heading .e-e-title' => 'opacity: {{SIZE}};',
 				],
-				'default'     => [
-		            'size' => 1,
-		            'unit' => 'px',
-		        ],
 			]
+		);
+
+		$this->add_control(
+		    'title_stroke_heading',
+		    [
+		        'label'     => esc_html__( 'Stroke', 'easy-elements' ),
+		        'type'      => Controls_Manager::HEADING,
+		        'separator' => 'before',
+		    ]
 		);
 
 		$this->add_control(
@@ -858,12 +753,17 @@ class Easyel_Heading_Widget extends \Elementor\Widget_Base {
 		    [
 		        'label'       => esc_html__('Stroke Width', 'easy-elements'),
 		        'type'        => Controls_Manager::SLIDER,
-		        'selectors'   => [
-		            '{{WRAPPER}} .e-e-heading .e-e-title' => '-webkit-text-stroke-width: {{SIZE}}{{UNIT}};',
+		        'size_units'  => ['px', 'em'],
+		        'range'       => [
+		            'px' => [ 'min' => 0, 'max' => 10, 'step' => 0.1 ],
+		            'em' => [ 'min' => 0, 'max' => 1,  'step' => 0.01 ],
 		        ],
 		        'default'     => [
 		            'size' => 0,
 		            'unit' => 'px',
+		        ],
+		        'selectors'   => [
+		            '{{WRAPPER}} .e-e-heading .e-e-title' => '-webkit-text-stroke-width: {{SIZE}}{{UNIT}};',
 		        ],
 		    ]
 		);
@@ -880,6 +780,15 @@ class Easyel_Heading_Widget extends \Elementor\Widget_Base {
 		        ],
 		    ]
 		);
+		$this->add_control(
+		    'title_effects_heading',
+		    [
+		        'label'     => esc_html__( 'Effects', 'easy-elements' ),
+		        'type'      => Controls_Manager::HEADING,
+		        'separator' => 'before',
+		    ]
+		);
+
 		// Text Shadow
 		$this->add_group_control(
 		    \Elementor\Group_Control_Text_Shadow::get_type(),
@@ -919,6 +828,15 @@ class Easyel_Heading_Widget extends \Elementor\Widget_Base {
 		        ],
 		    ]
 		);	
+		$this->add_control(
+		    'title_spacing_heading',
+		    [
+		        'label'     => esc_html__( 'Spacing', 'easy-elements' ),
+		        'type'      => Controls_Manager::HEADING,
+		        'separator' => 'before',
+		    ]
+		);
+
 		$this->add_responsive_control(
 			'title_margin',
 			[
@@ -1020,8 +938,9 @@ class Easyel_Heading_Widget extends \Elementor\Widget_Base {
 		$this->add_group_control(
 			\Elementor\Group_Control_Background::get_type(),
 			[
-				'name' => 'background_subtext',
-				'types' => [ 'classic', 'gradient' ],
+				'name'     => 'background_subtext',
+				'label'    => esc_html__( 'Background', 'easy-elements' ),
+				'types'    => [ 'classic', 'gradient' ],
 				'selector' => '{{WRAPPER}} .eel-sub-heading.top',
 				'condition' => [
 		            'icon_direction' => 'top',
@@ -1032,8 +951,9 @@ class Easyel_Heading_Widget extends \Elementor\Widget_Base {
 		$this->add_group_control(
 			\Elementor\Group_Control_Background::get_type(),
 			[
-				'name' => 'background_subtext_top',
-				'types' => [ 'classic', 'gradient' ],
+				'name'     => 'background_subtext_top',
+				'label'    => esc_html__( 'Background', 'easy-elements' ),
+				'types'    => [ 'classic', 'gradient' ],
 				'selector' => '{{WRAPPER}} .eel-sub-heading',
 				'condition' => [
 		            'icon_direction' => ['left', 'right'],
@@ -1048,6 +968,18 @@ class Easyel_Heading_Widget extends \Elementor\Widget_Base {
 				'label'    => esc_html__('Typography', 'easy-elements'),
 				'selector' => '{{WRAPPER}} .e-e-heading .eel-sub-heading span',
 			]
+		);
+
+		$this->add_control(
+		    'sub_heading_icon_image_heading',
+		    [
+		        'label'     => esc_html__( 'Icon / Image', 'easy-elements' ),
+		        'type'      => Controls_Manager::HEADING,
+		        'separator' => 'before',
+		        'condition' => [
+		            'sub_heading_type' => [ 'icon', 'image' ],
+		        ],
+		    ]
 		);
 
 		$this->add_responsive_control(
@@ -1068,15 +1000,6 @@ class Easyel_Heading_Widget extends \Elementor\Widget_Base {
 					'sub_heading_type' => [ 'icon', 'image' ],
 				],
 			]
-		);
-
-		$this->add_group_control(
-		    \Elementor\Group_Control_Border::get_type(),
-		    [
-		        'name' => 'subtext_border',
-		        'label' => esc_html__( 'Border', 'easy-elements' ),
-		        'selector' => '{{WRAPPER}} .eel-sub-heading',
-		    ]
 		);
 
 		$this->add_control(
@@ -1163,6 +1086,24 @@ class Easyel_Heading_Widget extends \Elementor\Widget_Base {
 		    ]
 		);
 
+		$this->add_control(
+		    'sub_heading_box_heading',
+		    [
+		        'label'     => esc_html__( 'Box', 'easy-elements' ),
+		        'type'      => Controls_Manager::HEADING,
+		        'separator' => 'before',
+		    ]
+		);
+
+		$this->add_group_control(
+		    \Elementor\Group_Control_Border::get_type(),
+		    [
+		        'name' => 'subtext_border',
+		        'label' => esc_html__( 'Border', 'easy-elements' ),
+		        'selector' => '{{WRAPPER}} .eel-sub-heading',
+		    ]
+		);
+
 		$this->add_responsive_control(
 		    'subtext_border_radius',
 		    [
@@ -1210,6 +1151,16 @@ class Easyel_Heading_Widget extends \Elementor\Widget_Base {
 				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
+
+		$this->add_control(
+			'highlight_help',
+			[
+				'type' => Controls_Manager::RAW_HTML,
+				'raw'  => esc_html__( 'Wrap part of the heading text in double curly braces to highlight it. Example: "Heading {{Here}}" highlights "Here".', 'easy-elements' ),
+				'content_classes' => 'elementor-panel-alert elementor-panel-alert-info',
+			]
+		);
+
 		$this->add_control(
 			'highlight_color',
 			[
@@ -1224,8 +1175,9 @@ class Easyel_Heading_Widget extends \Elementor\Widget_Base {
 		$this->add_group_control(
 			\Elementor\Group_Control_Background::get_type(),
 			[
-				'name' => 'background_highlight',
-				'types' => [ 'classic', 'gradient' ],
+				'name'     => 'background_highlight',
+				'label'    => esc_html__( 'Background', 'easy-elements' ),
+				'types'    => [ 'classic', 'gradient' ],
 				'selector' => '{{WRAPPER}} .e-e-heading .e-e-title span',
 			]
 		);
@@ -1326,6 +1278,305 @@ class Easyel_Heading_Widget extends \Elementor\Widget_Base {
 			]
 		);
 		$this->end_controls_section();
+
+
+		// =====================================================================
+		// WaterMark Style
+		// =====================================================================
+		$this->start_controls_section(
+		    'water_mark_style_section',
+		    [
+		        'label'     => esc_html__('WaterMark', 'easy-elements'),
+		        'tab'       => \Elementor\Controls_Manager::TAB_STYLE,
+		        'condition' => [
+		            'water_mark!' => '',
+		        ],
+		    ]
+		);
+
+		$this->add_group_control(
+		    Group_Control_Typography::get_type(),
+		    [
+		        'name'     => 'water_mark_typography',
+		        'label'    => esc_html__('Typography', 'easy-elements'),
+		        'selector' => '{{WRAPPER}} .eel-watermark',
+				// phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
+		        'exclude'  => ['font_size'],
+		    ]
+		);
+
+		// Kept for back-compat with widgets saved before Typography group was added.
+		$this->add_responsive_control(
+		    'water_mark_font_size',
+		    [
+		        'label'      => esc_html__('Font Size', 'easy-elements'),
+		        'type'       => \Elementor\Controls_Manager::SLIDER,
+		        'size_units' => ['px', 'em', 'rem', '%'],
+		        'range'      => [
+		            'px'  => ['min' => 10,  'max' => 300],
+		            'em'  => ['min' => 0.5, 'max' => 20],
+		            'rem' => ['min' => 0.5, 'max' => 20],
+		            '%'   => ['min' => 10,  'max' => 500],
+		        ],
+		        'default'    => [
+		            'size' => '',
+		            'unit' => 'px',
+		        ],
+		        'selectors'  => [
+		            '{{WRAPPER}} .eel-watermark' => 'font-size: {{SIZE}}{{UNIT}};',
+		        ],
+		    ]
+		);
+
+		$this->add_control(
+		    '_mark_color',
+		    [
+		        'label'     => esc_html__('Text Color', 'easy-elements'),
+		        'type'      => \Elementor\Controls_Manager::COLOR,
+		        'default'   => '',
+		        'selectors' => [
+		            '{{WRAPPER}} .eel-watermark' => 'color: {{VALUE}};',
+		        ],
+		    ]
+		);
+
+		$this->add_control(
+		    'water_mark_color',
+		    [
+		        'label'     => esc_html__('Stroke Color', 'easy-elements'),
+		        'type'      => \Elementor\Controls_Manager::COLOR,
+		        'default'   => 'rgba(0, 0, 0, 0.3)',
+		        'selectors' => [
+		            '{{WRAPPER}} .eel-watermark' => '-webkit-text-stroke-color: {{VALUE}}; text-stroke-color: {{VALUE}};',
+		        ],
+		    ]
+		);
+
+		$this->add_control(
+		    'water_mark_stroke_width',
+		    [
+		        'label'      => esc_html__('Stroke Width', 'easy-elements'),
+		        'type'       => \Elementor\Controls_Manager::SLIDER,
+		        'size_units' => ['px', 'em'],
+		        'default'    => [
+		            'size' => 1,
+		            'unit' => 'px',
+		        ],
+		        'range'      => [
+		            'px' => ['min' => 0, 'max' => 10, 'step' => 0.1],
+		            'em' => ['min' => 0, 'max' => 1,  'step' => 0.01],
+		        ],
+		        'selectors'  => [
+		            '{{WRAPPER}} .eel-watermark' => '-webkit-text-stroke-width: {{SIZE}}{{UNIT}}; text-stroke-width: {{SIZE}}{{UNIT}};',
+		        ],
+		    ]
+		);
+
+		$this->add_group_control(
+		    \Elementor\Group_Control_Text_Shadow::get_type(),
+		    [
+		        'name'     => 'water_mark_text_shadow',
+		        'label'    => esc_html__('Text Shadow', 'easy-elements'),
+		        'selector' => '{{WRAPPER}} .eel-watermark',
+		    ]
+		);
+
+		// Background & Box
+		$this->add_control(
+		    'water_mark_box_heading',
+		    [
+		        'label'     => esc_html__('Box', 'easy-elements'),
+		        'type'      => \Elementor\Controls_Manager::HEADING,
+		        'separator' => 'before',
+		    ]
+		);
+
+		$this->add_group_control(
+		    Group_Control_Background::get_type(),
+		    [
+		        'name'     => 'water_mark_background',
+		        'label'    => esc_html__('Background', 'easy-elements'),
+		        'types'    => ['classic', 'gradient'],
+		        'selector' => '{{WRAPPER}} .eel-watermark',
+		    ]
+		);
+
+		$this->add_group_control(
+		    \Elementor\Group_Control_Border::get_type(),
+		    [
+		        'name'     => 'water_mark_border',
+		        'label'    => esc_html__('Border', 'easy-elements'),
+		        'selector' => '{{WRAPPER}} .eel-watermark',
+		    ]
+		);
+
+		$this->add_responsive_control(
+		    'water_mark_border_radius',
+		    [
+		        'label'      => esc_html__('Border Radius', 'easy-elements'),
+		        'type'       => \Elementor\Controls_Manager::DIMENSIONS,
+		        'size_units' => ['px', '%', 'em'],
+		        'selectors'  => [
+		            '{{WRAPPER}} .eel-watermark' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+		        ],
+		    ]
+		);
+
+		$this->add_responsive_control(
+		    'water_mark_padding',
+		    [
+		        'label'      => esc_html__('Padding', 'easy-elements'),
+		        'type'       => \Elementor\Controls_Manager::DIMENSIONS,
+		        'size_units' => ['px', '%', 'em'],
+		        'selectors'  => [
+		            '{{WRAPPER}} .eel-watermark' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+		        ],
+		    ]
+		);
+
+		$this->add_group_control(
+		    \Elementor\Group_Control_Box_Shadow::get_type(),
+		    [
+		        'name'     => 'water_mark_box_shadow',
+		        'label'    => esc_html__('Box Shadow', 'easy-elements'),
+		        'selector' => '{{WRAPPER}} .eel-watermark',
+		    ]
+		);
+
+		// Position & Effects
+		$this->add_control(
+		    'water_mark_position_heading',
+		    [
+		        'label'     => esc_html__('Position & Effects', 'easy-elements'),
+		        'type'      => \Elementor\Controls_Manager::HEADING,
+		        'separator' => 'before',
+		    ]
+		);
+
+		$this->add_responsive_control(
+		    'water_mark_top',
+		    [
+		        'label'      => esc_html__('Top / Bottom', 'easy-elements'),
+		        'type'       => \Elementor\Controls_Manager::SLIDER,
+		        'size_units' => ['px', '%', 'em'],
+		        'range'      => [
+		            'px' => ['min' => -500, 'max' => 500],
+		            '%'  => ['min' => -100, 'max' => 100],
+		            'em' => ['min' => -50,  'max' => 50],
+		        ],
+		        'selectors'  => [
+		            '{{WRAPPER}} .eel-watermark' => 'top: {{SIZE}}{{UNIT}}; bottom: auto;',
+		        ],
+		    ]
+		);
+
+		$this->add_responsive_control(
+		    'water_mark_left',
+		    [
+		        'label'      => esc_html__('Left / Right', 'easy-elements'),
+		        'type'       => \Elementor\Controls_Manager::SLIDER,
+		        'size_units' => ['px', '%', 'em'],
+		        'range'      => [
+		            'px' => ['min' => -500, 'max' => 500],
+		            '%'  => ['min' => 0,    'max' => 100],
+		            'em' => ['min' => 0,    'max' => 50],
+		        ],
+		        'selectors'  => [
+		            '{{WRAPPER}} .eel-watermark' => 'left: {{SIZE}}{{UNIT}}; right: auto;',
+		        ],
+		    ]
+		);
+
+		$this->add_responsive_control(
+		    'water_mark_z_index',
+		    [
+		        'label'       => esc_html__('Z-Index', 'easy-elements'),
+		        'type'        => \Elementor\Controls_Manager::SLIDER,
+		        'default'     => [
+		            'size' => -1,
+		        ],
+		        'range'       => [
+		            'px' => [
+		                'min' => -10,
+		                'max' => 9999,
+		            ],
+		        ],
+		        'description' => esc_html__('Use a negative value (e.g. -1) to keep the watermark behind the heading.', 'easy-elements'),
+		        'selectors'   => [
+		            '{{WRAPPER}} .eel-watermark' => 'z-index: {{SIZE}};',
+		        ],
+		    ]
+		);
+
+		$this->add_responsive_control(
+		    'water_mark_rotation',
+		    [
+		        'label'      => esc_html__('Rotation', 'easy-elements'),
+		        'type'       => \Elementor\Controls_Manager::SLIDER,
+		        'size_units' => ['deg'],
+		        'range'      => [
+		            'deg' => ['min' => -360, 'max' => 360, 'step' => 1],
+		        ],
+		        'default'    => [
+		            'size' => '',
+		            'unit' => 'deg',
+		        ],
+		        'selectors'  => [
+		            '{{WRAPPER}} .eel-watermark' => 'transform: translateY(-50%) rotate({{SIZE}}deg);',
+		        ],
+		    ]
+		);
+
+		$this->add_control(
+		    'water_mark_opacity',
+		    [
+		        'label'      => esc_html__('Opacity', 'easy-elements'),
+		        'type'       => \Elementor\Controls_Manager::SLIDER,
+		        'size_units' => ['%'],
+		        'range'      => [
+		            '%' => ['min' => 0, 'max' => 1, 'step' => 0.01],
+		        ],
+		        'default'    => [
+		            'size' => '',
+		            'unit' => '%',
+		        ],
+		        'selectors'  => [
+		            '{{WRAPPER}} .eel-watermark' => 'opacity: {{SIZE}};',
+		        ],
+		    ]
+		);
+
+		$this->add_control(
+		    'water_mark_blend_mode',
+		    [
+		        'label'     => esc_html__('Blend Mode', 'easy-elements'),
+		        'type'      => \Elementor\Controls_Manager::SELECT,
+		        'options'   => [
+		            ''            => esc_html__('Default', 'easy-elements'),
+		            'normal'      => 'Normal',
+		            'multiply'    => 'Multiply',
+		            'screen'      => 'Screen',
+		            'overlay'     => 'Overlay',
+		            'darken'      => 'Darken',
+		            'lighten'     => 'Lighten',
+		            'color-dodge' => 'Color Dodge',
+		            'color-burn'  => 'Color Burn',
+		            'hard-light'  => 'Hard Light',
+		            'soft-light'  => 'Soft Light',
+		            'difference'  => 'Difference',
+		            'exclusion'   => 'Exclusion',
+		            'hue'         => 'Hue',
+		            'saturation'  => 'Saturation',
+		            'color'       => 'Color',
+		            'luminosity'  => 'Luminosity',
+		        ],
+		        'selectors' => [
+		            '{{WRAPPER}} .eel-watermark' => 'mix-blend-mode: {{VALUE}};',
+		        ],
+		    ]
+		);
+
+		$this->end_controls_section();
 	}
 
 	protected function render_separator( $settings ) {
@@ -1371,8 +1622,9 @@ class Easyel_Heading_Widget extends \Elementor\Widget_Base {
 	       	$border_position = $settings['border_position'] ?? '';
 			$unique_id = 'eel-heading-' . $this->get_id();
 			$animation = isset( $settings['animation_type'] ) && ! empty($settings['animation_type']) ? $settings['animation_type'] : '';
+			$watermark_class = ! empty( $settings['water_mark'] ) ? 'has-watermark' : '';
 	    ?>
-	    <div class="e-e-heading <?php echo esc_attr($border_position); ?>" <?php if(!empty($animation)) : ?>
+	    <div class="e-e-heading <?php echo esc_attr( trim( $border_position . ' ' . $watermark_class ) ); ?>" <?php if(!empty($animation)) : ?>
         data-eel-animation="<?php echo esc_attr($animation); ?>"
      <?php endif; ?>>
 	    	<?php 

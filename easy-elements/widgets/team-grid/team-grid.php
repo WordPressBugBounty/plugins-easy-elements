@@ -69,6 +69,24 @@ class Easyel_Team_Grid__Widget extends \Elementor\Widget_Base {
             );
 
             $this->add_control(
+                'skin4_hover_overlay',
+                [
+                    'label'   => esc_html__('Hover Overlay Style', 'easy-elements'),
+                    'type'    => \Elementor\Controls_Manager::SELECT,
+                    'default' => 'overlay1',
+                    'options' => [
+                        'overlay1' => esc_html__('Hover Overlay 1', 'easy-elements'),
+                        'overlay2' => esc_html__('Hover Overlay 2', 'easy-elements'),
+                    ],
+                    'condition' => [
+                        'team_skin' => 'skin4',
+                    ],
+                ]
+            );
+
+            
+
+            $this->add_control(
                 'image',
                 [
                     'label' => esc_html__('Image', 'easy-elements'),
@@ -728,7 +746,7 @@ class Easyel_Team_Grid__Widget extends \Elementor\Widget_Base {
                     'name' => 'skin4_overlay_bg',
                     'label' => esc_html__( 'Background', 'easy-elements' ),
                     'types' => [ 'classic', 'gradient' ],
-                    'selector' => '{{WRAPPER}} .eel-team-grid.skin4 .eel-team-hover-content',
+                    'selector' => '{{WRAPPER}} .eel-team-grid.skin4 .eel-team-hover-content, {{WRAPPER}} .eel-team-grid.skin4 .ee--team-img .eel-team-hover-content.overlay2',
                 ]
             );
 
@@ -743,6 +761,7 @@ class Easyel_Team_Grid__Widget extends \Elementor\Widget_Base {
                     ],
                     'selectors' => [
                         '{{WRAPPER}} .eel-team-grid.skin4 .eel-team-hover-content' => 'backdrop-filter: blur({{SIZE}}{{UNIT}}); -webkit-backdrop-filter: blur({{SIZE}}{{UNIT}});',
+                        '{{WRAPPER}} .eel-team-grid.skin4 .ee--team-img .eel-team-hover-content.overlay2' => 'backdrop-filter: blur({{SIZE}}{{UNIT}}); -webkit-backdrop-filter: blur({{SIZE}}{{UNIT}});',
                     ],
                 ]
             );
@@ -754,6 +773,27 @@ class Easyel_Team_Grid__Widget extends \Elementor\Widget_Base {
                     'type' => \Elementor\Controls_Manager::COLOR,
                     'selectors' => [
                         '{{WRAPPER}} .eel-team-grid.skin4 .eel-team-hover-content' => 'color: {{VALUE}};',
+                        '{{WRAPPER}} .eel-team-grid.skin4 .ee--team-img .eel-team-hover-content.overlay2' => 'color: {{VALUE}};',
+                    ],
+                ]
+            );
+
+            $this->add_responsive_control(
+                'skin4_overlay2_circle_size',
+                [
+                    'label' => esc_html__( 'Overlay 2 Circle Size', 'easy-elements' ),
+                    'type' => \Elementor\Controls_Manager::SLIDER,
+                    'size_units' => [ 'px', '%', 'vw' ],
+                    'range' => [
+                        'px' => [ 'min' => 80, 'max' => 500, 'step' => 1 ],
+                        '%'  => [ 'min' => 20, 'max' => 100, 'step' => 1 ],
+                        'vw' => [ 'min' => 10, 'max' => 80, 'step' => 1 ],
+                    ],
+                    'selectors' => [
+                        '{{WRAPPER}} .eel-team-grid.skin4 .ee--team-img .eel-team-hover-content.overlay2' => 'width: {{SIZE}}{{UNIT}};',
+                    ],
+                    'condition' => [
+                        'skin4_hover_overlay' => 'overlay2',
                     ],
                 ]
             );
@@ -766,6 +806,7 @@ class Easyel_Team_Grid__Widget extends \Elementor\Widget_Base {
                     'size_units' => [ 'px', 'em', '%' ],
                     'selectors' => [
                         '{{WRAPPER}} .eel-team-grid.skin4 .eel-team-hover-content' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                        '{{WRAPPER}} .eel-team-grid.skin4 .ee--team-img .eel-team-hover-content.overlay2' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
                     ],
                 ]
             );
@@ -778,6 +819,7 @@ class Easyel_Team_Grid__Widget extends \Elementor\Widget_Base {
                     'size_units' => [ 'px', '%' ],
                     'selectors' => [
                         '{{WRAPPER}} .eel-team-grid.skin4 .eel-team-hover-content' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                        '{{WRAPPER}} .eel-team-grid.skin4 .ee--team-img .eel-team-hover-content.overlay2' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
                     ],
                 ]
             );
@@ -792,6 +834,7 @@ class Easyel_Team_Grid__Widget extends \Elementor\Widget_Base {
                     ],
                     'selectors' => [
                         '{{WRAPPER}} .eel-team-grid.skin4 .eel-team-hover-content' => 'transition: opacity {{SIZE}}s ease;',
+                        '{{WRAPPER}} .eel-team-grid.skin4 .ee--team-img .eel-team-hover-content.overlay2' => 'transition: opacity {{SIZE}}s ease, transform {{SIZE}}s ease;',
                     ],
                 ]
             );
@@ -814,6 +857,7 @@ class Easyel_Team_Grid__Widget extends \Elementor\Widget_Base {
                     'type' => Controls_Manager::COLOR,
                     'selectors' => [
                         '{{WRAPPER}} .eel-name' => 'color: {{VALUE}};',
+                        '{{WRAPPER}} .eel-team-grid.skin4 .ee--team-img .eel-team-hover-content.overlay2 .eel-name' => 'color: {{VALUE}};',
                     ],
                 ]
             );
@@ -823,7 +867,7 @@ class Easyel_Team_Grid__Widget extends \Elementor\Widget_Base {
                 [
                     'name' => 'name_typography',
                     'label' => esc_html__( 'Typography', 'easy-elements' ),
-                    'selector' => '{{WRAPPER}} .eel-name',
+                    'selector' => '{{WRAPPER}} .eel-name, {{WRAPPER}} .eel-team-grid.skin4 .ee--team-img .eel-team-hover-content.overlay2 .eel-name',
                 ]
             );
 
@@ -857,6 +901,7 @@ class Easyel_Team_Grid__Widget extends \Elementor\Widget_Base {
                     'type' => Controls_Manager::COLOR,
                     'selectors' => [
                         '{{WRAPPER}} .eel-designation' => 'color: {{VALUE}};',
+                        '{{WRAPPER}} .eel-team-grid.skin4 .ee--team-img .eel-team-hover-content.overlay2 .eel-designation' => 'color: {{VALUE}};',
                     ],
                 ]
             );
@@ -866,7 +911,7 @@ class Easyel_Team_Grid__Widget extends \Elementor\Widget_Base {
                 [
                     'name' => 'designation_typography',
                     'label' => esc_html__( 'Typography', 'easy-elements' ),
-                    'selector' => '{{WRAPPER}} .eel-designation',
+                    'selector' => '{{WRAPPER}} .eel-designation, {{WRAPPER}} .eel-team-grid.skin4 .ee--team-img .eel-team-hover-content.overlay2 .eel-designation',
                 ]
             );
 
@@ -1118,6 +1163,7 @@ $this->end_controls_section();
                             'selectors' => [
                                 '{{WRAPPER}} .eel-team-grid-social ul li a' => 'color: {{VALUE}};',
                                 '{{WRAPPER}} .eel-team-grid-social .eel-team-social-hover a' => 'color: {{VALUE}};',
+                                '{{WRAPPER}} .eel-team-grid.skin4 .ee--team-img .eel-team-hover-content.overlay2 .eel-team-grid-social ul li a:not(.eel-popup-trigger)' => 'color: {{VALUE}};',
                             ],
                         ]
                     );
@@ -1130,6 +1176,7 @@ $this->end_controls_section();
                             'selectors' => [
                                 '{{WRAPPER}} .eel-team-grid-social ul li a' => 'background: {{VALUE}};',
                                 '{{WRAPPER}} .eel-team-grid-social .eel-team-social-hover a' => 'background: {{VALUE}};',
+                                '{{WRAPPER}} .eel-team-grid.skin4 .ee--team-img .eel-team-hover-content.overlay2 .eel-team-grid-social ul li a:not(.eel-popup-trigger)' => 'background: {{VALUE}};',
                             ],
                         ]
                     );
@@ -1149,6 +1196,7 @@ $this->end_controls_section();
                             'selectors' => [
                                 '{{WRAPPER}} .eel-team-grid-social ul li a:hover' => 'color: {{VALUE}};',
                                 '{{WRAPPER}} .eel-team-grid-social .eel-team-social-hover a:hover' => 'color: {{VALUE}};',
+                                '{{WRAPPER}} .eel-team-grid.skin4 .ee--team-img .eel-team-hover-content.overlay2 .eel-team-grid-social ul li a:not(.eel-popup-trigger):hover' => 'color: {{VALUE}};',
                             ],
                         ]
                     );
@@ -1161,6 +1209,7 @@ $this->end_controls_section();
                             'selectors' => [
                                 '{{WRAPPER}} .eel-team-grid-social ul li a:hover' => 'background: {{VALUE}};',
                                 '{{WRAPPER}} .eel-team-grid-social .eel-team-social-hover a:hover' => 'background: {{VALUE}};',
+                                '{{WRAPPER}} .eel-team-grid.skin4 .ee--team-img .eel-team-hover-content.overlay2 .eel-team-grid-social ul li a:not(.eel-popup-trigger):hover' => 'background: {{VALUE}};',
                             ],
                         ]
                     );
@@ -1174,7 +1223,7 @@ $this->end_controls_section();
                 [
                     'name' => 's_icon_typography',
                     'label' => esc_html__( 'Typography', 'easy-elements' ),
-                    'selector' => '{{WRAPPER}} .eel-team-grid-social ul li a, {{WRAPPER}} .eel-team-grid-social .eel-team-social-hover a',
+                    'selector' => '{{WRAPPER}} .eel-team-grid-social ul li a, {{WRAPPER}} .eel-team-grid-social .eel-team-social-hover a, {{WRAPPER}} .eel-team-grid.skin4 .ee--team-img .eel-team-hover-content.overlay2 .eel-team-grid-social ul li a:not(.eel-popup-trigger)',
                 ]
             );
             $this->add_responsive_control(
@@ -1197,6 +1246,7 @@ $this->end_controls_section();
                     'selectors' => [
                         '{{WRAPPER}} .eel-team-grid-social ul li a' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
                         '{{WRAPPER}} .eel-team-grid-social .eel-team-social-hover a' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
+                        '{{WRAPPER}} .eel-team-grid.skin4 .ee--team-img .eel-team-hover-content.overlay2 .eel-team-grid-social ul li a:not(.eel-popup-trigger)' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
                     ],
                 ]
             );
@@ -1272,6 +1322,52 @@ $this->end_controls_section();
                     ]
                 ]
             );
+
+            // Normal Box Shadow
+            $this->add_group_control(
+                \Elementor\Group_Control_Box_Shadow::get_type(),
+                [
+                    'name' => 'item_box_shadow',
+                    'label' => esc_html__( 'Box Shadow', 'easy-elements' ),
+                    'selector' => '{{WRAPPER}} .eel-team-grid-social ul li a',
+                    'condition' => [
+                        'enable_multiple_shadow!' => 'yes',
+                    ],
+                ]
+            );
+
+            // Multiple Shadow Switcher
+            $this->add_control(
+                'enable_multiple_shadow',
+                [
+                    'label' => esc_html__( 'Enable Multiple Shadow', 'easy-elements' ),
+                    'type' => \Elementor\Controls_Manager::SWITCHER,
+                    'label_on' => esc_html__( 'Yes', 'easy-elements' ),
+                    'label_off' => esc_html__( 'No', 'easy-elements' ),
+                    'return_value' => 'yes',
+                    'default' => '',
+                ]
+            );
+
+            // Multiple Shadow Control
+            $this->add_control(
+                'multiple_box_shadow',
+                [
+                    'label' => esc_html__( 'Multiple Box Shadow', 'easy-elements' ),
+                    'type' => \Elementor\Controls_Manager::TEXTAREA,
+                    'rows' => 4,
+                    'default' => '',
+                    'label_block' => true,
+                    'selectors' => [
+                        '{{WRAPPER}} .eel-team-grid-social ul li a' => 'box-shadow: {{VALUE}};',
+                    ],
+                    'condition' => [
+                        'enable_multiple_shadow' => 'yes',
+                    ],
+                ]
+            );
+
+
 
         $this->end_controls_section();
         

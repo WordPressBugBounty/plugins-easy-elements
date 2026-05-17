@@ -58,7 +58,6 @@ class Enqueue {
 
         wp_add_inline_style( 'eel-elements-plugins', $dynamic_css );
         
-        
 	}
 
 

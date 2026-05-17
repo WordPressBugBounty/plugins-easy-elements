@@ -111,7 +111,7 @@
         $.ajax({
           url: easyel_builder_obj.ajax_url,
           method: "POST",
-          data: { action: "easyel_get_archives" },
+          data: { action: "easyel_get_archives", nonce: easyel_builder_obj.nonce },
           success: function (response) {
             if (response.success) {
               let data = response.data;
@@ -193,7 +193,7 @@
         $.ajax({
           url: easyel_builder_obj.ajax_url,
           method: "POST",
-          data: { action: "easyel_get_singulars" },
+          data: { action: "easyel_get_singulars", nonce: easyel_builder_obj.nonce },
           success: function (response) {
             if (response.success && Array.isArray(response.data)) {
               response.data.forEach(function (item) {

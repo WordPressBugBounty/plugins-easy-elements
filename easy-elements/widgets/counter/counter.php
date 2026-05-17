@@ -57,7 +57,19 @@ class Easyel_Counter_Widget extends \Elementor\Widget_Base {
 				'type' => Controls_Manager::NUMBER,
 				'default' => 500,
 				'dynamic' => [
-					'active' => true, 
+					'active' => true,
+				],
+			]
+		);
+
+		$this->add_control(
+			'start_number',
+			[
+				'label' => esc_html__('Starting Number', 'easy-elements'),
+				'type' => Controls_Manager::NUMBER,
+				'default' => 0,
+				'dynamic' => [
+					'active' => true,
 				],
 			]
 		);
@@ -113,6 +125,20 @@ class Easyel_Counter_Widget extends \Elementor\Widget_Base {
 		);
 
 		$this->add_control(
+			'animation_type',
+			[
+				'label' => esc_html__('Animation Style', 'easy-elements'),
+				'type' => \Elementor\Controls_Manager::SELECT,
+				'default' => 'counter',
+				'options' => [
+					'counter'  => esc_html__('Counter', 'easy-elements'),
+					'odometer' => esc_html__('Odometer', 'easy-elements'),
+				],
+				'description' => esc_html__('Counter: smooth count up. Odometer: rolling digits like a car odometer.', 'easy-elements'),
+			]
+		);
+
+		$this->add_control(
 			'cnt-icon-enable',
 			[
 				'label' => esc_html__( 'Icon Show', 'easy-elements' ),
@@ -146,9 +172,9 @@ class Easyel_Counter_Widget extends \Elementor\Widget_Base {
 				'type' => Controls_Manager::TEXT,
 				'placeholder' => esc_html__('Label', 'easy-elements'),
 				'default' => esc_html__('Easy Elements', 'easy-elements'),
-				'label_block' => 'true',
+				'label_block' => true,
 				'dynamic' => [
-					'active' => true, 
+					'active' => true,
 				],
 			]
 		);
@@ -182,29 +208,34 @@ class Easyel_Counter_Widget extends \Elementor\Widget_Base {
 			]
 		);
 
-		$this->add_responsive_control(
-			'content_align',
+		$this->add_control(
+			'title_position',
 			[
-				'label' => esc_html__( 'Content Alignment', 'easy-elements' ),
+				'label' => esc_html__( 'Title Position', 'easy-elements' ),
 				'type' => \Elementor\Controls_Manager::CHOOSE,
 				'options' => [
+					'top' => [
+						'title' => esc_html__( 'Top', 'easy-elements' ),
+						'icon' => 'eicon-v-align-top',
+					],
+					'bottom' => [
+						'title' => esc_html__( 'Bottom', 'easy-elements' ),
+						'icon' => 'eicon-v-align-bottom',
+					],
 					'left' => [
 						'title' => esc_html__( 'Left', 'easy-elements' ),
-						'icon' => 'eicon-text-align-left',
-					],
-					'center' => [
-						'title' => esc_html__( 'Center', 'easy-elements' ),
-						'icon' => 'eicon-text-align-center',
+						'icon' => 'eicon-h-align-left',
 					],
 					'right' => [
 						'title' => esc_html__( 'Right', 'easy-elements' ),
-						'icon' => 'eicon-text-align-right',
+						'icon' => 'eicon-h-align-right',
 					],
 				],
-				'toggle' => true,
-				'selectors' => [
-					'{{WRAPPER}} .eel-cnt-wrap' => 'text-align: {{VALUE}};',
-					'{{WRAPPER}} .eel-cnt-number-wrap' => 'justify-content: {{VALUE}};',
+				'default' => 'bottom',
+				'toggle' => false,
+				'prefix_class' => 'eel-cnt-title-pos-',
+				'condition' => [
+					'title!' => '',
 				],
 			]
 		);
@@ -216,7 +247,38 @@ class Easyel_Counter_Widget extends \Elementor\Widget_Base {
 				'type' => \Elementor\Controls_Manager::SLIDER,
 				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
 				'selectors' => [
-					'{{WRAPPER}} .eel-cnt-title' => 'margin-top: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .eel-cnt-content' => 'gap: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .eel-cnt-title' => 'margin-top: 0;',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'content_vertical_align',
+			[
+				'label' => esc_html__( 'Vertical Alignment', 'easy-elements' ),
+				'type' => \Elementor\Controls_Manager::CHOOSE,
+				'options' => [
+					'flex-start' => [
+						'title' => esc_html__( 'Top', 'easy-elements' ),
+						'icon' => 'eicon-v-align-top',
+					],
+					'center' => [
+						'title' => esc_html__( 'Middle', 'easy-elements' ),
+						'icon' => 'eicon-v-align-middle',
+					],
+					'flex-end' => [
+						'title' => esc_html__( 'Bottom', 'easy-elements' ),
+						'icon' => 'eicon-v-align-bottom',
+					],
+				],
+				'toggle' => true,
+				'selectors' => [
+					'{{WRAPPER}} .eel-cnt-content' => 'align-items: {{VALUE}};',
+				],
+				'condition' => [
+					'title_position' => [ 'left', 'right' ],
+					'title!' => '',
 				],
 			]
 		);
@@ -581,6 +643,36 @@ class Easyel_Counter_Widget extends \Elementor\Widget_Base {
 			]
 		);
 
+		$this->add_responsive_control(
+			'title_align',
+			[
+				'label' => esc_html__( 'Text Alignment', 'easy-elements' ),
+				'type' => \Elementor\Controls_Manager::CHOOSE,
+				'options' => [
+					'left' => [
+						'title' => esc_html__( 'Left', 'easy-elements' ),
+						'icon' => 'eicon-text-align-left',
+					],
+					'center' => [
+						'title' => esc_html__( 'Center', 'easy-elements' ),
+						'icon' => 'eicon-text-align-center',
+					],
+					'right' => [
+						'title' => esc_html__( 'Right', 'easy-elements' ),
+						'icon' => 'eicon-text-align-right',
+					],
+					'justify' => [
+						'title' => esc_html__( 'Justified', 'easy-elements' ),
+						'icon' => 'eicon-text-align-justify',
+					],
+				],
+				'toggle' => true,
+				'selectors' => [
+					'{{WRAPPER}} .eel-cnt-title' => 'text-align: {{VALUE}};',
+				],
+			]
+		);
+
 		$this->add_group_control(
 			\Elementor\Group_Control_Text_Shadow::get_type(),
 			[
@@ -684,19 +776,57 @@ class Easyel_Counter_Widget extends \Elementor\Widget_Base {
 				],
 			]
 		);
+
+		$this->add_responsive_control(
+			'icon_padding',
+			[
+				'label' => esc_html__( 'Padding', 'easy-elements' ),
+				'type' => \Elementor\Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+				'selectors' => [
+					'{{WRAPPER}} .eel-cnt-icon' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_group_control(
+			\Elementor\Group_Control_Border::get_type(),
+			[
+				'name' => 'icon_border',
+				'selector' => '{{WRAPPER}} .eel-cnt-icon',
+			]
+		);
+
+		$this->add_group_control(
+			\Elementor\Group_Control_Box_Shadow::get_type(),
+			[
+				'name' => 'icon_box_shadow',
+				'selector' => '{{WRAPPER}} .eel-cnt-icon',
+			]
+		);
 		$this->end_controls_section();
 	}
 
 	protected function render() {
 		$settings   = $this->get_settings_for_display();
-		$number     = !empty($settings['number']) ? $settings['number'] : 0;
+		$number     = isset($settings['number']) && $settings['number'] !== '' ? $settings['number'] : 0;
+		$start      = isset($settings['start_number']) && $settings['start_number'] !== '' ? $settings['start_number'] : 0;
 		$prefix     = !empty($settings['prefix']) ? $settings['prefix'] : '';
 		$suffix     = !empty($settings['suffix']) ? $settings['suffix'] : '';
 		$title      = !empty($settings['title'])  ? $settings['title']  : '';
-		$title_tag  = !empty($settings['title_tag']) ? $settings['title_tag'] : 'h3';
+		$title_tag  = !empty($settings['title_tag']) ? $settings['title_tag'] : 'span';
 
 		$duration   = !empty($settings['duration']) ? intval($settings['duration']) : 1000;
 		$format     = !empty($settings['format']) ? $settings['format'] : 'default';
+		$animation  = !empty($settings['animation_type']) ? $settings['animation_type'] : 'counter';
+		if (!in_array($animation, ['counter', 'odometer'], true)) {
+			$animation = 'counter';
+		}
+
+		$allowed_tags = ['h1','h2','h3','h4','h5','h6','p','div','span'];
+		if (!in_array($title_tag, $allowed_tags, true)) {
+			$title_tag = 'span';
+		}
 
 		$icon_enabled = !empty($settings['cnt-icon-enable']) && $settings['cnt-icon-enable'] === 'yes';
 		$icon         = $icon_enabled && !empty($settings['cnt-icon']['value']) ? $settings['cnt-icon'] : false;
@@ -728,11 +858,13 @@ class Easyel_Counter_Widget extends \Elementor\Widget_Base {
                         </span>
                     <?php endif; ?>
 
-                    <span class="eel-cnt-number eel-counter" 
+                    <span class="eel-cnt-number eel-counter"
                           data-count="<?php echo esc_attr($number); ?>"
+                          data-start="<?php echo esc_attr($start); ?>"
                           data-duration="<?php echo esc_attr($duration); ?>"
-                          data-format="<?php echo esc_attr($format); ?>">
-                        0
+                          data-format="<?php echo esc_attr($format); ?>"
+                          data-animation="<?php echo esc_attr($animation); ?>">
+                        <?php echo esc_html($start); ?>
                     </span>
 
                     <?php if ($suffix !== '') : 

@@ -1212,6 +1212,105 @@ class Easyel_Blog_Grid__Widget extends \Elementor\Widget_Base {
                 ],
             ]
         );
+
+        $this->add_control(
+            'icon_box_color',
+            [
+                'label' => esc_html__( 'Icon Color', 'easy-elements' ),
+                'type' => \Elementor\Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .eel-post-grid-wrap .eel--read-more a svg' => 'fill: {{VALUE}};',
+                    '{{WRAPPER}} .eel-post-grid-wrap .eel--read-more a svg path' => 'fill: {{VALUE}};',
+                    '{{WRAPPER}} .eel-post-grid-wrap .eel--read-more a i' => 'color: {{VALUE}};',
+                    '{{WRAPPER}} .eel-post-grid-wrap .eel--read-more a i' => 'color: {{VALUE}};',
+                ],
+                'condition' => [
+                    'show_read_more' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'icon_box_color_hover',
+            [
+                'label' => esc_html__( 'Icon Color (Hover)', 'easy-elements' ),
+                'type' => \Elementor\Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .eel-post-grid-wrap .eel--read-more a:hover svg' => 'fill: {{VALUE}};',
+                    '{{WRAPPER}} .eel-post-grid-wrap .eel--read-more a:hover svg path' => 'fill: {{VALUE}};',
+                    '{{WRAPPER}} .eel-post-grid-wrap .eel--read-more a:hover i' => 'color: {{VALUE}};',
+                ],
+                'condition' => [
+                    'show_read_more' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'icon_box_padding',
+            [
+                'label' => esc_html__( 'Icon Padding', 'easy-elements' ),
+                'type' => \Elementor\Controls_Manager::DIMENSIONS,
+                'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+                'selectors' => [
+                    '{{WRAPPER}} .eel--read-more-icon' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+                'condition' => [
+                    'show_read_more' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Background::get_type(),
+            [
+                'name' => 'icon_box_background',
+                'label' => esc_html__( 'Icon Background', 'easy-elements' ),
+                'types' => [ 'classic', 'gradient' ],
+                'selector' => '{{WRAPPER}} .eel--read-more-icon',
+                'condition' => [
+                    'show_read_more' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Border::get_type(),
+            [
+                'name' => 'icon_box_border',
+                'selector' => '{{WRAPPER}} .eel--read-more-icon',
+                'condition' => [
+                    'show_read_more' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'icon_box_border_radius',
+            [
+                'label' => esc_html__( 'Icon Border Radius', 'easy-elements' ),
+                'type' => \Elementor\Controls_Manager::DIMENSIONS,
+                'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
+                'selectors' => [
+                    '{{WRAPPER}} .eel--read-more-icon' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+                'condition' => [
+                    'show_read_more' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Box_Shadow::get_type(),
+            [
+                'name' => 'icon_box_shadow',
+                'selector' => '{{WRAPPER}} .eel--read-more-icon',
+                'condition' => [
+                    'show_read_more' => 'yes',
+                ],
+            ]
+        );
+
         $this->add_responsive_control(
             'btn_icon_offset',
             [
@@ -1702,6 +1801,15 @@ class Easyel_Blog_Grid__Widget extends \Elementor\Widget_Base {
                 'selector' => '{{WRAPPER}} .eel-post-grid-wrap .grid-item-inner',
             ]
         );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Box_Shadow::get_type(),
+            [
+                'name'     => 'item_box_shadow',
+                'selector' => '{{WRAPPER}} .eel-post-grid-wrap .grid-item-inner',
+            ]
+        );
+        
 
         $this->end_controls_section();
 
