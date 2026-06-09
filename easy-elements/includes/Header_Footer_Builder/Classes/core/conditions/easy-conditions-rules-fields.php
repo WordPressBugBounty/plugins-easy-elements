@@ -529,7 +529,10 @@ class EASY_EHF_Target_Rules_Fields {
 		}
 		$selection_options = self::$location_selection;
 
-		
+		/*
+		* js template used by the admin UI.
+		* This is a client-side HTML template, not executable JavaScript.
+		*/
 		$output .= '<script type="text/html" id="tmpl-easy-target-rule-' . esc_attr( $rule_type ) . '-condition">';
 		$output .= '<div class="easyel-target-rule-condition ast-target-rule-{{data.id}}" data-rule="{{data.id}}" >';
 		$output .= '<span class="target_rule-condition-delete dashicons dashicons-dismiss"></span>';

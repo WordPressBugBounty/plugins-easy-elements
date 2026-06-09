@@ -102,11 +102,11 @@ class Easy_Header_Footer_Elementor {
 	 * Adds classes to the body tag conditionally.
 	 */
 	public function easy_body_class( $classes ) {
-		if ( ee_easy_header_enabled() ) {
+		if ( easyel_easy_header_enabled() ) {
 			$classes[] = 'easy-header';
 		}
 
-		if ( ee_easy_footer_enabled() ) {
+		if ( easyel_easy_footer_enabled() ) {
 			$classes[] = 'ehf-footer';
 		}
 
@@ -206,10 +206,10 @@ class Easy_Header_Footer_Elementor {
 			$elementor->frontend->enqueue_styles();
 		}
 
-		self::force_enqueue_css( get_ee_easy_header_id() );
-		self::force_enqueue_css( get_ee_easy_footer_id() );
-		self::force_enqueue_css( ee_hfe_get_before_footer_id() );
-		self::force_enqueue_css( hfe_get_before_header_id() );
+		self::force_enqueue_css( easyel_get_ee_easy_header_id() );
+		self::force_enqueue_css( easyel_get_ee_easy_footer_id() );
+		self::force_enqueue_css( easyel_hfe_get_before_footer_id() );
+		self::force_enqueue_css( easyel_get_before_header_id() );
 
 		if ( easyel_after_header_enabled() ) {
 			self::force_enqueue_css( easyel_get_after_header_id() );
@@ -220,10 +220,10 @@ class Easy_Header_Footer_Elementor {
 	 * Enqueue all Elementor header/footer CSS early in head.
 	 */
 	public function easy_header_footer_css_early() {
-		self::force_enqueue_css( get_ee_easy_header_id() );
-		self::force_enqueue_css( get_ee_easy_footer_id() );
-		self::force_enqueue_css( ee_hfe_get_before_footer_id() );
-		self::force_enqueue_css( hfe_get_before_header_id() );
+		self::force_enqueue_css( easyel_get_ee_easy_header_id() );
+		self::force_enqueue_css( easyel_get_ee_easy_footer_id() );
+		self::force_enqueue_css( easyel_hfe_get_before_footer_id() );
+		self::force_enqueue_css( easyel_get_before_header_id() );
 
 		if ( easyel_after_header_enabled() ) {
 			self::force_enqueue_css( easyel_get_after_header_id() );
@@ -237,7 +237,7 @@ class Easy_Header_Footer_Elementor {
 	 * Get the header content
 	 */
 	public static function get_header_content() {
-		$header_id = get_ee_easy_header_id();
+		$header_id = easyel_get_ee_easy_header_id();
 
 		if ( function_exists( 'icl_object_id' ) ) {
 			$header_id = icl_object_id( $header_id, 'elementor_library', true, ( defined('ICL_LANGUAGE_CODE') ? ICL_LANGUAGE_CODE : null ) );
@@ -253,7 +253,7 @@ class Easy_Header_Footer_Elementor {
 	 * Get the footer content
 	 */
 	public static function get_footer_content() {
-		$footer_id = get_ee_easy_footer_id();
+		$footer_id = easyel_get_ee_easy_footer_id();
 
 		if ( function_exists( 'icl_object_id' ) ) {
 			$footer_id = icl_object_id( $footer_id, 'elementor_library', true, ( defined('ICL_LANGUAGE_CODE') ? ICL_LANGUAGE_CODE : null ) );
@@ -324,13 +324,21 @@ class Easy_Header_Footer_Elementor {
 			'rshfe_template'
 		);
 
-		$id = ! empty( $atts['id'] ) ? apply_filters( 'hfe_render_template_id', intval( $atts['id'] ) ) : ''; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+		$id = ! empty( $atts['id'] ) ? apply_filters( 'hfe_render_template_id', intval( $atts['id'] ) ) : 0; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 
 		if ( empty( $id ) ) {
 			return '';
 		}
 
-		return self::$elementor_instance->frontend->get_builder_content_for_display( $id );
+		// Buffer the Elementor-rendered template HTML so the shortcode returns
+		// captured output instead of a raw method return value. The HTML is
+		// produced by Elementor's frontend render pipeline, which sanitises
+		// builder content during rendering — re-running it through wp_kses_*
+		// would strip valid Elementor data-attributes, inline styles, and
+		// classes the builder requires to function.
+		ob_start();
+		echo self::$elementor_instance->frontend->get_builder_content_for_display( $id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Output is HTML built by Elementor's render pipeline; further escaping would break the template.
+		return ob_get_clean();
 	}
 }
 

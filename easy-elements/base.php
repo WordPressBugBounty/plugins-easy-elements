@@ -21,11 +21,6 @@ final class Easyel_Elements_Elementor_Extension {
 		// Load AJAX handlers
 		require_once EASYELEMENTS_DIR_PATH . 'widgets/login-register/class.login-register.php';
 
-		// Mini Cart AJAX handlers are loaded from the main plugin file
-		// (easy-elements.php) so wp_ajax_* actions are registered as early as
-		// possible — required on WP 6.9+ where admin-ajax.php returns 400 for
-		// unregistered actions instead of the previous silent 200 + "0".
-
 		add_action( 'init', [ $this, 'init' ] );
 		add_action( 'elementor/widgets/register', [ $this, 'init_widgets' ] );
 		add_action( 'elementor/elements/categories_registered', [ $this, 'add_elementor_categories' ] );
@@ -168,7 +163,7 @@ final class Easyel_Elements_Elementor_Extension {
 			<div class="easyel-promo-content">
 				<div class="easyel-promo-left">
 					<span class="orange">Exclusive Deals Available</span> • <span></span> Discount Up To 
-					<span style="color:#ff7dcb;">40%</span> OFF
+					<span style="color:#ff7dcb;">60%</span> OFF
 					<a class="easyel-promo-btn" href="https://wpeasyelements.com/pricing/" target="_blank">
 						Grab the Deal →
 					</a>
@@ -242,15 +237,14 @@ final class Easyel_Elements_Elementor_Extension {
 
 		if( is_admin() ) {
 			\Easyel\EasyElements\Admin\Admin_Settings::get_instance();	
-			\Easyel\EasyElements\NoticeDashboard\NoticeDashboard::get_instance();
-			
 		}
 
 		if ( did_action( 'elementor/loaded' ) ) {
-			\Easyel\EasyElements\Template_Library\Easyel_Templates_Library::get_instance();	
-			\Easyel\EasyElements\Starter_Template\Easyel_Starter_Template::get_instance();	
+			\Easyel\EasyElements\Template_Library\Easyel_Templates_Library::get_instance();
 			\Easyel\EasyElements\Header_Footer_Builder\Classes\Easy_Header_Footer_Elementor::get_instance();
 		}
+
+		\Easyel\EasyElements\Starter_Template\Easyel_Starter_Template::get_instance();
 
 		\Easyel\EasyElements\Theme_Builder\Easyel_Theme_Builder_CPT::get_instance();
 
@@ -270,15 +264,13 @@ final class Easyel_Elements_Elementor_Extension {
 		\Easyel\EasyElements\Extensions\ProgressBar\ReadingProgressBar::get_instance();
 		\Easyel\EasyElements\Extensions\ScrollTop\ScrollTop::get_instance();
 
-		// Preloader extension — only load the class file when the extension is enabled
-		// (avoids parsing/instantiation cost when user has it turned off).
-		if ( function_exists( 'easy_element_is_enabled' ) && easy_element_is_enabled( 'enable_preloader' ) ) {
+		if ( function_exists( 'easyel_element_is_enabled' ) && easyel_element_is_enabled( 'enable_preloader' ) ) {
 			require_once EASYELEMENTS_DIR_PATH . 'includes/Extensions/Preloader/preloader.php';
 			\Easyel\EasyElements\Extensions\Preloader\EasyelPreloader::get_instance();
 		}
 
 
-		if ( ! class_exists( '\Appsero\Client' ) ) {
+		if ( ! class_exists( '\Easyel\Vendor\Appsero\Client' ) ) {
 			return;
 		}
 
@@ -317,27 +309,40 @@ final class Easyel_Elements_Elementor_Extension {
 				self_admin_url( 'plugins.php?action=activate&plugin=' . $elementor ),
 				'activate-plugin_' . $elementor
 			);
-
 			$button_label = esc_html__( 'Activate Elementor', 'easy-elements' );
-			$notice_text  = esc_html__( 'Easy Elements is not working because the Elementor plugin is inactive.', 'easy-elements' );
-
 		} else {
 			$action_url = wp_nonce_url(
 				self_admin_url( 'update.php?action=install-plugin&plugin=elementor' ),
 				'install-plugin_elementor'
 			);
-
 			$button_label = esc_html__( 'Install Elementor', 'easy-elements' );
-			$notice_text  = esc_html__( 'Easy Elements requires the Elementor plugin to be installed.', 'easy-elements' );
 		}
 
-		$message  = '<p>' . $notice_text . '</p>';
-		$message .= '<p><a href="' . esc_url( $action_url ) . '" class="button-primary">' . $button_label . '</a></p>';
-
-		printf(
-			'<div class="notice notice-error is-dismissible">%s</div>',
-			wp_kses_post( $message )
+		wp_enqueue_style(
+			'easyel-missing-elementor-notice',
+			EASYELEMENTS_DIR_URL . 'assets/css/admin/missing-elementor-notice.css',
+			[],
+			self::VERSION
 		);
+		?>
+		<div class="easyel-missing-elementor-notice" role="alert">
+			<span class="easyel-missing-elementor-notice__icon" aria-hidden="true">!</span>
+			<div class="easyel-missing-elementor-notice__text">
+				<?php
+				printf(
+					/* translators: 1: Plugin name (Easy Elements), 2: Required plugin name (Elementor) */
+					esc_html__( '%1$s requires %2$s plugin to be installed and activated.', 'easy-elements' ),
+					'<strong>' . esc_html__( 'Easy Elements', 'easy-elements' ) . '</strong>',
+					'<strong>' . esc_html__( 'Elementor', 'easy-elements' ) . '</strong>'
+				);
+				?>
+			</div>
+			<a href="<?php echo esc_url( $action_url ); ?>" class="easyel-missing-elementor-notice__button">
+				<span class="dashicons dashicons-admin-network" aria-hidden="true"></span>
+				<?php echo esc_html( $button_label ); ?>
+			</a>
+		</div>
+		<?php
 	}
 
 	// Container Full site
@@ -694,8 +699,12 @@ final class Easyel_Elements_Elementor_Extension {
 	}
 
 	public function easyel_setting_page_link( $links ) {
-		$action_link = sprintf("<a href='%s'>%s</a>",admin_url('admin.php?page=easy-elements-dashboard'),__('Settings','easy-elements'));
-		array_push( $links,$action_link );
+		$action_link = sprintf(
+			'<a href="%s">%s</a>',
+			esc_url( admin_url( 'admin.php?page=easy-elements-dashboard' ) ),
+			esc_html__( 'Settings', 'easy-elements' )
+		);
+		array_push( $links, $action_link );
 		return $links;
 	}
 

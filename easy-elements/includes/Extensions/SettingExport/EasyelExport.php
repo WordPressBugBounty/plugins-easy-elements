@@ -16,7 +16,7 @@ final class EasyelExport {
 
 	private function __construct() {
 
-        if ( function_exists( 'easy_element_is_enabled' ) &&  ! easy_element_is_enabled( 'enable_postpage_export' ) ) {
+        if ( function_exists( 'easyel_element_is_enabled' ) &&  ! easyel_element_is_enabled( 'enable_postpage_export' ) ) {
             return;
         }
 

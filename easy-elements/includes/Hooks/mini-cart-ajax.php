@@ -16,16 +16,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-add_filter( 'woocommerce_add_to_cart_fragments', 'eel_mini_cart_add_count_fragment' );
+add_filter( 'woocommerce_add_to_cart_fragments', 'easyel_mini_cart_add_count_fragment' );
 
-if ( ! function_exists( 'eel_mini_cart_add_count_fragment' ) ) {
+if ( ! function_exists( 'easyel_mini_cart_add_count_fragment' ) ) {
 	/**
 	 * Add the cart count badge to the WooCommerce fragment list.
 	 *
 	 * @param array $fragments Existing fragments.
 	 * @return array Modified fragments.
 	 */
-	function eel_mini_cart_add_count_fragment( $fragments ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- "eel_" is the Easy Elements plugin prefix.
+	function easyel_mini_cart_add_count_fragment( $fragments ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- "eel_" is the Easy Elements plugin prefix.
 		if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
 			return $fragments;
 		}

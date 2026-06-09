@@ -3,7 +3,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-
 if ( ! function_exists( 'easyel_allowed_html' ) ) {
     /**
      * Returns allowed HTML tags and attributes for wp_kses.
@@ -490,6 +489,104 @@ if ( ! function_exists( 'easyel_allowed_html' ) ) {
 add_filter( 'elementor/files/allow_unfiltered_files', '__return_false' );
 
 
+if ( ! function_exists( 'easyel_premium_addon_active' ) ) {
+    /**
+     * Check if Easy Elements Pro is active.
+     *
+     * Cached per request and filterable for compatibility.
+     *
+     * @return bool
+     */
+    function easyel_premium_addon_active() {
+        static $is_active = null;
+        if ( null === $is_active ) {
+            $detected  = defined( 'EASYELEMENTS_PRO_VER' ) || defined( 'EASYELEMENTS_PRO_FILE' );
+            $is_active = (bool) apply_filters( 'easyel_premium_addon_active', $detected );
+        }
+        return $is_active;
+    }
+}
+
+if ( ! function_exists( 'easyel_get_pro_extension_keys' ) ) {
+    /**
+     * Option keys for the Pro-only extensions.
+     *
+     * Deliberately free of any __() / translation call so it is safe to use
+     * before the `init` action (e.g. inside option filters that run on
+     * `plugins_loaded`). Mirrors every entry flagged `'is_pro' => true` in
+     * easyel_get_extension_fields() — keep the two lists in sync when adding
+     * or removing a Pro extension.
+     *
+     * @return string[]
+     */
+    function easyel_get_pro_extension_keys() {
+        return [
+            'enable_cursor',
+            'enable_sticky_elements',
+            'enable_cursor_hover_effect',
+            'enable_cursor_move_effect',
+            'enable_scroll_trigger',
+            'enable_parallax_image',
+            'enable_drawsvg',
+            'enable_image_3d_effect',
+            'enable_smooth_scroller',
+            'enable_bounce_animation',
+            'enable_visibility_control',
+            'enable_dynamic_content',
+            'enable_live_copy_paste',
+            'enable_easy_custom_css',
+            'enable_global_badge',
+            'enable_megamenu_builder',
+            'enable_popup_builder',
+            'enable_quick_view',
+            'enable_easyel_compare',
+            'enable_easyel_wishlist',
+        ];
+    }
+}
+
+if ( ! function_exists( 'easyel_force_pro_options_off_when_inactive' ) ) {
+    /**
+     * Disable Pro-only options when the Pro add-on is inactive.
+     *
+     * Forces Pro settings to appear disabled without modifying saved values.
+     */
+    function easyel_force_pro_options_off_when_inactive() {
+        if ( easyel_premium_addon_active() ) {
+            return;
+        }
+
+        add_filter( 'option_easy_element_extensions', static function ( $value ) {
+            if ( ! is_array( $value ) ) {
+                return $value;
+            }
+            // Use the translation-free key list here: this filter runs on
+            // `plugins_loaded` (before `init`), so it must not call any
+            // translating helper such as easyel_get_extension_fields(), which
+            // would trigger the "_load_textdomain_just_in_time" notice.
+            foreach ( easyel_get_pro_extension_keys() as $key ) {
+                if ( isset( $value[ $key ] ) ) {
+                    $value[ $key ] = 0;
+                }
+            }
+            return $value;
+        } );
+
+        if ( class_exists( '\\Easyel\\EasyElements\\Admin\\Admin_Settings' ) ) {
+            $instance = \Easyel\EasyElements\Admin\Admin_Settings::get_instance();
+            if ( method_exists( $instance, 'easyel_elements_get_available_widgets' ) ) {
+                foreach ( (array) $instance->easyel_elements_get_available_widgets() as $widget_key => $widget ) {
+                    if ( ! empty( $widget['is_pro'] ) ) {
+                        add_filter( 'option_easy_element_widget_' . $widget_key, '__return_zero' );
+                    }
+                }
+            }
+        }
+    }
+    // Run before init_widgets (which fires on plugins_loaded default 10).
+    add_action( 'plugins_loaded', 'easyel_force_pro_options_off_when_inactive', 5 );
+}
+
 if ( ! function_exists( 'easyel_get_pro_clean_version' ) ) {
     function easyel_get_pro_clean_version() {
 
@@ -507,6 +604,20 @@ if ( ! function_exists( 'easyel_get_pro_clean_version' ) ) {
         );
 
         return $data['Version'] ?? null;
+    }
+}
+
+if ( ! function_exists( 'easyel_get_license_status' ) ) {
+   
+    function easyel_get_license_status() {
+        return (string) apply_filters( 'easyel_license_status', 'invalid' );
+    }
+}
+
+if ( ! function_exists( 'easyel_get_license_activate_url' ) ) {
+   
+    function easyel_get_license_activate_url() {
+        return (string) apply_filters( 'easyel_license_activate_url', '' );
     }
 }
 
@@ -847,7 +958,7 @@ function easyel_safe_json_decode( $data ) {
     }
 }
 
-class Easy_Widget_Injection {
+class Easyel_Widget_Injection {
     public static function init() {
         add_filter( 'elementor/controls/animations/additional_animations', [ __CLASS__, 'inject_easy_animations' ] );
     }
@@ -861,7 +972,7 @@ class Easy_Widget_Injection {
 }
 
 // Initialize the class
-Easy_Widget_Injection::init();
+Easyel_Widget_Injection::init();
 
 
 /**
@@ -870,7 +981,7 @@ Easy_Widget_Injection::init();
  * @param string $setting_key The key of the setting to check (e.g. 'enable_sticky_elements').
  * @return bool True if enabled, false otherwise.
  */
-function easy_element_is_enabled( $setting_key ) {
+function easyel_element_is_enabled( $setting_key ) {
     if ( empty( $setting_key ) ) {
         return false;
     }
@@ -1075,10 +1186,9 @@ if ( ! function_exists( 'easyel_get_prepared_post_id' ) ) {
     }
 }
 
-// Sticky Header On
 add_action('template_redirect', function() {
     ob_start(function ($html) {
-        if ( isset($GLOBALS['eel_force_sticky_header']) && $GLOBALS['eel_force_sticky_header'] === true ) {
+        if ( isset($GLOBALS['easyel_force_sticky_header']) && $GLOBALS['easyel_force_sticky_header'] === true ) {
             return preg_replace(
                 '/(class=["\'][^"\']*easy-site-header[^"\']*)/i',
                 '$1 eel-sticky-header-on',
@@ -1087,4 +1197,20 @@ add_action('template_redirect', function() {
         }
         return $html;
     });
+
+    $GLOBALS['easyel_sticky_buffer_level'] = ob_get_level();
 });
+
+add_action('shutdown', function() {
+    if ( ! isset( $GLOBALS['easyel_sticky_buffer_level'] ) ) {
+        return;
+    }
+
+    $target = (int) $GLOBALS['easyel_sticky_buffer_level'];
+    while ( ob_get_level() >= $target ) {
+        if ( ! @ob_end_flush() ) {
+            break;
+        }
+    }
+    unset( $GLOBALS['easyel_sticky_buffer_level'] );
+}, 0);

@@ -1,3 +1,3 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
-include "fields/FieldManager.php";
+include __DIR__ . '/fields/FieldManager.php';

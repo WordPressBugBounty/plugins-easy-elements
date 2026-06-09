@@ -33,18 +33,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 	do_action( 'elementor/page_templates/canvas/before_content' );
 
-    	do_action( 'easyel_builder_archive_content' );
+    do_action( 'easyel_builder_archive_content' );
 
-     ?>
-
-
-    <?php /**
-    	 * After canvas page template content.
-    	 *
-    	 * Fires after the content of Elementor canvas page template.
-    	 *
-    	 * @since 1.0.0
-    	 */
+	/**
+	 * After canvas page template content.
+	 *
+	 * Fires after the content of Elementor canvas page template.
+	 *
+	 * @since 1.0.0
+	 */
 		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
     	do_action( 'elementor/page_templates/canvas/after_content' );
 

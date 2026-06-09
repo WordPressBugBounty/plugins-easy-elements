@@ -11,7 +11,7 @@ use Easyel\EasyElements\Header_Footer_Builder\Classes\Easy_Header_Footer_Element
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
-function ee_easy_header_enabled() {
+function easyel_easy_header_enabled() {
 	$header_id = Easy_Header_Footer_Elementor::get_settings( 'type_header', '' );
 	$status    = false;
 
@@ -20,7 +20,7 @@ function ee_easy_header_enabled() {
 	}
 
 	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
-	return apply_filters( 'ee_easy_header_enabled', $status );
+	return apply_filters( 'easyel_easy_header_enabled', $status );
 }
 
 /**
@@ -30,7 +30,7 @@ function ee_easy_header_enabled() {
  * @return bool True if footer is enabled, false otherwise.
  */
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
-function ee_easy_footer_enabled() {
+function easyel_easy_footer_enabled() {
 	$footer_id = Easy_Header_Footer_Elementor::get_settings( 'type_footer', '' );
 	$status    = false;
 
@@ -39,7 +39,7 @@ function ee_easy_footer_enabled() {
 	}
 
 	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
-	return apply_filters( 'ee_easy_footer_enabled', $status );
+	return apply_filters( 'easyel_easy_footer_enabled', $status );
 }
 
 /**
@@ -49,7 +49,7 @@ function ee_easy_footer_enabled() {
  * @return string|false Header ID if set, otherwise false.
  */
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
-function get_ee_easy_header_id() {
+function easyel_get_ee_easy_header_id() {
 	$header_id = Easy_Header_Footer_Elementor::get_settings( 'type_header', '' );
 
 	if ( '' === $header_id ) {
@@ -57,7 +57,7 @@ function get_ee_easy_header_id() {
 	}
 
 	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
-	return apply_filters( 'get_ee_easy_header_id', $header_id );
+	return apply_filters( 'easyel_get_ee_easy_header_id', $header_id );
 }
 
 /**
@@ -67,14 +67,14 @@ function get_ee_easy_header_id() {
  * @return string|false Footer ID if set, otherwise false.
  */
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
-function get_ee_easy_footer_id() {
+function easyel_get_ee_easy_footer_id() {
 	$footer_id = Easy_Header_Footer_Elementor::get_settings( 'type_footer', '' );
 
 	if ( '' === $footer_id ) {
 		$footer_id = false;
 	}
 	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
-	return apply_filters( 'get_ee_easy_footer_id', $footer_id );
+	return apply_filters( 'easyel_get_ee_easy_footer_id', $footer_id );
 }
 
 /**
@@ -84,10 +84,10 @@ function get_ee_easy_footer_id() {
  * @return void
  */
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
-function ee_hfe_render_header() {
+function easyel_hfe_render_header() {
 
 	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
-	if ( false == apply_filters( 'enable_ee_hfe_render_header', true ) ) {
+	if ( false == apply_filters( 'enable_easyel_hfe_render_header', true ) ) {
 		return;
 	}
 	?>
@@ -110,10 +110,10 @@ function ee_hfe_render_header() {
  * @return void
  */
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
-function ee_hfe_render_footer() {
+function easyel_hfe_render_footer() {
 
 	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
-	if ( false == apply_filters( 'enable_ee_hfe_render_footer', true ) ) {
+	if ( false == apply_filters( 'enable_easyel_hfe_render_footer', true ) ) {
 		return;
 	}
 
@@ -131,7 +131,7 @@ function ee_hfe_render_footer() {
  * @return string|false Before-header ID if set, otherwise false.
  */
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
-function hfe_get_before_header_id() {
+function easyel_get_before_header_id() {
 
 	$before_header_id = Easy_Header_Footer_Elementor::get_settings( 'type_before_header', '' );
 
@@ -149,7 +149,7 @@ function hfe_get_before_header_id() {
  * @return string|false Before-footer ID if set, otherwise false.
  */
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
-function ee_hfe_get_before_footer_id() {
+function easyel_hfe_get_before_footer_id() {
 
 	$before_footer_id = Easy_Header_Footer_Elementor::get_settings( 'type_before_footer', '' );
 
@@ -167,7 +167,7 @@ function ee_hfe_get_before_footer_id() {
  * @return bool True if before-header is enabled, false otherwise.
  */
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
-function hfe_is_before_header_enabled() {
+function easyel_is_before_header_enabled() {
 
 	$before_header_id = Easy_Header_Footer_Elementor::get_settings( 'type_before_header', '' );
 	$status           = false;
@@ -180,7 +180,7 @@ function hfe_is_before_header_enabled() {
 }
 
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
-function ee_hfe_is_before_footer_enabled() {
+function easyel_hfe_is_before_footer_enabled() {
 
 	$before_footer_id = Easy_Header_Footer_Elementor::get_settings( 'type_before_footer', '' );
 	$status           = false;
@@ -199,7 +199,7 @@ function ee_hfe_is_before_footer_enabled() {
  * @return void
  */
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
-function ee_render_before_header() {
+function easyel_render_before_header() {
 	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 	if ( false == apply_filters( 'enable_hfe_render_before_header', true ) ) {
 		return;
@@ -220,9 +220,9 @@ function ee_render_before_header() {
  * @return void
  */
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
-function ee_hfe_render_before_footer() {
+function easyel_hfe_render_before_footer() {
 	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
-	if ( false == apply_filters( 'enable_ee_hfe_render_before_footer', true ) ) {
+	if ( false == apply_filters( 'enable_easyel_hfe_render_before_footer', true ) ) {
 		return;
 	}
 

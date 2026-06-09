@@ -31,11 +31,11 @@ class VisibilityModule {
 	}
 
 	public function easy_register_section( $element ) {
-		if ( function_exists( 'easy_element_is_enabled' ) &&  easy_element_is_enabled( 'enable_visibility_control' ) || ! class_exists( 'Easy_Elements_Pro' ) ) { 
+		if ( function_exists( 'easyel_element_is_enabled' ) &&  easyel_element_is_enabled( 'enable_visibility_control' ) || ! easyel_premium_addon_active() ) { 
 			$element->start_controls_section(
 				'easy_visibility_section',
 				[
-					'label' => EASY_EXTENSION_BADGE . __( 'Visibility Control', 'easy-elements' ),
+					'label' => EASYEL_EXTENSION_BADGE . __( 'Visibility Control', 'easy-elements' ),
 					'tab'   => \Elementor\Controls_Manager::TAB_ADVANCED,
 				]
 			);
@@ -49,11 +49,11 @@ class VisibilityModule {
 	 */
 	public function easy_register_controls( $element, $args ) {
 
-		if ( ! class_exists( 'Easy_Elements_Pro' ) ) {
+		if ( ! easyel_premium_addon_active() ) {
 			
 			HookControl::register_controls( $element ,"easyel_visibility_control_sec");
 		} else {
-			if ( did_action( 'plugins_loaded' ) &&  function_exists( 'easy_element_is_enabled' ) &&  easy_element_is_enabled( 'enable_visibility_control' ) ) {
+			if ( did_action( 'plugins_loaded' ) &&  function_exists( 'easyel_element_is_enabled' ) &&  easyel_element_is_enabled( 'enable_visibility_control' ) ) {
 			$pro_version = easyel_get_pro_clean_version();
 			if (
 				$pro_version &&

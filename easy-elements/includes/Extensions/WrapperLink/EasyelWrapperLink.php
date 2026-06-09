@@ -76,7 +76,7 @@ final class EasyelWrapperLink {
         $element_data->start_controls_section(
             'easyel_wrapper_link_section',
             [
-                'label' => EASY_EXTENSION_BADGE . __( 'Wrapper Link', 'easy-elements' ),
+                'label' => EASYEL_EXTENSION_BADGE . __( 'Wrapper Link', 'easy-elements' ),
                 'tab'   => $wrapper_position,
             ]
         );

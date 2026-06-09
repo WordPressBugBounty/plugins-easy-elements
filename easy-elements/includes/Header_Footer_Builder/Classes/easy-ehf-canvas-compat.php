@@ -33,7 +33,7 @@ class EASY_EHF_Canvas_Compat {
 	public function init_hooks() {
 
 		// Header
-		if ( ee_easy_header_enabled() ) {
+		if ( easyel_easy_header_enabled() ) {
 
 			// Action `elementor/page_templates/canvas/before_content` is introduced in Elementor Version 1.4.1.
 			if ( version_compare( ELEMENTOR_VERSION, '1.4.1', '>=' ) ) {
@@ -54,7 +54,7 @@ class EASY_EHF_Canvas_Compat {
 		}
 
 		// Footer
-		if ( ee_easy_footer_enabled() ) {
+		if ( easyel_easy_footer_enabled() ) {
 
 			// Action `elementor/page_templates/canvas/after_content` is introduced in Elementor Version 1.9.0.
 			if ( version_compare( ELEMENTOR_VERSION, '1.9.0', '>=' ) ) {
@@ -65,12 +65,12 @@ class EASY_EHF_Canvas_Compat {
 		}
 
 		// Optional before-footer element
-		if ( ee_hfe_is_before_footer_enabled() ) {
+		if ( easyel_hfe_is_before_footer_enabled() ) {
 
 			if ( 'elementor_canvas' == get_page_template_slug() ) {
-				$override_cannvas_template = get_post_meta( ee_hfe_get_before_footer_id(), 'display-on-canvas-template', true );
+				$override_cannvas_template = get_post_meta( easyel_hfe_get_before_footer_id(), 'display-on-canvas-template', true );
 				if ( '1' == $override_cannvas_template ) {
-					add_action( 'elementor/page_templates/canvas/after_content', 'ee_hfe_render_before_footer', 9 );
+					add_action( 'elementor/page_templates/canvas/after_content', 'easyel_hfe_render_before_footer', 9 );
 				}
 			}
 		}
@@ -85,10 +85,10 @@ class EASY_EHF_Canvas_Compat {
 			return;
 		}
 
-		$override_cannvas_template = get_post_meta( get_ee_easy_header_id(), 'display-on-canvas-template', true );
+		$override_cannvas_template = get_post_meta( easyel_get_ee_easy_header_id(), 'display-on-canvas-template', true );
 
 		if ( '1' == $override_cannvas_template ) {
-			ee_hfe_render_header();
+			easyel_hfe_render_header();
 		}
 	}
 
@@ -101,10 +101,10 @@ class EASY_EHF_Canvas_Compat {
 			return;
 		}
 
-		$override_cannvas_template = get_post_meta( get_ee_easy_footer_id(), 'display-on-canvas-template', true );
+		$override_cannvas_template = get_post_meta( easyel_get_ee_easy_footer_id(), 'display-on-canvas-template', true );
 
 		if ( '1' == $override_cannvas_template ) {
-			ee_hfe_render_footer();
+			easyel_hfe_render_footer();
 		}
 	}
 

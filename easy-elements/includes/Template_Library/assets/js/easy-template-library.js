@@ -228,13 +228,14 @@
            
 
             const items = activeTab === 'templates' ? templates.taxonomies.groups : templates.layouts;
-        
+
             rtElementsTemplatesLibraryEl.attr('data-templates-tab', activeTab );
+
+            const canInsertPro = Boolean(rtElementsTemplatesManager.canInsertPro);
+            const proCta       = rtElementsTemplatesManager.proCta || {};
 
             const templatesHtml = items.map(template => {
                 const isTemplateTab = activeTab === 'templates';
-
-                 //console.log(JSON.stringify(template, null, 2));
 
                 const preview = isTemplateTab
                     ? ''
@@ -252,35 +253,23 @@
                     thumbnail = template.thumbnail || rtElementsTemplatesManager.thumbnailPlaceholderUrl;
                 }
 
-                let isPro = template.is_pro === "yes";
+                const isPro = template.is_pro === "yes";
 
-                if (isPro) {
-                    if (rtElementsTemplatesManager.proActive ) {
-                        if (rtElementsTemplatesManager.licenseStatus === 'valid') {
-                            insertBtnHtml = `<a data-template-id="${template.id}" class="elementor-template-library-template-action rt-elements-template-insert elementor-button e-primary"><i class="eicon-file-download" aria-hidden="true"></i>
-                            <span class="elementor-button-title">Insert</span></a>`;
-                        } else {
-                            insertBtnHtml = `<a href="${rtElementsTemplatesManager.licensePageUrl}" class="elementor-template-library-template-action rt-elements-template-insert elementor-button e-disabled" title="Activate License to insert" target="_blank">
-                            <i class="eicon-lock" aria-hidden="true"></i>
-                                <span class="elementor-button-title">Activate License</span>
-                            </a>`;
-                        }
-                    } else {
-                        insertBtnHtml = `<a href="https://wpeasyelements.com/pricing/" class="elementor-template-library-template-action rt-elements-template-insert elementor-button e-disabled" title="Upgrade to Pro" target="_blank"><i class="eicon-lock" aria-hidden="true"></i>
-                        <span class="elementor-button-title">Go Pro</span></a>`;
-                    }
+                let insertBtnHtml;
+                if (isPro && !canInsertPro) {
+                    // Premium templates listed in the free plugin link to the
+                    // marketing/CTA URL provided by the JS config. The Pro
+                    // plugin filters canInsertPro/proCta when it's active.
+                    const ctaUrl   = proCta.btnUrl  || 'https://wpeasyelements.com/pricing/';
+                    const ctaText  = proCta.btnText || 'Get Pro';
+                    const ctaTitle = proCta.title   || 'Premium template';
+                    insertBtnHtml = `<a href="${ctaUrl}" class="elementor-template-library-template-action rt-elements-template-insert elementor-button e-disabled" title="${ctaTitle}" target="_blank" rel="noopener"><i class="eicon-lock" aria-hidden="true"></i><span class="elementor-button-title">${ctaText}</span></a>`;
                 } else {
                     insertBtnHtml = `<a data-template-id="${template.id}" class="elementor-template-library-template-action rt-elements-template-insert elementor-button e-primary"><i class="eicon-file-download" aria-hidden="true"></i><span class="elementor-button-title">Insert</span></a>`;
                 }
 
-                let easyelProActive = '';
+                const proClass = isPro ? 'easyel-pro' : '';
 
-                if (isPro) {
-                    easyelProActive = 'easyel-pro';
-                }
-
-                // Sync isPro with proActive
-        
                 const attr = isTemplateTab
                     ? `data-template-group="${template.slug}"`
                     : `data-template-id="${template.id}" data-preview="${preview}" data-demo="${easyPermalinkCustom}"`;
@@ -288,9 +277,8 @@
 
                 return `
                     <div ${attr}
-                        style="--elementor-template-library-subscription-plan-label: &quot;Pro&quot;--elementor-template-library-subscription-plan-color: #92003B;" 
                         class="easyel-template-library-item elementor-template-library-template elementor-template-library-template-remote elementor-template-library-template-${activeTab} elementor-template-library-free-template">
-                        <div class="elementor-template-library-template-body easyel-template-library-body ${easyelProActive}" data-template-id="${template.id}">
+                        <div class="elementor-template-library-template-body easyel-template-library-body ${proClass}" data-template-id="${template.id}">
                             <img src="${thumbnail}" alt="Template Thumbnail">
                             <div class="elementor-template-library-template-preview">
                                 <i class="eicon-zoom-in-bold" aria-hidden="true"></i>

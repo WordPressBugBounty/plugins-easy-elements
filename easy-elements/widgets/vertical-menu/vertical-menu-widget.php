@@ -1489,7 +1489,7 @@ class Easyel_vertical_Menu_Widget extends \Elementor\Widget_Base  {
 			<ul id="%1$s" class="%2$s">%3$s</ul>
 		</div>';
 
-		if ( !class_exists( 'Easy_Elements_Pro'  ) ) {
+		if ( ! easyel_premium_addon_active() ) {
 			$submenu_animation =  'eel_animation_slide_down';
 			$submenu_type      =  'eel_hover';
 			$position_fixed    =  '';
@@ -1576,12 +1576,17 @@ class Easyel_vertical_Menu_Widget extends \Elementor\Widget_Base  {
 			}
 		}
 
+		$container_class = 'eel-vertical-menu-elelmentor-widget menu-wrapper eel-vertical-menu-container eel-vertical-menu-area';
+		if ( ! empty( $settings['mobile_menu_breakpoint'] ) ) {
+			$container_class .= ' eel-mobile-bp-' . absint( $settings['mobile_menu_breakpoint'] );
+		}
+
 		$args = [
 			'echo'        => false,
 			'menu'        => $settings['menu'],
 			'fallback_cb' => '__return_empty_string',
 			'menu_class'      => 'menu desktop-menu eel-vertical-verticalmenu ' . $submenu_animation . ' ' . $submenu_type . ' ' . $position_fixed,
-			'container_class'	=> 'eel-vertical-menu-elelmentor-widget menu-wrapper eel-vertical-menu-container eel-vertical-menu-area',
+			'container_class'	=> $container_class,
 			'items_wrap'      => $items_wrap,
 			'submenu_parent_icon' => $submenu_parent_icon,
 			'is_mobile_menu'	=> '',
@@ -1591,6 +1596,7 @@ class Easyel_vertical_Menu_Widget extends \Elementor\Widget_Base  {
 			'menu_before_icon'  => $menu_before_icon_html,
 			'menu_after_icon'   => $menu_after_icon_html,
 		];
+		
 		echo wp_nav_menu( $args );
 
 		// Mobile Menu — each widget renders its own sidebar
@@ -1631,30 +1637,5 @@ class Easyel_vertical_Menu_Widget extends \Elementor\Widget_Base  {
 				<?php
 		endif;
 
-		$settings = $this->get_settings_for_display();
-
-		if ( ! empty( $settings['mobile_menu_breakpoint'] ) ) :
-			$mobile_breakpoint = absint( $settings['mobile_menu_breakpoint'] );
-			$widget_selector = '.elementor-element-' . $this->get_id();
-		?>
-		<style>
-			@media (max-width: <?php echo esc_attr( $mobile_breakpoint ); ?>px) {
-				<?php echo esc_attr( $widget_selector ); ?> .eel-vertical-menu-wrap > ul {
-					display: none !important;
-				}
-				<?php echo esc_attr( $widget_selector ); ?> .eel-vertical-menu-icon-mobile {
-					display: block !important;
-				}
-				<?php echo esc_attr( $widget_selector ); ?> .eel-vertical-menu-content-part.sub-menu{
-					width: 100% !important;
-				}
-			}
-			@media (min-width: <?php echo esc_attr( $mobile_breakpoint + 1 ); ?>px) {
-				<?php echo esc_attr( $widget_selector ); ?> .eel-vertical-menu-icon-mobile{
-					display: none !important;
-				}
-			}
-		</style>
-		<?php endif;		
-	} 		
-} 
+	}
+}

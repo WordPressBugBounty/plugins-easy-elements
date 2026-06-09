@@ -23,7 +23,7 @@ class Easyel_Menu_Walker extends \Walker_Nav_Menu {
 		// Mega menu (Elementor template) ke o has_children hisebe treat kori,
 		// jate dropdown icon, submenu class ar aria attributes thik moto add hoy.
 		$has_megamenu_template = false;
-		if ( function_exists( 'easy_element_is_enabled' ) && easy_element_is_enabled( 'enable_megamenu_builder' ) ) {
+		if ( function_exists( 'easyel_element_is_enabled' ) && easyel_element_is_enabled( 'enable_megamenu_builder' ) ) {
 			$mm_template_id = get_post_meta( $item->ID, 'easyel__menu_item_elementor_template', true );
 			if ( ! empty( $mm_template_id ) ) $has_megamenu_template = true;
 		}
@@ -86,7 +86,7 @@ class Easyel_Menu_Walker extends \Walker_Nav_Menu {
 		$item_output .= '</a>';
 		$item_output .= $args->after;
 
-		if ( function_exists( 'easy_element_is_enabled' ) &&  easy_element_is_enabled( 'enable_megamenu_builder' ) ) {
+		if ( function_exists( 'easyel_element_is_enabled' ) &&  easyel_element_is_enabled( 'enable_megamenu_builder' ) ) {
 			if ( class_exists( '\Elementor\Plugin' ) && ! \Elementor\Plugin::$instance->preview->is_preview_mode() ) {
 				$template_id = get_post_meta( $item->ID, 'easyel__menu_item_elementor_template', true );
 				if ( ! empty( $template_id ) ) {

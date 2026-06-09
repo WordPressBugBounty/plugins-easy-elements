@@ -32,7 +32,6 @@ class StarterTemplates {
         this.initSync();
         this.initPluginActivateBtns();
         this.initThemeActivateBtns();
-        this.initProLockModal();
 
         this.cacheItems();
         this.applyFilters();
@@ -50,7 +49,6 @@ class StarterTemplates {
             if (!item) return;
 
             const slug        = item.getAttribute('data-slug');
-            const source      = item.getAttribute('data-source');
             const isInstalled = item.getAttribute('data-installed') === 'true';
 
             const originalText = btn.textContent;
@@ -60,7 +58,7 @@ class StarterTemplates {
 
             try {
                 if (!isInstalled) {
-                    await this.installPlugin(slug, source);
+                    await this.installPlugin(slug);
                     item.setAttribute('data-installed', 'true');
                     btn.textContent = 'Activating…';
                 }
@@ -97,7 +95,6 @@ class StarterTemplates {
             if (!item) return;
 
             const slug        = item.getAttribute('data-slug');
-            const source      = item.getAttribute('data-source');
             const isInstalled = item.getAttribute('data-installed') === 'true';
 
             const originalText = btn.textContent;
@@ -107,7 +104,7 @@ class StarterTemplates {
 
             try {
                 if (!isInstalled) {
-                    await this.installTheme(slug, source);
+                    await this.installTheme(slug);
                     item.setAttribute('data-installed', 'true');
                     btn.textContent = 'Activating…';
                 }
@@ -436,11 +433,19 @@ class StarterTemplates {
     }
 
     initTypeFilter() {
-        const select = document.getElementById('easyel-type-filter');
-        if (!select) return;
-        select.addEventListener('change', () => {
-            this.typeFilter = select.value;
-            this.applyFilters();
+        const group = document.getElementById('easyel-type-filter');
+        if (!group) return;
+
+        const pills = group.querySelectorAll('.easyel-type-pill');
+        const radios = group.querySelectorAll('input[name="easyel-type-filter"]');
+
+        radios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                if (!radio.checked) return;
+                this.typeFilter = radio.value;
+                pills.forEach(p => p.classList.toggle('is-active', p.dataset.type === radio.value));
+                this.applyFilters();
+            });
         });
     }
 
@@ -514,8 +519,21 @@ class StarterTemplates {
                     importFileEasyelSettingsUrl: btn.getAttribute('data-import-file-easyel-settings-url'),
                     importFileFormUrl:          btn.getAttribute('data-import-file-form-url'),
                     defaultHomepage:            btn.getAttribute('data-default-homepage'),
-                    isPro:                      btn.getAttribute('data-import-file-is-pro') === 'true'
+                    importable:                 btn.getAttribute('data-importable') !== 'false',
+                    comingSoon:                 btn.getAttribute('data-coming-soon') === 'true',
+                    proUrl:                     btn.getAttribute('data-pro-url') || '',
+                    ctaLabel:                   btn.getAttribute('data-cta-label') || '',
+                    // Action + nonce are per-button so the Pro add-on can route a
+                    // licensed premium import to its own license-gated endpoint.
+                    importAction:               btn.getAttribute('data-import-action') || 'easyel_import_content',
+                    importNonce:                btn.getAttribute('data-import-nonce') || easyElementsStarterTemplatesajax.nonce
                 };
+
+                // The footer CTA imports free templates, becomes a marketing /
+                // "Activate License" link for premium (preview-only) templates, and
+                // shows a disabled "Coming Soon" state for licensed premium
+                // templates whose demo data isn't published yet.
+                this.updatePreviewCta(importCta, this.previewTemplate.importable, this.previewTemplate.comingSoon, this.previewTemplate.ctaLabel);
 
                 titleEl.textContent = btn.getAttribute('data-template-name');
                 showLoader();
@@ -543,11 +561,16 @@ class StarterTemplates {
 
         if (importCta) {
             importCta.addEventListener('click', () => {
-                if (this.previewTemplate.isPro && !this.canImportPro()) {
-                    modal.style.display = 'none';
-                    hideLoader();
-                    iframe.src = 'about:blank';
-                    this.showProLockModal();
+                // Licensed premium template without published demo data: nothing
+                // to import yet, so the CTA is inert.
+                if (this.previewTemplate && this.previewTemplate.comingSoon) {
+                    return;
+                }
+                // Premium / preview-only template: there is no import data, so
+                // send the user to the add-on instead of starting an import.
+                if (this.previewTemplate && this.previewTemplate.importable === false) {
+                    const url = this.previewTemplate.proUrl || (easyElementsStarterTemplatesajax || {}).proUrl;
+                    if (url) window.open(url, '_blank', 'noopener');
                     return;
                 }
                 modal.style.display = 'none';
@@ -560,53 +583,24 @@ class StarterTemplates {
         }
     }
 
-    canImportPro() {
-        const cfg = easyElementsStarterTemplatesajax || {};
-        return Boolean(cfg.hasPro) && Boolean(cfg.licenseValid);
-    }
-
-    initProLockModal() {
-        const modal = document.getElementById('easyel-pro-lock-modal');
-        if (!modal) return;
-        const close = () => { modal.style.display = 'none'; };
-        const closer = modal.querySelector('.easyel-pro-lock-closer');
-        const overlay = modal.querySelector('.easyel-pro-lock-overlay');
-        if (closer) closer.addEventListener('click', close);
-        if (overlay) overlay.addEventListener('click', close);
-    }
-
-    showProLockModal() {
-        const modal = document.getElementById('easyel-pro-lock-modal');
-        if (!modal) return;
-        const cfg = easyElementsStarterTemplatesajax || {};
-        const i18n = cfg.i18n || {};
-        const cta = modal.querySelector('.easyel-pro-lock-cta');
-        const ctaText = modal.querySelector('.easyel-pro-lock-cta-text');
-        const ctaIcon = modal.querySelector('.easyel-pro-lock-cta .dashicons');
-
-        if (cta && ctaText) {
-            if (!cfg.hasPro) {
-                cta.href = cfg.proUpgradeUrl || '#';
-                cta.target = '_blank';
-                cta.rel = 'noopener noreferrer';
-                ctaText.textContent = i18n.upgradeBtn || 'Upgrade to Pro';
-                if (ctaIcon) {
-                    ctaIcon.classList.remove('dashicons-admin-network');
-                    ctaIcon.classList.add('dashicons-star-filled');
-                }
-            } else {
-                cta.href = cfg.licenseActivateUrl || '#';
-                cta.target = '_self';
-                cta.removeAttribute('rel');
-                ctaText.textContent = i18n.activateLicenseBtn || 'Activate License';
-                if (ctaIcon) {
-                    ctaIcon.classList.remove('dashicons-star-filled');
-                    ctaIcon.classList.add('dashicons-admin-network');
-                }
-            }
+    updatePreviewCta(cta, importable, comingSoon, ctaLabel) {
+        if (!cta) return;
+        let icon, label;
+        if (importable) {
+            icon  = 'dashicons-download';
+            label = 'Import';
+        } else if (comingSoon) {
+            icon  = 'dashicons-clock';
+            label = 'Coming Soon';
+        } else {
+            // Label is overridable so add-ons can match it to the URL
+            // (e.g. "Activate License" when a Pro licence is inactive).
+            icon  = 'dashicons-star-filled';
+            label = ctaLabel || 'Get Pro';
         }
-
-        modal.style.display = 'flex';
+        cta.innerHTML = '<span class="dashicons ' + icon + '"></span> ' + label;
+        cta.classList.toggle('is-pro-cta', !importable && !comingSoon);
+        cta.classList.toggle('is-coming-soon', !!comingSoon);
     }
 
     initSync() {
@@ -650,7 +644,12 @@ class StarterTemplates {
                     importFileKitUrl:           btn.getAttribute('data-import-file-kit-url'),
                     importFileEasyelSettingsUrl: btn.getAttribute('data-import-file-easyel-settings-url'),
                     importFileFormUrl:          btn.getAttribute('data-import-file-form-url'),
-                    defaultHomepage:            btn.getAttribute('data-default-homepage')
+                    defaultHomepage:            btn.getAttribute('data-default-homepage'),
+                    templateId:                 btn.getAttribute('data-template-id') || '',
+                    // Action + nonce are per-button so the Pro add-on can route a
+                    // licensed premium import to its own license-gated endpoint.
+                    importAction:               btn.getAttribute('data-import-action') || 'easyel_import_content',
+                    importNonce:                btn.getAttribute('data-import-nonce') || easyElementsStarterTemplatesajax.nonce
                 };
                 this.showModal();
             });
@@ -703,35 +702,32 @@ class StarterTemplates {
     }
 
     async processPlugins(updateProgress) {
+        // Verify only — never install/activate without an explicit user click.
+        // The per-plugin "Activate" buttons are the only sanctioned path to
+        // changing plugin state, because each click is an explicit user action.
         const plugins = document.querySelectorAll('.easyel-plugin-item');
-        const total   = plugins.length;
-        let current   = 0;
-        const step    = 30 / (total || 1);
+        const inactive = [];
 
         for (const plugin of plugins) {
-            const slug      = plugin.getAttribute('data-slug');
-            const source    = plugin.getAttribute('data-source');
-            const isActive  = plugin.getAttribute('data-active') === 'true';
-
+            const isActive = plugin.getAttribute('data-active') === 'true';
             if (!isActive) {
-                const isInstalled = plugin.getAttribute('data-installed') === 'true';
-                try {
-                    if (!isInstalled) {
-                        updateProgress(10 + (current * step), `Installing ${slug}...`);
-                        await this.installPlugin(slug, source);
-                    }
-                    updateProgress(10 + (current * step) + (step / 2), `Activating ${slug}...`);
-                    await this.activatePlugin(slug);
-                } catch (e) {
-                    console.error(`Failed to install/activate ${slug}:`, e);
-                }
+                inactive.push(plugin.getAttribute('data-slug'));
             }
-            current++;
         }
+
+        if (inactive.length) {
+            const err = new Error(
+                `Please activate the required plugin(s) before importing: ${inactive.join(', ')}`
+            );
+            err.code = 'inactive_required_plugins';
+            throw err;
+        }
+
+        updateProgress(35, 'Required plugins are active.');
     }
 
-    async installPlugin(slug, source) {
-        return this.ajaxRequest('easyel_install_plugin', { slug, source });
+    async installPlugin(slug) {
+        return this.ajaxRequest('easyel_install_plugin', { slug });
     }
 
     async activatePlugin(slug) {
@@ -739,23 +735,30 @@ class StarterTemplates {
     }
 
     async processTheme(updateProgress) {
+        // Verify only — the user activates the theme via the explicit
+        // "Activate" button on the theme row. We never switch the theme
+        // silently from this step.
         const themeCheckbox = document.querySelector('input[name="recommened-theme"]');
-        if (themeCheckbox && themeCheckbox.checked) {
-            const slug        = themeCheckbox.value;
-            const source      = themeCheckbox.getAttribute('data-source');
-            const isInstalled = themeCheckbox.getAttribute('data-installed') === 'true';
-
-            if (!isInstalled) {
-                updateProgress(45, `Installing Theme ${slug}...`);
-                await this.installTheme(slug, source);
-            }
-            updateProgress(50, `Activating Theme ${slug}...`);
-            await this.activateTheme(slug);
+        if (!themeCheckbox || !themeCheckbox.checked) {
+            return;
         }
+
+        const themeItem = themeCheckbox.closest('.easyel-theme-item');
+        const isActive  = themeItem && themeItem.getAttribute('data-active') === 'true';
+
+        if (!isActive) {
+            const err = new Error(
+                `Please activate the recommended theme (${themeCheckbox.value}) before importing.`
+            );
+            err.code = 'inactive_recommended_theme';
+            throw err;
+        }
+
+        updateProgress(50, 'Recommended theme is active.');
     }
 
-    async installTheme(slug, source) {
-        return this.ajaxRequest('easyel_install_theme', { slug, source });
+    async installTheme(slug) {
+        return this.ajaxRequest('easyel_install_theme', { slug });
     }
 
     async activateTheme(slug) {
@@ -767,30 +770,32 @@ class StarterTemplates {
 
         updateProgress(70, 'Importing Content...');
 
-        let activatedTheme = '';
-        const themeCheckbox = document.querySelector('input[name="recommened-theme"]');
-        if (themeCheckbox && themeCheckbox.checked) {
-            activatedTheme = themeCheckbox.value;
-        }
-
-        await this.ajaxRequest('easyel_import_content', {
-            import_file_url:                    this.currentTemplate.importFileUrl,
-            import_file_kit_url:                this.currentTemplate.importFileKitUrl,
-            import_file_easyel_settings_url:    this.currentTemplate.importFileEasyelSettingsUrl,
-            import_file_form_url:               this.currentTemplate.importFileFormUrl,
-            default_homepage:                   this.currentTemplate.defaultHomepage,
-            activated_theme:                    activatedTheme
-        });
+        // Action + nonce default to the free endpoint but can be overridden
+        // per-button (the Pro add-on points premium imports at its own
+        // license-gated endpoint). template_id lets a license-gated endpoint
+        // re-derive the trusted import URLs server-side.
+        await this.ajaxRequest(
+            this.currentTemplate.importAction || 'easyel_import_content',
+            {
+                template_id:                        this.currentTemplate.templateId || '',
+                import_file_url:                    this.currentTemplate.importFileUrl,
+                import_file_kit_url:                this.currentTemplate.importFileKitUrl,
+                import_file_easyel_settings_url:    this.currentTemplate.importFileEasyelSettingsUrl,
+                import_file_form_url:               this.currentTemplate.importFileFormUrl,
+                default_homepage:                   this.currentTemplate.defaultHomepage
+            },
+            this.currentTemplate.importNonce || easyElementsStarterTemplatesajax.nonce
+        );
     }
 
-    ajaxRequest(action, data) {
+    ajaxRequest(action, data, nonce = easyElementsStarterTemplatesajax.nonce) {
         return new Promise((resolve, reject) => {
             jQuery.ajax({
                 url:  easyElementsStarterTemplatesajax.ajaxUrl,
                 type: 'POST',
                 data: {
                     action,
-                    security: easyElementsStarterTemplatesajax.nonce,
+                    security: nonce,
                     ...data
                 },
                 success: (response) => {

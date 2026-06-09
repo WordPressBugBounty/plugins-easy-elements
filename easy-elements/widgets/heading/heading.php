@@ -1156,7 +1156,11 @@ class Easyel_Heading_Widget extends \Elementor\Widget_Base {
 			'highlight_help',
 			[
 				'type' => Controls_Manager::RAW_HTML,
-				'raw'  => esc_html__( 'Wrap part of the heading text in double curly braces to highlight it. Example: "Heading {{Here}}" highlights "Here".', 'easy-elements' ),
+				'raw'  => sprintf(
+					/* translators: %s is the curly-brace syntax example rendered with HTML entities so Elementor's template engine does not evaluate it. */
+					esc_html__( 'Wrap part of the heading text in double curly braces to highlight it. Example: %s highlights "Here".', 'easy-elements' ),
+					'<code>Heading &#123;&#123;Here&#125;&#125;</code>'
+				),
 				'content_classes' => 'elementor-panel-alert elementor-panel-alert-info',
 			]
 		);

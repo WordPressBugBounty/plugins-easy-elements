@@ -1643,7 +1643,7 @@ class Easyel_Navigation_Menu_Widget extends \Elementor\Widget_Base {
 
 	if ( isset( $settings['enable_sticky_header'] ) && 'yes' === $settings['enable_sticky_header'] ) {
 		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-		$GLOBALS['eel_force_sticky_header'] = true;  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+		$GLOBALS['easyel_force_sticky_header'] = true;  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 		wp_enqueue_script(
 			'eel-sticky-header',
 			plugin_dir_url( dirname( dirname( __FILE__ ) ) ) . 'widgets/navigation-menu/js/eel-sticky-header.js',

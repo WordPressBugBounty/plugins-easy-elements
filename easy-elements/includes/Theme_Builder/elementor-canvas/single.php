@@ -21,7 +21,7 @@ do_action( 'elementor/page_templates/header-footer/before_content' );
         the_post();
         if( !\Elementor\Plugin::$instance->preview->is_preview_mode() ){
             do_action( 'easyel_builder_singular_content' );
-        }else{
+        } else{
             the_content();
         }
     endwhile; // end of the loop. 

@@ -1,7 +1,7 @@
 <?php
 namespace Easyel\EasyElements\Tracking;
 
-use Appsero\Client;
+use Easyel\Vendor\Appsero\Client;
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
@@ -25,7 +25,7 @@ class Appsero_Tracker {
 
         // Appsero Client init
         $this->client = new Client(
-            '8c8586eb-5fc7-493d-97f3-87f342fa8a09', 
+            '8c8586eb-5fc7-493d-97f3-87f342fa8a09',
             'Easy Elements for Elementor',
             EASYELEMENTS_FILE
         );

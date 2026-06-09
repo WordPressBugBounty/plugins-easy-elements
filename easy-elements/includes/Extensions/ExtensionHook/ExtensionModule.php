@@ -58,19 +58,19 @@ class ExtensionModule {
 
 		foreach( $sections as $id => $section ) {
 
-			if ( in_array( $id, [ 'cursor_hover', 'cursor_move','scroll_trigger','background_parallax','sticky_elements' ], true ) && class_exists( 'Easy_Elements_Pro' ) ) {
+			if ( in_array( $id, [ 'cursor_hover', 'cursor_move','scroll_trigger','background_parallax','sticky_elements' ], true ) && easyel_premium_addon_active() ) {
 				continue;
 			}
 
 			$element->start_controls_section(
 				"id_{$id}_section",
 				[
-					'label' => EASY_EXTENSION_BADGE . $section['label'],
+					'label' => EASYEL_EXTENSION_BADGE . $section['label'],
 					'tab'   => \Elementor\Controls_Manager::TAB_ADVANCED,
 				]
 			);
 
-			if ( ! class_exists( 'Easy_Elements_Pro' ) ) {
+			if ( ! easyel_premium_addon_active() ) {
 				HookControl::register_controls( $element, $section['promo_key'] );
 			} 
 

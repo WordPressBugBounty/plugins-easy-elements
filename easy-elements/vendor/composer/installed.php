@@ -3,7 +3,7 @@
         'name' => 'easyel/easy-elements',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '88d200b68da50453c20d9bca85d26d398912ab1d',
+        'reference' => '7848c48bf80f7dfb15f89961f7fafc46be9ab78f',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         'appsero/client' => array(
-            'pretty_version' => 'v2.0.5',
-            'version' => '2.0.5.0',
-            'reference' => 'b7766ee150cc8e28125a818a11e770feb9899a71',
+            'pretty_version' => 'v2.0.6',
+            'version' => '2.0.6.0',
+            'reference' => '2e553be6a47b387a7b05496f6a6e8d8595dd0d08',
             'type' => 'library',
             'install_path' => __DIR__ . '/../appsero/client',
             'aliases' => array(),
@@ -22,7 +22,7 @@
         'easyel/easy-elements' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '88d200b68da50453c20d9bca85d26d398912ab1d',
+            'reference' => '7848c48bf80f7dfb15f89961f7fafc46be9ab78f',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

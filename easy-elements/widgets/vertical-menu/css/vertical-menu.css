@@ -501,3 +501,52 @@ body.logged-in .sidebar-on-mobile-vertical-nav .eel-vertical-menu-icon-close {
 .eel-single-nav-list.eel-single-nav-list-mobile li a {
   padding: 10px 0;
 }
+
+/* Mobile menu breakpoint toggle (class set in render: .eel-mobile-bp-XXX on the menu container) */
+@media (max-width: 480px) {
+  .eel-mobile-bp-480 .eel-vertical-menu-wrap > ul {
+    display: none !important;
+  }
+  .eel-mobile-bp-480 .eel-vertical-menu-icon-mobile {
+    display: block !important;
+  }
+  .eel-mobile-bp-480 .eel-vertical-menu-content-part.sub-menu {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .eel-mobile-bp-576 .eel-vertical-menu-wrap > ul {
+    display: none !important;
+  }
+  .eel-mobile-bp-576 .eel-vertical-menu-icon-mobile {
+    display: block !important;
+  }
+  .eel-mobile-bp-576 .eel-vertical-menu-content-part.sub-menu {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .eel-mobile-bp-768 .eel-vertical-menu-wrap > ul {
+    display: none !important;
+  }
+  .eel-mobile-bp-768 .eel-vertical-menu-icon-mobile {
+    display: block !important;
+  }
+  .eel-mobile-bp-768 .eel-vertical-menu-content-part.sub-menu {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 992px) {
+  .eel-mobile-bp-992 .eel-vertical-menu-wrap > ul {
+    display: none !important;
+  }
+  .eel-mobile-bp-992 .eel-vertical-menu-icon-mobile {
+    display: block !important;
+  }
+  .eel-mobile-bp-992 .eel-vertical-menu-content-part.sub-menu {
+    width: 100% !important;
+  }
+}

@@ -18,12 +18,12 @@ foreach ($easyel_fields as $easyel_key => $easyel_data) {
 }
 ?>
 
-<div class=" easyel-extension-main-wrapper">
+<div class="easyel-extension-main-wrapper">
     <div id="easyel-message-box"></div>
     <div class="form-table easyel-extension">
         <h1 class="easyel-dashboard-heading"><?php esc_html_e('Extensions','easy-elements');?></h1>
-        <?php foreach($easyel_grouped_fields as $easyel_group_name => $easyel_group_fields) : 
-            $easyel_group_slug = str_replace(' ', '-', strtolower($easyel_group_name));
+        <?php foreach( $easyel_grouped_fields as $easyel_group_name => $easyel_group_fields ) : 
+            $easyel_group_slug = str_replace(' ', '-', strtolower( $easyel_group_name ) );
             $easyel_group_enabled = get_option('easy_element_group_' . $easyel_group_slug, 0);
             ?>
             <div class="easyel-extension-heading-group easyel-dflex easyel-justify-between easyel-align-center">
@@ -44,14 +44,15 @@ foreach ($easyel_fields as $easyel_key => $easyel_data) {
             </div>
 
             <div class="easyel-extension-wrapper" data-group="<?php echo esc_attr($easyel_group_slug); ?>">
-                <?php foreach($easyel_group_fields as $easyel_key => $easyel_data) : 
+                <?php foreach($easyel_group_fields as $easyel_key => $easyel_data) :
 
-                    $easyel_is_pro_enable = $easyel_data['is_pro'];
+                    $easyel_is_pro_enable = ! empty( $easyel_data['is_pro'] );
+                    
+                    $easyel_pro_locked    = $easyel_is_pro_enable && ! easyel_premium_addon_active();
                     $easyel_is_upcoming_enable = isset( $easyel_data['upcoming'] ) ? $easyel_data['upcoming'] : '';
                     $easyel_is_settings_enable = isset( $easyel_data['setting'] ) ? $easyel_data['setting'] : '';
-                    $easyel_is_pro        = $easyel_is_pro_enable && ! class_exists('Easy_Elements_Pro');
-                    $easyel_pro_class     = $easyel_is_pro ? ' easyel-pro-enable' : '';
                     $easyel_pro_widget    = $easyel_is_pro_enable ? ' easyel-pro-widget' : '';
+                    $easyel_pro_class     = $easyel_pro_locked ? ' easyel-pro-enable' : '';
                 ?>
                     <div class="easyel-extension-item easyel-widget-card easyel-dflex easyel-justify-between easyel-align-center <?php echo esc_attr( $easyel_pro_class . $easyel_pro_widget ); ?>" style="padding-right:20px;">
                         <div class="easyel-widget-card-content easyel-dflex easyel-align-center">
@@ -110,24 +111,12 @@ foreach ($easyel_fields as $easyel_key => $easyel_data) {
                         </div>
                         <div class="widget-toggle easyel-widget-card-switcher">
                             <label class="easy-toggle-switch">
-                                <?php 
-                                     if ( ! empty( $easyel_data['is_pro'] ) && ! class_exists('Easy_Elements_Pro') ) { ?>
-                                      <input type="checkbox" 
-                                    class="easyel-extension-toggle" 
-                                    data-key="<?php echo esc_attr($easyel_key); ?>" 
-                                    data-tab="<?php echo esc_attr($easyel_tab_slug); ?>" 
+                                <input type="checkbox"
+                                    class="easyel-extension-toggle"
+                                    data-key="<?php echo esc_attr( $easyel_key ); ?>"
+                                    data-tab="<?php echo esc_attr( $easyel_tab_slug ); ?>"
                                     value="1"
-                                    <?php disabled($easyel_is_pro, true); ?> />
-                                <?php } else { 
-                                ?>
-                                <input type="checkbox" 
-                                    class="easyel-extension-toggle" 
-                                    data-key="<?php echo esc_attr($easyel_key); ?>" 
-                                    data-tab="<?php echo esc_attr($easyel_tab_slug); ?>" 
-                                    value="1"
-                                    <?php checked(1, $easyel_extensions_settings[$easyel_key]); ?>
-                                    <?php disabled($easyel_is_pro, true); ?> />
-                                <?php } ?>
+                                    <?php checked( 1, $easyel_extensions_settings[ $easyel_key ] ); ?> />
                                 <span class="slider round"></span>
                             </label>
                         </div>

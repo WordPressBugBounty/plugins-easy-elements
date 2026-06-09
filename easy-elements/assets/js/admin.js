@@ -17,23 +17,12 @@
         },
 
        initWidgetToggles: function() {
-           
-            $('.easy-widget-item.easyel-pro-enable .widget-toggle-checkbox').each(function() {
-                $(this).prop('checked', false).prop('disabled', true);
-            });
-
 
             $('.widget-toggle-checkbox').on('change', function () {
 
                 var checkbox   = $(this);
-                var widgetItem = checkbox.closest('.easy-widget-item');
                 var mainWrap   = $('.easyel-plugin-main-settings-page');
                 var indicator  = mainWrap.find('.easyel-saving-indicator');
-
-                if (widgetItem.hasClass('easyel-pro-enable')) {
-                    checkbox.prop('checked', false).prop('disabled', true);
-                    return false;
-                }
 
                 var widgetKey = checkbox.data('widget-key');
                 var status    = checkbox.is(':checked') ? '1' : '0';
@@ -65,8 +54,12 @@
                             }, 500 );
 
                         } else {
-                            mainWrap.removeClass('is-saving');
+                            // Pro-locked items never reach this branch in
+                            // normal use (click is intercepted at the
+                            // upgrade-modal handler). On any other save
+                            // failure just revert silently.
                             checkbox.prop('checked', !checkbox.is(':checked'));
+                            mainWrap.removeClass('is-saving');
                         }
                     },
 
@@ -181,11 +174,15 @@
                             return; 
                         }
 
+                        // Pro-only widgets aren't registered when the
+                        // premium add-on is inactive, so a bulk "activate"
+                        // request to the server is rejected for them. Mirror
+                        // that here: leave them unchecked rather than
+                        // pretending the bulk action affected them.
                         if (isProWidget && !response.data.is_pro_active) {
-                            $checkbox.prop('checked', false).prop('disabled', true);
+                            $checkbox.prop('checked', false);
                         } else {
                             $checkbox.prop('checked', action === 'activate_all');
-                            $checkbox.prop('disabled', false);
                         }
 
                     });
@@ -363,13 +360,18 @@
 
 
                     } else {
-                        indicator.text('Failed');
+                        // Pro-locked items never reach this branch in
+                        // normal use (click is intercepted at the
+                        // upgrade-modal handler). On any other save
+                        // failure just revert silently.
                         checkbox.prop('checked', !checkbox.is(':checked'));
+                        mainWrap.removeClass('is-saving');
+                        return;
                     }
 
                     setTimeout(function() {
                         mainWrap.removeClass('is-saving');
-                        indicator.text('Saving...'); 
+                        indicator.text('Saving...');
                     }, 500);
                 })
                 .fail(function () {
@@ -953,17 +955,26 @@
     }
 
     /**
-     * PRO widget click → show modal
+     * Pro-locked items (widgets and extensions) — clicking the toggle
+     * area opens the upgrade modal instead of flipping the checkbox.
+     * Capture-phase + stopImmediatePropagation so the click never
+     * reaches the input's native toggle or the regular change handler
+     * that would otherwise fire an AJAX save.
      */
-    $(document).on(
+    document.addEventListener(
         'click',
-        '.easy-widget-item.easyel-pro-enable .easyel-widget-card-switcher',
         function (e) {
+            var trigger = e.target && e.target.closest
+                ? e.target.closest('.easyel-pro-enable .easyel-widget-card-switcher')
+                : null;
+            if ( ! trigger ) {
+                return;
+            }
             e.preventDefault();
-            e.stopPropagation();
-
+            e.stopImmediatePropagation();
             easyelAdminToggleOpenProModal();
-        }
+        },
+        true
     );
 
     // Close modal

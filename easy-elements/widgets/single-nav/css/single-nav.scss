@@ -190,3 +190,28 @@ body.logged-in{
   padding: 10px 0;
 }
 
+/* Mobile menu breakpoint toggle (class set in render: .eel-mobile-bp-XXX) */
+$eel-nav-breakpoints: 480, 576, 768, 992;
+
+@each $bp in $eel-nav-breakpoints {
+  .eel-mobile-bp-#{$bp} {
+    .eel-single-nav-list {
+      display: flex;
+    }
+    .eel-nav-menu-icon {
+      display: none;
+    }
+  }
+
+  @media (max-width: #{$bp}px) {
+    .eel-mobile-bp-#{$bp} {
+      .eel-single-nav-list {
+        display: none;
+      }
+      .eel-nav-menu-icon {
+        display: block;
+      }
+    }
+  }
+}
+

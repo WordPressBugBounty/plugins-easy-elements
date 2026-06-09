@@ -1888,18 +1888,25 @@ $this->add_control(
 
             ?>
 
-            <?php 
-                $skin_file = plugin_dir_path(__FILE__) . 'skin/';
-                switch ($info_skin) {
-                    case 'default':
-                        include $skin_file . 'default.php';
-                        break;
-                    case 'skin-2':
-                        include $skin_file . 'skin-2.php';
-                        break;
-                    default:
-                        include $skin_file . 'default.php';
-                        break;
+            <?php
+                // Resolve the skin directory to its canonical path so any
+                // include below is verifiably inside the widget's own skin/
+                // folder — no path traversal can escape it.
+                $skin_root = realpath( plugin_dir_path( __FILE__ ) . 'skin' );
+                $allowed_skins = [
+                    'default' => 'default.php',
+                    'skin-2'  => 'skin-2.php',
+                ];
+                $skin_key = isset( $allowed_skins[ $info_skin ] ) ? $info_skin : 'default';
+                $skin_target = false !== $skin_root
+                    ? realpath( $skin_root . DIRECTORY_SEPARATOR . $allowed_skins[ $skin_key ] )
+                    : false;
+                if ( false !== $skin_target
+                    && false !== $skin_root
+                    && 0 === strpos( $skin_target, $skin_root . DIRECTORY_SEPARATOR )
+                    && substr( $skin_target, -4 ) === '.php'
+                ) {
+                    include $skin_target;
                 }
             ?>
                       

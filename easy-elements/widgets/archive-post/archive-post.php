@@ -35,7 +35,6 @@ class Easyel_Free_Archive_Post__Widget extends \Elementor\Widget_Base {
         return $options;
     }
 
-
     protected function get_all_categories() {
        $cats = get_categories( [ 'hide_empty' => false ] );
        $options = [];
@@ -44,7 +43,6 @@ class Easyel_Free_Archive_Post__Widget extends \Elementor\Widget_Base {
        }
        return $options;
     }
-
 
     public function get_name() {
         return 'eel-archive-post';

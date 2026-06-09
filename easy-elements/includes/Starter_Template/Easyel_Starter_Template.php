@@ -7,15 +7,14 @@ class Easyel_Starter_Template {
 	private $recommeneded_theme;
 	protected static $instance = null;
 
-	const API_ENDPOINT   = 'https://wpeasyelements.com/demotemplate/wp-json/rtTemplates/v1/starter-templates';
-	const TRANSIENT_KEY  = 'easyel_starter_templates_cache_v2';
+	const API_ENDPOINT   = 'https://wpeasyelements.com/demotemplate/wp-json/rtTemplates/v1/starter-templates?package=free';
+	const TRANSIENT_KEY  = 'easyel_starter_templates_cache_v3';
 
     public function __construct() {
         add_action( 'admin_menu', array( $this, 'admin_menus' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'templates_css' ) );
 		add_action( 'in_admin_header', array( $this, 'suppress_admin_notices' ), 1 );
 		add_filter( 'admin_body_class', array( $this, 'add_body_class' ) );
-		add_action( 'admin_head', array( $this, 'fullscreen_head_style' ) );
 
 		$this->required_plugins = $this->required_plugins();
 		$this->recommeneded_theme = $this->recommeneded_theme();
@@ -39,22 +38,27 @@ class Easyel_Starter_Template {
 	}
 
 	public function add_body_class( $classes ) {
-		if ( $this->is_starter_screen() ) {
+		if ( $this->is_starter_screen() && $this->is_elementor_active() ) {
 			$classes .= ' easyel-starter-fullscreen';
 		}
 		return $classes;
 	}
 
-	public function fullscreen_head_style() {
-		if ( ! $this->is_starter_screen() ) {
-			return;
-		}
-		echo '<style>html.wp-toolbar{padding-top:0 !important;}</style>';
-	}
-
 	private function is_starter_screen() {
 		$screen = get_current_screen();
 		return $screen && 'easy-elements_page_starter-templates-dashboard' === $screen->id;
+	}
+
+	private function is_elementor_active() {
+		if ( did_action( 'elementor/loaded' ) ) {
+			return true;
+		}
+
+		if ( ! function_exists( 'is_plugin_active' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
+		return is_plugin_active( 'elementor/elementor.php' );
 	}
 
 	/**
@@ -77,38 +81,10 @@ class Easyel_Starter_Template {
 			'starter-templates-dashboard',
 			array( $this, 'templates_page_html' )
 		);
-	}
 
-	public function get_license_info() {
-		$has_pro        = class_exists( 'Easy_Elements_Pro' );
-		$license_status = 'invalid';
-
-		if ( $has_pro ) {
-			$pro_version = function_exists( 'easyel_get_pro_clean_version' ) ? easyel_get_pro_clean_version() : '';
-
-			if ( $pro_version && version_compare( $pro_version, '1.0.8', '>=' ) ) {
-				if ( did_action( 'plugins_loaded' ) && class_exists( '\EasyElements_Elementor\Pro\Licenses\EasyelLicense' ) ) {
-					$manager = \EasyElements_Elementor\Pro\Licenses\EasyelLicense::get_instance();
-					if ( method_exists( $manager, 'check_license_validity' ) ) {
-						$license_status = $manager->check_license_validity();
-					}
-				}
-			} else {
-				if ( did_action( 'plugins_loaded' ) && class_exists( '\Easyel_License_Manager' ) ) {
-					$license_manager = new \Easyel_License_Manager();
-					if ( $license_manager && method_exists( $license_manager, 'check_license_validity' ) ) {
-						$license_status = $license_manager->check_license_validity();
-					}
-				}
-			}
+		if ( ! $this->is_elementor_active() ) {
+			remove_submenu_page( 'easy-elements-dashboard', 'starter-templates-dashboard' );
 		}
-
-		return array(
-			'has_pro'              => $has_pro,
-			'license_status'       => $license_status,
-			'pro_upgrade_url'      => 'https://wpeasyelements.com/pricing/',
-			'license_activate_url' => admin_url( 'admin.php?page=easy-elements-dashboard#activate_license' ),
-		);
 	}
 
 	public function templates_css() {
@@ -119,9 +95,7 @@ class Easyel_Starter_Template {
 		}
 
 		$css_path = EASYELEMENTS_DIR_PATH . 'includes/Starter_Template/assets/css/starter-templates.css';
-		$js_path  = EASYELEMENTS_DIR_PATH . 'includes/Starter_Template/assets/js/starter-templates.js';
 		$css_ver  = file_exists( $css_path ) ? filemtime( $css_path ) : EASYELEMENTS_VER;
-		$js_ver   = file_exists( $js_path ) ? filemtime( $js_path ) : EASYELEMENTS_VER;
 
 		wp_enqueue_style(
 			'easy-elements-starter-templates-css',
@@ -129,6 +103,15 @@ class Easyel_Starter_Template {
 			[],
 			$css_ver
 		);
+
+		// Library JS only matters when Elementor is active; the notice page
+		// is static and doesn't need it.
+		if ( ! $this->is_elementor_active() ) {
+			return;
+		}
+
+		$js_path = EASYELEMENTS_DIR_PATH . 'includes/Starter_Template/assets/js/starter-templates.js';
+		$js_ver  = file_exists( $js_path ) ? filemtime( $js_path ) : EASYELEMENTS_VER;
 
 		wp_enqueue_script(
 			'easy-elements-starter-templates-isotope-js',
@@ -153,32 +136,62 @@ class Easyel_Starter_Template {
 			$js_ver,
 			true
 		);
-		$license_info = $this->get_license_info();
+		$js_config = [
+			'previewBaseUrl' => 'https://wpeasyelements.com/demotemplate/',
+			'ajaxUrl'        => admin_url( 'admin-ajax.php' ),
+			'nonce'          => wp_create_nonce( 'easyel_starter_templates_nonce' ),
+			'proUrl'         => $this->get_pro_upgrade_url(),
+		];
 
-		wp_localize_script('easy-elements-starter-templates-js', 'easyElementsStarterTemplatesajax', [
-			'previewBaseUrl'     => "https://wpeasyelements.com/demotemplate/",
-			'ajaxUrl'            => admin_url('admin-ajax.php'),
-			'nonce'              => wp_create_nonce('easyel_starter_templates_nonce'),
-			'hasPro'             => $license_info['has_pro'],
-			'licenseValid'       => 'valid' === $license_info['license_status'],
-			'proUpgradeUrl'      => $license_info['pro_upgrade_url'],
-			'licenseActivateUrl' => $license_info['license_activate_url'],
-			'i18n'               => [
-				'unlockTitle'        => __( 'Unlock Premium Templates', 'easy-elements' ),
-				'unlockText'         => __( 'This is a premium template. Upgrade to Pro to import and use all premium templates instantly.', 'easy-elements' ),
-				'upgradeBtn'         => __( 'Upgrade to Pro', 'easy-elements' ),
-				'activateLicenseBtn' => __( 'Activate License', 'easy-elements' ),
-			],
-		]);
+		wp_localize_script( 'easy-elements-starter-templates-js', 'easyElementsStarterTemplatesajax', $js_config );
 	}
 
 	public function import_files() {
 		return $this->get_all();
 	}
 
+	/**
+	 * Marketing URL shown for premium templates. The free plugin cannot import
+	 * premium templates (it never receives their import data) — this link only
+	 * tells users where the premium add-on is available. Filterable so the Pro
+	 * add-on or site owners can point it elsewhere.
+	 */
+	public function get_pro_upgrade_url() {
+		return apply_filters( 'easyel_starter_templates_pro_url', 'https://wpeasyelements.com/pricing/' );
+	}
+
+	/**
+	 * External URL for the "More Premium Templates" button. The free plugin
+	 * only ships free templates; this link points users to the full premium
+	 * collection on the product website. Filterable.
+	 */
+	public function get_premium_templates_url() {
+		return apply_filters( 'easyel_premium_templates_url', 'https://wpeasyelements.com/demotemplate/templates/' );
+	}
+
+	/**
+	 * Public normalization helper for add-ons.
+	 *
+	 * The Easy Elements Pro add-on uses this to shape its own (premium)
+	 * template data into the exact structure the library expects, so premium
+	 * templates it injects via the `easyel_starter_templates` filter render
+	 * and filter just like the bundled free ones. This is pure data
+	 * transformation — it does no fetching, importing, or access control.
+	 *
+	 * @param array $raw_items Raw template items (API shape: title, xml, kit, …).
+	 * @param array $api_tree  Raw categories tree, used for category aliasing.
+	 * @return array Normalized template entries.
+	 */
+	public function build_template_entries( array $raw_items, array $api_tree = array() ) {
+		$alias_map = $this->build_child_alias_map( $api_tree );
+		return $this->normalize_api_data( $raw_items, $alias_map );
+	}
+
 	public function get_all() {
 		$payload = $this->get_cached_payload();
-		return $payload['templates'];
+		$all     = is_array( $payload['templates'] ) ? $payload['templates'] : array();
+
+		return apply_filters( 'easyel_starter_templates', $all );
 	}
 
 	public function get_category_tree() {
@@ -242,6 +255,12 @@ class Easyel_Starter_Template {
 			: array();
 		$alias_map = $this->build_child_alias_map( $tree_raw );
 
+		// The free plugin fetches and shows ONLY free templates (the endpoint is
+		// already scoped with ?package=free). It has no awareness of premium
+		// templates at all. The Easy Elements Pro add-on (distributed separately)
+		// extends this page — it injects its own premium templates into the
+		// library via the `easyel_starter_templates` filter and owns everything
+		// premium-related (the type filter, badges, import).
 		return array(
 			'templates'       => $this->normalize_api_data( $body['starter_templates'], $alias_map ),
 			'categories_tree' => $tree_raw,
@@ -316,6 +335,7 @@ class Easyel_Starter_Template {
 			}
 
 			$normalized[] = array(
+				'id'                              => isset( $item['id'] ) ? (string) $item['id'] : '',
 				'import_file_name'                => $item['title'] ?? '',
 				'categories'                      => array_values( array_unique( $categories ) ),
 				'category_labels'                 => array_values( array_unique( $category_labels ) ),
@@ -327,7 +347,6 @@ class Easyel_Starter_Template {
 				'import_preview_image_url'        => $item['thumbnail_url'] ?? '',
 				'import_notice'                   => $notice,
 				'preview_url'                     => $item['live_demo_url'] ?? '',
-				'is_pro'                          => (bool) ( $item['is_pro'] ?? false ),
 			);
 		}
 
@@ -400,6 +419,157 @@ class Easyel_Starter_Template {
 		return $out;
 	}
 
+	/**
+	 * Drop categories the current library has no templates for.
+	 *
+	 * The API returns the full category tree (every category that exists across
+	 * the whole template collection), but a given install only has a subset of
+	 * templates — the free bundle alone, or free + whatever the Easy Elements
+	 * Pro add-on injects via the `easyel_starter_templates` filter. We collect
+	 * every category slug present on the available templates and keep only the
+	 * tree entries that match: leaf categories whose slug is available, and
+	 * parent categories that still have at least one available child. This is
+	 * why the filter "grows" automatically when Pro is active — Pro's templates
+	 * carry the previously-empty category slugs, so they stop being filtered out.
+	 *
+	 * Some templates are tagged with a broad top-level category that has no
+	 * sub-category of its own with templates (e.g. "Construction"). Rather than
+	 * surface it as a separate top-level chip, we relocate it as a sub-item under
+	 * a more appropriate parent group (Construction → Business). The mapping is
+	 * filterable via `easyel_starter_templates_category_reparent`.
+	 *
+	 * @param array $tree      Normalized category tree (see normalize_api_tree()).
+	 * @param array $templates Normalized templates currently in the library.
+	 * @return array Tree containing only categories that have templates.
+	 */
+	private function filter_tree_to_available( array $tree, array $templates ) {
+		if ( empty( $tree ) || empty( $templates ) ) {
+			return array();
+		}
+
+		$available = array();
+		foreach ( $templates as $template ) {
+			foreach ( (array) ( $template['categories'] ?? array() ) as $slug ) {
+				if ( '' !== $slug ) {
+					$available[ $slug ] = true;
+				}
+			}
+		}
+
+		// orphan top-level category slug => target parent group slug it should
+		// be nested under as a sub-item.
+		$reparent = apply_filters(
+			'easyel_starter_templates_category_reparent',
+			array( 'construction' => 'business' )
+		);
+
+		$out           = array();
+		$index_by_slug = array();   // slug => position in $out (for child injection)
+		$orphans       = array();   // target parent slug => [ child entry, ... ]
+
+		foreach ( $tree as $cat ) {
+			$slug = $cat['slug'];
+
+			if ( ! empty( $cat['children'] ) ) {
+				$children = array();
+				foreach ( $cat['children'] as $child ) {
+					if ( isset( $available[ $child['slug'] ] ) ) {
+						$children[] = $child;
+					}
+				}
+				if ( ! empty( $children ) ) {
+					// At least one sub-category has templates: keep the group.
+					// When templates are tagged directly on the broad parent
+					// (e.g. just "business"), prepend the parent itself as the
+					// FIRST selectable sub-item so users can filter by it on its
+					// own — not only via the group header's "select all".
+					if ( isset( $available[ $slug ] ) ) {
+						array_unshift( $children, array(
+							'slug'  => $slug,
+							'label' => $cat['label'],
+							'count' => isset( $cat['count'] ) ? (int) $cat['count'] : 0,
+						) );
+					}
+					$cat['children']        = $children;
+					$index_by_slug[ $slug ] = count( $out );
+					$out[]                  = $cat;
+				} elseif ( isset( $available[ $cat['slug'] ] ) ) {
+					// No sub-category has templates, but templates ARE tagged with
+					// the broad parent itself (e.g. "Construction"). Relocate it as
+					// a sub-item under its mapped parent group instead of showing a
+					// standalone chip or an empty dropdown.
+					$this->collect_or_keep_orphan( $cat, $reparent, $orphans, $out, $index_by_slug );
+				}
+			} elseif ( isset( $available[ $cat['slug'] ] ) ) {
+				// Standalone leaf category. Honour the reparent map too, so a
+				// configured leaf can also be nested under a group.
+				if ( isset( $reparent[ $slug ] ) ) {
+					$this->collect_or_keep_orphan( $cat, $reparent, $orphans, $out, $index_by_slug );
+				} else {
+					$index_by_slug[ $slug ] = count( $out );
+					$out[]                  = $cat;
+				}
+			}
+		}
+
+		// Inject relocated orphans into their target groups (or fall back to a
+		// standalone chip when the target group isn't present in this library).
+		foreach ( $orphans as $target => $kids ) {
+			if ( isset( $index_by_slug[ $target ] ) ) {
+				$pos = $index_by_slug[ $target ];
+				foreach ( $kids as $kid ) {
+					$out[ $pos ]['children'][] = $kid;
+				}
+			} else {
+				foreach ( $kids as $kid ) {
+					$out[] = array(
+						'slug'     => $kid['slug'],
+						'label'    => $kid['label'],
+						'count'    => $kid['count'],
+						'children' => array(),
+					);
+				}
+			}
+		}
+
+		return $out;
+	}
+
+	/**
+	 * Queue an orphan category for relocation under its mapped parent group, or
+	 * keep it as a standalone chip when it has no mapping. Used by
+	 * filter_tree_to_available() for both broad parents with no available
+	 * sub-category and configured leaf categories.
+	 *
+	 * @param array $cat           The category entry (slug, label, count).
+	 * @param array $reparent      orphan slug => target parent slug map.
+	 * @param array $orphans       Accumulator: target slug => [ child entries ].
+	 * @param array $out           Output tree (modified when kept standalone).
+	 * @param array $index_by_slug slug => position in $out (kept in sync).
+	 */
+	private function collect_or_keep_orphan( array $cat, array $reparent, array &$orphans, array &$out, array &$index_by_slug ) {
+		$slug  = $cat['slug'];
+		$child = array(
+			'slug'  => $slug,
+			'label' => $cat['label'],
+			'count' => isset( $cat['count'] ) ? (int) $cat['count'] : 0,
+		);
+
+		if ( isset( $reparent[ $slug ] ) ) {
+			$orphans[ $reparent[ $slug ] ][] = $child;
+			return;
+		}
+
+		// No mapping: keep it reachable as a single selectable chip.
+		$index_by_slug[ $slug ] = count( $out );
+		$out[]                  = array(
+			'slug'     => $slug,
+			'label'    => $cat['label'],
+			'count'    => $child['count'],
+			'children' => array(),
+		);
+	}
+
 	public function required_plugins() {
 		$plugins = array(	 
 			array(
@@ -415,7 +585,6 @@ class Easyel_Starter_Template {
 			array(
 				'name' 		=> 'BoldForm Lite',
 				'slug' 		=> 'boldform-lite',
-				'source' 	=> 'https://themewant.com/products/plugins/boldform-lite.zip',
 				'required' 	=> true,
 			),
 			array(
@@ -432,106 +601,133 @@ class Easyel_Starter_Template {
 		return array(
 			'name' => 'Hello Elementor',
 			'slug' => 'hello-elementor',
-			'source' => 'https://downloads.wordpress.org/theme/hello-elementor.3.4.5.zip',
 		);
 	}
 
-	public static function install_wordpress_importer() {
-        if ( ! function_exists( 'is_plugin_active' ) ) {
-            require_once ABSPATH . 'wp-admin/includes/plugin.php';
-        }
+	/**
+	 * Locate the wordpress-importer plugin file (if installed) and report
+	 * whether it is currently active. We never install or activate it
+	 * ourselves — the user must do that explicitly from the Required
+	 * Plugins step in the modal.
+	 */
+	public static function get_wordpress_importer_status() {
+		if ( ! function_exists( 'is_plugin_active' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+		if ( ! function_exists( 'get_plugins' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
 
-        $slug = 'wordpress-importer';
-        $plugin_file = 'wordpress-importer/wordpress-importer.php';
-        
-        $is_installed = false;
-        if ( file_exists( WP_PLUGIN_DIR . '/' . $plugin_file ) ) {
-            $is_installed = true;
-        } else {
-             // Fallback: scan for the plugin file if the directory name differs
-             if ( ! function_exists( 'get_plugins' ) ) {
-                 require_once ABSPATH . 'wp-admin/includes/plugin.php';
-             }
-             $all_plugins = get_plugins();
-             foreach ( array_keys( $all_plugins ) as $ph ) {
-                 if ( dirname( $ph ) === $slug || basename( $ph ) === 'wordpress-importer.php' ) {
-                     $plugin_file = $ph;
-                     $is_installed = true;
-                     break;
-                 }
-             }
-        }
+		$slug        = 'wordpress-importer';
+		$plugin_file = 'wordpress-importer/wordpress-importer.php';
+		$installed   = file_exists( WP_PLUGIN_DIR . '/' . $plugin_file );
 
-        if ( ! $is_installed ) {
-            include_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
-            include_once ABSPATH . 'wp-admin/includes/plugin-install.php';
+		if ( ! $installed ) {
+			foreach ( array_keys( get_plugins() ) as $ph ) {
+				if ( dirname( $ph ) === $slug || basename( $ph ) === 'wordpress-importer.php' ) {
+					$plugin_file = $ph;
+					$installed   = true;
+					break;
+				}
+			}
+		}
 
-            if ( ! class_exists( 'Plugin_Upgrader' ) ) {
-                return;
-            }
+		return array(
+			'installed'   => $installed,
+			'active'      => $installed ? is_plugin_active( $plugin_file ) : false,
+			'plugin_file' => $plugin_file,
+		);
+	}
 
-            $api = plugins_api( 'plugin_information', array( 'slug' => $slug, 'fields' => array( 'sections' => false ) ) );
+	/**
+	 * Rendered in place of the Starter Templates library when the Elementor
+	 * plugin is not installed/activated. Replaces WordPress's default
+	 * "Sorry, you are not allowed to access this page." with a friendly,
+	 * actionable notice that mirrors the Animation Addons style.
+	 */
+	private function render_elementor_required_page() {
+		$elementor_file = 'elementor/elementor.php';
+		$is_installed   = file_exists( WP_PLUGIN_DIR . '/' . $elementor_file );
 
-            if ( ! is_wp_error( $api ) ) {
-                $skin = new \WP_Ajax_Upgrader_Skin();
-                $upgrader = new \Plugin_Upgrader( $skin );
-                $upgrader->install( $api->download_link );
-                
-                // Clear plugin cache to ensure the new plugin is recognized
-                wp_cache_delete( 'plugins', 'plugins' );
-            }
-        }
-        
-        // Ensure the plugin is active if installed
-        if ( $is_installed || file_exists( WP_PLUGIN_DIR . '/' . $plugin_file ) ) {
-            if ( ! is_plugin_active( $plugin_file ) ) {
-                activate_plugin( $plugin_file );
-            }
-        }
-    }
+		if ( $is_installed ) {
+			$action_url = wp_nonce_url(
+				self_admin_url( 'plugins.php?action=activate&plugin=' . $elementor_file ),
+				'activate-plugin_' . $elementor_file
+			);
+			$button_label = esc_html__( 'Activate', 'easy-elements' );
+		} else {
+			$action_url = wp_nonce_url(
+				self_admin_url( 'update.php?action=install-plugin&plugin=elementor' ),
+				'install-plugin_elementor'
+			);
+			$button_label = esc_html__( 'Install Elementor', 'easy-elements' );
+		}
+
+		$dashboard_url = admin_url( 'admin.php?page=easy-elements-dashboard' );
+		?>
+		<div class="wrap easyel-elementor-required-wrap">
+			<div class="easyel-elementor-required-notice" role="alert">
+				<span class="easyel-elementor-required-notice__icon" aria-hidden="true">!</span>
+				<div class="easyel-elementor-required-notice__text">
+					<?php
+					printf(
+						/* translators: 1: Plugin feature name, 2: Required plugin name */
+						esc_html__( '%1$s requires %2$s plugin to be installed and activated.', 'easy-elements' ),
+						'<strong>' . esc_html__( 'Easy Elements Starter Templates', 'easy-elements' ) . '</strong>',
+						'<strong>' . esc_html__( 'Elementor', 'easy-elements' ) . '</strong>'
+					);
+					?>
+				</div>
+				<a href="<?php echo esc_url( $action_url ); ?>" class="easyel-elementor-required-notice__button">
+					<span class="dashicons dashicons-admin-network" aria-hidden="true"></span>
+					<?php echo esc_html( $button_label ); ?>
+				</a>
+			</div>
+
+			<div class="easyel-elementor-required-body">
+				<h2><?php esc_html_e( 'Elementor is required for Starter Templates', 'easy-elements' ); ?></h2>
+				<p>
+					<?php esc_html_e( 'The Easy Elements Starter Templates library lets you import full ready-made websites in one click. To browse and import any template, you need the Elementor plugin installed and activated first.', 'easy-elements' ); ?>
+				</p>
+				<p>
+					<?php
+					if ( $is_installed ) {
+						esc_html_e( 'Elementor is already installed — just activate it using the button above to continue.', 'easy-elements' );
+					} else {
+						esc_html_e( 'Click "Install Elementor" above to install the free Elementor plugin from WordPress.org.', 'easy-elements' );
+					}
+					?>
+				</p>
+				<a href="<?php echo esc_url( $dashboard_url ); ?>" class="easyel-back-link">
+					&larr; <?php esc_html_e( 'Back to Easy Elements Dashboard', 'easy-elements' ); ?>
+				</a>
+			</div>
+		</div>
+		<?php
+	}
 
 	// Starter Templates Page HTML
 	public function templates_page_html() {
 
+		if ( ! $this->is_elementor_active() ) {
+			$this->render_elementor_required_page();
+			return;
+		}
+
 		$templates = $this->import_files();
 
-		$total_count = count( $templates );
-		$free_count  = count( array_filter( $templates, function( $t ) { return empty( $t['is_pro'] ); } ) );
-		$pro_count   = count( array_filter( $templates, function( $t ) { return ! empty( $t['is_pro'] ); } ) );
+		$pro_upgrade_url       = $this->get_pro_upgrade_url();
+		$premium_templates_url = $this->get_premium_templates_url();
 
-		$category_tree = $this->get_category_tree();
-	
+		// Show only categories that actually have templates in the library.
+		// $templates already reflects what is available: the free plugin ships
+		// only free templates, while the Easy Elements Pro add-on injects its
+		// premium templates via the `easyel_starter_templates` filter. So when
+		// Pro is active its categories light up automatically; without it, empty
+		// categories (free templates we don't have) are hidden from the filter.
+		$category_tree = $this->filter_tree_to_available( $this->get_category_tree(), $templates );
+
 		$is_activated_plugins = true;
-
-		$license_status = 'invalid';
-
-		$pro_version = easyel_get_pro_clean_version();
-
-		if (
-			$pro_version &&
-			version_compare( $pro_version, '1.0.8', '>=' )
-		) {
-
-			if (
-				did_action( 'plugins_loaded' ) &&
-				class_exists( '\EasyElements_Elementor\Pro\Licenses\EasyelLicense' ) 
-			) {
-				$manager = \EasyElements_Elementor\Pro\Licenses\EasyelLicense::get_instance();
-
-				if ( method_exists( $manager, 'check_license_validity' ) ) {
-					$license_status = $manager->check_license_validity();
-				}
-			}
-                            
-        } else {
-			if ( did_action( 'plugins_loaded' ) && class_exists( '\Easyel_License_Manager' ) ) {
-				$license_manager = new \Easyel_License_Manager();
-
-				if ( $license_manager && method_exists( $license_manager, 'check_license_validity' ) ) {
-					$license_status = $license_manager->check_license_validity();
-				}
-			} 
-		}
 
 		$dashboard_url = admin_url( 'admin.php?page=easy-elements-dashboard' );
 		?>
@@ -568,14 +764,16 @@ class Easyel_Starter_Template {
 						<span class="dashicons dashicons-update" aria-hidden="true"></span>
 					</button>
 
-					<div class="easyel-select-wrap">
-						<select id="easyel-type-filter" aria-label="<?php echo esc_attr__( 'Filter by type', 'easy-elements' ); ?>">
-							<option value="all"><?php /* translators: %d: total number of templates */ echo esc_html( sprintf( __( 'All (%d)', 'easy-elements' ), $total_count ) ); ?></option>
-							<option value="free"><?php /* translators: %d: number of free templates */ echo esc_html( sprintf( __( 'Free (%d)', 'easy-elements' ), $free_count ) ); ?></option>
-							<option value="pro"><?php /* translators: %d: number of pro templates */ echo esc_html( sprintf( __( 'Pro (%d)', 'easy-elements' ), $pro_count ) ); ?></option>
-						</select>
-						<span class="dashicons dashicons-arrow-down-alt2" aria-hidden="true"></span>
-					</div>
+					<?php
+					// Premium area. By default the free plugin only invites users to
+					// explore the premium collection on the product site. The Easy
+					// Elements Pro add-on replaces this with the All/Free/Pro type
+					// filter (and injects its premium templates into the grid).
+					$more_premium_btn = '<a href="' . esc_url( $premium_templates_url ) . '" target="_blank" rel="noopener noreferrer" class="easyel-more-premium-btn">'
+						. '<span class="dashicons dashicons-star-filled" aria-hidden="true"></span>'
+						. '<span>' . esc_html__( 'More Premium Templates', 'easy-elements' ) . '</span></a>';
+					echo apply_filters( 'easyel_starter_templates_topbar_premium', $more_premium_btn ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted markup / add-on HTML.
+					?>
 				</div>
 			</header>
 
@@ -676,47 +874,69 @@ class Easyel_Starter_Template {
 						$import_file_form_url = $template['import_file_form_url'];
 						$template_cats = implode(' ', $template['categories']);
 						$default_homepage = $template['default_homepage'];
-						$is_pro = $template['is_pro'];
+						$template_id   = isset( $template['id'] ) ? (string) $template['id'] : '';
+						// Generic type tag used by the topbar filter (default "free").
+						// Add-ons that inject their own templates set this themselves.
+						$template_type = ! empty( $template['type'] ) ? sanitize_html_class( $template['type'] ) : 'free';
+						// Importable only when import data is actually present.
+						$importable = ! empty( $import_file_url );
 
-						$pro_class = ( $is_pro == true ) ? 'easyel-pro-feature' : '';
-
-						if( !class_exists( 'Easy_Elements_Pro' ) ) {
-							$pro_url = 'https://wpeasyelements.com/pricing/';
-							$pro_text = 'Upgrade to pro';
-						}
-						elseif( class_exists( 'Easy_Elements_Pro' ) && $license_status == 'invalid' ) {
-							$pro_url  = admin_url( 'admin.php?page=easy-elements-dashboard#activate_license' );
-							$pro_text = 'Activate License';
-						}
-
-
+						// Preview-button data attributes. The Pro add-on can enrich these
+						// (e.g. make a licensed premium template importable straight from
+						// the preview modal) via the filter below. The free plugin never
+						// sets a premium import action/nonce — those live in Pro.
+						$preview_attrs = array(
+							'preview-url'                     => $preview_url,
+							'template-name'                   => $title,
+							'template-id'                     => $template_id,
+							'import-file-url'                 => $import_file_url,
+							'import-file-kit-url'             => $import_file_kit_url,
+							'import-file-easyel-settings-url' => $import_file_easyel_settings_url,
+							'import-file-form-url'            => $import_file_form_url,
+							'importable'                      => $importable ? 'true' : 'false',
+							'coming-soon'                     => 'false',
+							'pro-url'                         => $pro_upgrade_url,
+							'default-homepage'                => $default_homepage,
+							'import-action'                   => '',
+							'import-nonce'                    => '',
+							// Optional label for the non-importable preview CTA. Add-ons
+							// can override it (e.g. "Activate License") to match the URL.
+							'cta-label'                       => '',
+						);
+						$preview_attrs = apply_filters( 'easyel_starter_template_preview_attrs', $preview_attrs, $template );
 						?>
-						<div class="easyel-item <?php echo esc_attr( $pro_class ); ?>" data-category="<?php echo esc_attr( $template_cats ) ?>" data-title="<?php echo esc_attr( $title ) ?>" data-type="<?php echo $is_pro ? 'pro' : 'free'; ?>">
+						<div class="easyel-item" data-category="<?php echo esc_attr( $template_cats ) ?>" data-title="<?php echo esc_attr( $title ) ?>" data-type="<?php echo esc_attr( $template_type ); ?>">
 							<div class="easyel-card">
 								<div class="easyel-thumb">
 									<img src="<?php echo esc_url($thumb_url) ?>" class="easyel-thumbnail"/>
+									<?php
+									// Extension point: add-ons can place a ribbon/badge on a
+									// card (e.g. Easy Elements Pro tags its templates "PRO").
+									echo apply_filters( 'easyel_starter_template_badge_html', '', $template ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted add-on HTML.
+									?>
 									<button class="easyel-fav-btn" data-template-name="<?php echo esc_attr( $title ) ?>" title="<?php echo esc_attr__( 'Add to Favourites', 'easy-elements' ); ?>">
 										<span class="dashicons dashicons-heart"></span>
 									</button>
 									<div class="easyel-overlay">
 										<div class="easyel-action-btns">
-											<button class="easyel-preview-btn"
-												data-preview-url="<?php echo esc_url( $preview_url ) ?>"
-												data-template-name="<?php echo esc_attr( $title ) ?>"
-												data-import-file-url="<?php echo esc_url( $import_file_url ) ?>"
-												data-import-file-kit-url="<?php echo esc_url( $import_file_kit_url ) ?>"
-												data-import-file-easyel-settings-url="<?php echo esc_url( $import_file_easyel_settings_url ) ?>"
-												data-import-file-form-url="<?php echo esc_url( $import_file_form_url ) ?>"
-												data-import-file-is-pro="<?php echo esc_attr( $is_pro ? 'true' : 'false' ) ?>"
-												data-default-homepage="<?php echo esc_attr( $default_homepage ) ?>">
+											<button class="easyel-preview-btn"<?php foreach ( $preview_attrs as $attr_key => $attr_val ) { echo ' data-' . esc_attr( $attr_key ) . '="' . esc_attr( $attr_val ) . '"'; } ?>>
 												<span class="dashicons dashicons-visibility"></span> <?php echo esc_html__( 'Preview', 'easy-elements' ); ?>
 											</button>
+											<?php if ( $importable ) : ?>
+											<a href="#"
+												data-import-file-url="<?php echo esc_url( $import_file_url )?>"
+												data-import-file-kit-url="<?php echo esc_url( $import_file_kit_url )?>"
+												data-import-file-easyel-settings-url="<?php echo esc_url( $import_file_easyel_settings_url )?>"
+												data-import-file-form-url="<?php echo esc_url( $import_file_form_url )?>"
+												data-default-homepage="<?php echo esc_attr( $default_homepage )?>"
+												class="easyel-import-btn"><span class="dashicons dashicons-download"></span> <?php echo esc_html__( 'Import', 'easy-elements' ); ?></a>
+											<?php endif; ?>
 											<?php
-												if( ! $is_pro  || ( $is_pro && $license_status === 'valid' ) ) { ?>
-													<a href="#" data-import-file-url="<?php echo esc_url( $import_file_url )?>" data-import-file-kit-url="<?php echo esc_url( $import_file_kit_url )?>" data-import-file-easyel-settings-url="<?php echo esc_url( $import_file_easyel_settings_url )?>" data-import-file-form-url="<?php echo esc_url( $import_file_form_url )?>" data-default-homepage="<?php echo esc_attr( $default_homepage )?>" class="easyel-import-btn"><span class="dashicons dashicons-download"></span> <?php echo esc_html__( 'Import', 'easy-elements' ); ?></a>
-											<?php } else { ?>
-											<a href="<?php echo esc_url( $pro_url )?>" class="easyel-invalid-license" target="_blank"><span class="dashicons dashicons-download"></span> <?php echo esc_html( $pro_text ); ?></a>
-											<?php } ?>
+											// Extension point: add-ons (Easy Elements Pro) append their
+											// own CTA — e.g. a license-gated import button — for the
+											// templates they inject. Free templates need nothing here.
+											echo apply_filters( 'easyel_starter_template_extra_cta_html', '', $template ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted add-on HTML.
+											?>
 										</div>
 									</div>
 								</div>
@@ -770,7 +990,7 @@ class Easyel_Starter_Template {
 
 												foreach ( $this->required_plugins as $plugin ) {
 
-                                                    // Find the plugin file based on the slug (folder name)
+                                                   
                                                     $plugin_file = '';
                                                     $is_active = false;
                                                     
@@ -781,7 +1001,7 @@ class Easyel_Starter_Template {
                                                         }
                                                     }
                                                     
-                                                    // Fallback for plugins in the root directory or if slug matches filename
+
                                                     if ( empty( $plugin_file ) && isset( $all_plugins[ $plugin['slug'] . '.php' ] ) ) {
                                                         $plugin_file = $plugin['slug'] . '.php';
                                                     }
@@ -794,13 +1014,16 @@ class Easyel_Starter_Template {
 														$is_activated_plugins = false;
 													 }
 													?>
-													<li class="easyel-plugin-item" data-slug="<?php echo esc_attr($plugin['slug']); ?>" data-source="<?php echo esc_attr(isset($plugin['source']) ? $plugin['source'] : ''); ?>" data-installed="<?php echo !empty($plugin_file) ? 'true' : 'false'; ?>" data-active="<?php echo $is_active ? 'true' : 'false'; ?>">
+													<li class="easyel-plugin-item" data-slug="<?php echo esc_attr($plugin['slug']); ?>" data-installed="<?php echo !empty($plugin_file) ? 'true' : 'false'; ?>" data-active="<?php echo $is_active ? 'true' : 'false'; ?>">
 														<span class="easyel-importer-step-dot"></span>
 
 														<?php echo esc_html( $plugin['name'] ); ?>
 
 														<?php if ( $is_active ) : ?>
 															<span class="easyel-importer-step-status active"><?php echo esc_html__( 'Active', 'easy-elements' ); ?></span>
+														<?php elseif ( empty( $plugin_file ) ) : ?>
+															<span class="easyel-importer-step-status inactive"><?php echo esc_html__( 'Not Installed', 'easy-elements' ); ?></span>
+															<button type="button" class="easyel-plugin-activate-btn"><?php echo esc_html__( 'Install', 'easy-elements' ); ?></button>
 														<?php else : ?>
 															<span class="easyel-importer-step-status inactive"><?php echo esc_html__( 'Inactive', 'easy-elements' ); ?></span>
 															<button type="button" class="easyel-plugin-activate-btn"><?php echo esc_html__( 'Activate', 'easy-elements' ); ?></button>
@@ -828,11 +1051,14 @@ class Easyel_Starter_Template {
                                         $is_theme_installed = $theme_obj->exists();
 										?>
 										<ul class="easyel-importer-step-item-list">
-											<li class="easyel-theme-item" data-slug="<?php echo esc_attr( $this->recommeneded_theme['slug'] ); ?>" data-source="<?php echo esc_attr( $this->recommeneded_theme['source'] ); ?>" data-installed="<?php echo $is_theme_installed ? 'true' : 'false'; ?>" data-active="<?php echo $is_theme_active ? 'true' : 'false'; ?>">
-												<input type="checkbox" name="recommened-theme" value="<?php echo esc_attr( $this->recommeneded_theme['slug'] )?>" data-source="<?php echo esc_attr($this->recommeneded_theme['source']); ?>" data-installed="<?php echo $is_theme_installed ? 'true' : 'false'; ?>" <?php checked( $is_theme_active ); ?>>
+											<li class="easyel-theme-item" data-slug="<?php echo esc_attr( $this->recommeneded_theme['slug'] ); ?>" data-installed="<?php echo $is_theme_installed ? 'true' : 'false'; ?>" data-active="<?php echo $is_theme_active ? 'true' : 'false'; ?>">
+												<input type="checkbox" name="recommened-theme" value="<?php echo esc_attr( $this->recommeneded_theme['slug'] )?>" data-installed="<?php echo $is_theme_installed ? 'true' : 'false'; ?>" <?php checked( $is_theme_active ); ?>>
 												<?php echo esc_html( $this->recommeneded_theme['name'] ); ?>
                                                 <?php if ( $is_theme_active ) : ?>
 												    <span class="easyel-importer-step-status active"><?php echo esc_html__( 'Active', 'easy-elements' ); ?></span>
+                                                <?php elseif ( ! $is_theme_installed ) : ?>
+                                                    <span class="easyel-importer-step-status inactive"><?php echo esc_html__( 'Not Installed', 'easy-elements' ); ?></span>
+                                                    <button type="button" class="easyel-theme-activate-btn"><?php echo esc_html__( 'Install', 'easy-elements' ); ?></button>
                                                 <?php else : ?>
                                                     <span class="easyel-importer-step-status inactive"><?php echo esc_html__( 'Inactive', 'easy-elements' ); ?></span>
                                                     <button type="button" class="easyel-theme-activate-btn"><?php echo esc_html__( 'Activate', 'easy-elements' ); ?></button>
@@ -922,23 +1148,6 @@ class Easyel_Starter_Template {
 				</div>
 			</div>
 
-			<!-- Pro Lock Modal -->
-			<div id="easyel-pro-lock-modal" role="dialog" aria-modal="true" aria-labelledby="easyel-pro-lock-title" style="display:none;">
-				<div class="easyel-pro-lock-overlay"></div>
-				<div class="easyel-pro-lock-body">
-					<button type="button" class="easyel-pro-lock-closer" aria-label="<?php echo esc_attr__( 'Close', 'easy-elements' ); ?>"><span class="dashicons dashicons-no-alt"></span></button>
-					<div class="easyel-pro-lock-content">
-						<span class="easyel-pro-lock-icon dashicons dashicons-lock" aria-hidden="true"></span>
-						<h2 class="easyel-pro-lock-title" id="easyel-pro-lock-title"><?php echo esc_html__( 'Unlock Premium Templates', 'easy-elements' ); ?></h2>
-						<p class="easyel-pro-lock-text"><?php echo esc_html__( 'This is a premium template. Upgrade to Pro to import and use all premium templates instantly.', 'easy-elements' ); ?></p>
-						<a href="#" class="easyel-pro-lock-cta">
-							<span class="dashicons dashicons-star-filled" aria-hidden="true"></span>
-							<span class="easyel-pro-lock-cta-text"><?php echo esc_html__( 'Upgrade to Pro', 'easy-elements' ); ?></span>
-						</a>
-					</div>
-				</div>
-			</div>
-
 			<!-- Preview Modal -->
 			<div id="easyel-preview-modal" style="display:none;">
 				<div class="easyel-preview-modal-header">
@@ -980,16 +1189,22 @@ class Easyel_Starter_Template {
 
 	public function install_plugin() {
         check_ajax_referer( 'easyel_starter_templates_nonce', 'security' );
-        
+
         if ( ! current_user_can( 'install_plugins' ) ) {
             wp_send_json_error( array( 'message' => __( 'Insufficient permissions.', 'easy-elements' ) ) );
         }
 
         $slug = isset( $_POST['slug'] ) ? sanitize_text_field( wp_unslash( $_POST['slug'] ) ) : '';
-        $source = isset( $_POST['source'] ) ? esc_url_raw( wp_unslash( $_POST['source'] ) ) : '';
 
         if ( empty( $slug ) ) {
             wp_send_json_error( array( 'message' => __( 'Plugin slug is missing.', 'easy-elements' ) ) );
+        }
+
+        // Only allow installing required plugins from the official WordPress.org
+        // directory. We never accept an arbitrary ZIP URL from the client.
+        $allowed_slugs = wp_list_pluck( $this->required_plugins, 'slug' );
+        if ( ! in_array( $slug, $allowed_slugs, true ) ) {
+            wp_send_json_error( array( 'message' => __( 'Plugin is not in the allowed list.', 'easy-elements' ) ) );
         }
 
         include_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
@@ -998,16 +1213,11 @@ class Easyel_Starter_Template {
         $skin = new \WP_Ajax_Upgrader_Skin();
         $upgrader = new \Plugin_Upgrader( $skin );
 
-        if ( ! empty( $source ) ) {
-             $result = $upgrader->install( $source );
-        } else {
-            // If source is empty, use WordPress.org directory
-            $api = plugins_api( 'plugin_information', array( 'slug' => $slug, 'fields' => array( 'sections' => false ) ) );
-            if ( is_wp_error( $api ) ) {
-                wp_send_json_error( array( 'message' => $api->get_error_message() ) );
-            }
-            $result = $upgrader->install( $api->download_link );
+        $api = plugins_api( 'plugin_information', array( 'slug' => $slug, 'fields' => array( 'sections' => false ) ) );
+        if ( is_wp_error( $api ) ) {
+            wp_send_json_error( array( 'message' => $api->get_error_message() ) );
         }
+        $result = $upgrader->install( $api->download_link );
 
         if ( is_wp_error( $result ) ) {
             wp_send_json_error( array( 'message' => $result->get_error_message() ) );
@@ -1068,10 +1278,15 @@ class Easyel_Starter_Template {
         }
 
         $slug = isset( $_POST['slug'] ) ? sanitize_text_field( wp_unslash( $_POST['slug'] ) ) : '';
-        $source = isset( $_POST['source'] ) ? esc_url_raw( wp_unslash( $_POST['source'] ) ) : '';
 
         if ( empty( $slug ) ) {
             wp_send_json_error( array( 'message' => __( 'Theme slug is missing.', 'easy-elements' ) ) );
+        }
+
+        // Only allow installing the recommended theme from the WordPress.org
+        // directory. We never accept an arbitrary ZIP URL from the client.
+        if ( empty( $this->recommeneded_theme['slug'] ) || $slug !== $this->recommeneded_theme['slug'] ) {
+            wp_send_json_error( array( 'message' => __( 'Theme is not in the allowed list.', 'easy-elements' ) ) );
         }
 
         include_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
@@ -1080,15 +1295,11 @@ class Easyel_Starter_Template {
         $skin = new \WP_Ajax_Upgrader_Skin();
         $upgrader = new \Theme_Upgrader( $skin );
 
-        if ( ! empty( $source ) ) {
-            $result = $upgrader->install( $source );
-        } else {
-            $api = themes_api( 'theme_information', array( 'slug' => $slug, 'fields' => array( 'sections' => false ) ) );
-            if ( is_wp_error( $api ) ) {
-                wp_send_json_error( array( 'message' => $api->get_error_message() ) );
-            }
-            $result = $upgrader->install( $api->download_link );
+        $api = themes_api( 'theme_information', array( 'slug' => $slug, 'fields' => array( 'sections' => false ) ) );
+        if ( is_wp_error( $api ) ) {
+            wp_send_json_error( array( 'message' => $api->get_error_message() ) );
         }
+        $result = $upgrader->install( $api->download_link );
 
         if ( is_wp_error( $result ) ) {
             wp_send_json_error( array( 'message' => $result->get_error_message() ) );
@@ -1116,6 +1327,18 @@ class Easyel_Starter_Template {
             wp_send_json_error( array( 'message' => __( 'Theme slug is missing.', 'easy-elements' ) ) );
         }
 
+        // Only allow activating the explicitly recommended theme. We never
+        // accept an arbitrary slug from the client — that would let an
+        // authenticated request switch the site theme to any installed theme.
+        if ( empty( $this->recommeneded_theme['slug'] ) || $slug !== $this->recommeneded_theme['slug'] ) {
+            wp_send_json_error( array( 'message' => __( 'Theme is not in the allowed list.', 'easy-elements' ) ) );
+        }
+
+        $theme = wp_get_theme( $slug );
+        if ( ! $theme->exists() ) {
+            wp_send_json_error( array( 'message' => __( 'Theme is not installed.', 'easy-elements' ) ) );
+        }
+
         switch_theme( $slug );
 
         wp_send_json_success( array( 'message' => __( 'Theme activated successfully.', 'easy-elements' ) ) );
@@ -1128,109 +1351,144 @@ class Easyel_Starter_Template {
             wp_send_json_error( array( 'message' => __( 'Insufficient permissions.', 'easy-elements' ) ) );
         }
 
-		// Increase limits to prevent 500 Internal Server Errors (timeouts and memory limits) on Apache/FCGI
-		if ( function_exists( 'set_time_limit' ) ) {
-			@set_time_limit( 0 ); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
-		}
-		@ini_set( 'max_execution_time', '0' ); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
-		@ini_set( 'max_input_time', '0' ); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
-		wp_raise_memory_limit( 'admin' );
-		ignore_user_abort( true );
+        $args = array(
+            'import_file_url'                 => isset( $_POST['import_file_url'] ) ? esc_url_raw( wp_unslash( $_POST['import_file_url'] ) ) : '',
+            'import_file_kit_url'             => isset( $_POST['import_file_kit_url'] ) ? esc_url_raw( wp_unslash( $_POST['import_file_kit_url'] ) ) : '',
+            'import_file_easyel_settings_url' => isset( $_POST['import_file_easyel_settings_url'] ) ? esc_url_raw( wp_unslash( $_POST['import_file_easyel_settings_url'] ) ) : '',
+            'import_file_form_url'            => isset( $_POST['import_file_form_url'] ) ? esc_url_raw( wp_unslash( $_POST['import_file_form_url'] ) ) : '',
+            'default_homepage'                => isset( $_POST['default_homepage'] ) ? sanitize_text_field( wp_unslash( $_POST['default_homepage'] ) ) : '',
+        );
 
-		// Buffer all output to prevent PHP notices/warnings from corrupting the JSON AJAX response.
-		ob_start();
+        $result = $this->run_import( $args );
 
-		// Optimize performance by preventing cache and term counting overhead during the heavy import
-		if ( function_exists( 'wp_suspend_cache_invalidation' ) ) {
-			wp_suspend_cache_invalidation( true );
-		}
-		if ( function_exists( 'wp_defer_term_counting' ) ) {
-			wp_defer_term_counting( true );
-		}
-		if ( function_exists( 'wp_defer_comment_counting' ) ) {
-			wp_defer_comment_counting( true );
-		}
+        if ( is_wp_error( $result ) ) {
+            wp_send_json_error( array(
+                'message' => $result->get_error_message(),
+                'context' => $result->get_error_code(),
+            ) );
+        }
 
-        $import_file_url = isset( $_POST['import_file_url'] ) ? esc_url_raw( wp_unslash( $_POST['import_file_url'] ) ) : '';
-		$import_file_kit_url = isset( $_POST['import_file_kit_url'] ) ? esc_url_raw( wp_unslash( $_POST['import_file_kit_url'] ) ) : '';
-		$import_file_easyel_settings_url = isset( $_POST['import_file_easyel_settings_url'] ) ? esc_url_raw( wp_unslash( $_POST['import_file_easyel_settings_url'] ) ) : '';
-		$import_file_form_url = isset( $_POST['import_file_form_url'] ) ? esc_url_raw( wp_unslash( $_POST['import_file_form_url'] ) ) : '';
-		$default_homepage = isset( $_POST['default_homepage'] ) ? sanitize_text_field( wp_unslash( $_POST['default_homepage'] ) ) : '';
+        if ( true === $result ) {
+            wp_send_json_success( array( 'message' => __( 'Content imported successfully.', 'easy-elements' ) ) );
+        }
+
+        wp_send_json_error( array( 'message' => __( 'Content import failed.', 'easy-elements' ) ) );
+    }
+
+    /**
+     * Neutral, reusable import engine. Downloads and processes the four demo
+     * files (XML content, Elementor kit, Easy Elements settings, BoldForm form)
+     * for ANY template, then assigns the menu/homepage and clears caches.
+     *
+     * This method contains NO access control, NO nonce check and NO license
+     * logic — callers (the free `import_content()` AJAX, and the Easy Elements
+     * Pro add-on's own license-gated AJAX endpoint) are responsible for those.
+     * It returns a bool result and sends no JSON, so it is safe to reuse.
+     *
+     * @param array $args import_file_url, import_file_kit_url,
+     *                     import_file_easyel_settings_url, import_file_form_url,
+     *                     default_homepage.
+     * @return bool|\WP_Error true on success, false on import failure, or a
+     *                        WP_Error for missing args / inactive WP Importer.
+     */
+    public function run_import( array $args ) {
+        $import_file_url                 = $args['import_file_url'] ?? '';
+        $import_file_kit_url             = $args['import_file_kit_url'] ?? '';
+        $import_file_easyel_settings_url = $args['import_file_easyel_settings_url'] ?? '';
+        $import_file_form_url            = $args['import_file_form_url'] ?? '';
+        $default_homepage                = $args['default_homepage'] ?? '';
 
         if ( empty( $import_file_url ) ) {
-            wp_send_json_error( array( 'message' => __( 'Import file URL is missing.', 'easy-elements' ) ) );
+            return new \WP_Error( 'missing_import_url', __( 'Import file URL is missing.', 'easy-elements' ) );
+        }
+        if ( empty( $import_file_kit_url ) ) {
+            return new \WP_Error( 'missing_kit_url', __( 'Import kit file URL is missing.', 'easy-elements' ) );
+        }
+        if ( empty( $import_file_easyel_settings_url ) ) {
+            return new \WP_Error( 'missing_settings_url', __( 'Import Easy Elements settings file URL is missing.', 'easy-elements' ) );
+        }
+        if ( empty( $import_file_form_url ) ) {
+            return new \WP_Error( 'missing_form_url', __( 'Import form file URL is missing.', 'easy-elements' ) );
         }
 
-		if ( empty( $import_file_kit_url ) ) {
-            wp_send_json_error( array( 'message' => __( 'Import kit file URL is missing.', 'easy-elements' ) ) );
+        // Increase limits to prevent 500 Internal Server Errors (timeouts and memory limits) on Apache/FCGI
+        if ( function_exists( 'set_time_limit' ) ) {
+            @set_time_limit( 0 ); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
+        }
+        @ini_set( 'max_execution_time', '0' ); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
+        @ini_set( 'max_input_time', '0' ); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
+        wp_raise_memory_limit( 'admin' );
+        ignore_user_abort( true );
+
+        // Buffer all output to prevent PHP notices/warnings from corrupting the JSON AJAX response.
+        ob_start();
+
+        // Optimize performance by preventing cache and term counting overhead during the heavy import
+        if ( function_exists( 'wp_suspend_cache_invalidation' ) ) {
+            wp_suspend_cache_invalidation( true );
+        }
+        if ( function_exists( 'wp_defer_term_counting' ) ) {
+            wp_defer_term_counting( true );
+        }
+        if ( function_exists( 'wp_defer_comment_counting' ) ) {
+            wp_defer_comment_counting( true );
         }
 
-		if ( empty( $import_file_easyel_settings_url ) ) {
-            wp_send_json_error( array( 'message' => __( 'Import Easy Elements settings file URL is missing.', 'easy-elements' ) ) );
+        // The WordPress Importer plugin must already be installed and active.
+        // We never install or activate it ourselves — the user does that
+        // explicitly via the Required Plugins step in the modal.
+        $wp_importer_status = self::get_wordpress_importer_status();
+        if ( ! $wp_importer_status['active'] ) {
+            $this->restore_import_counting();
+            if ( ob_get_level() > 0 ) {
+                ob_end_clean();
+            }
+            return new \WP_Error(
+                'wordpress_importer_inactive',
+                __( 'The WordPress Importer plugin must be installed and activated before importing. Please activate it from the Required Plugins list and try again.', 'easy-elements' )
+            );
         }
-
-		if ( empty( $import_file_form_url ) ) {
-            wp_send_json_error( array( 'message' => __( 'Import form file URL is missing.', 'easy-elements' ) ) );
-        }
-
-        // Ensure wordpress-importer is installed and active before proceeding
-        self::install_wordpress_importer();
 
         require_once ABSPATH . 'wp-admin/includes/file.php';
         require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
-        $file_ext = strtolower( pathinfo( $import_file_url, PATHINFO_EXTENSION ) );
+        // import core plugin settings
+        $easyel_settings_imported = $this->process_easyel_settings_import( $import_file_easyel_settings_url );
+        $kit_imported  = $this->process_kit_import( $import_file_kit_url );
+        $xml_imported  = $this->process_xml_import( $import_file_url );
+        $form_imported = $this->process_form_import( $import_file_form_url );
 
-		// import core plugin settings
-		$easyel_settings_imported = $this->process_easyel_settings_import( $import_file_easyel_settings_url );
-		$kit_imported = $this->process_kit_import( $import_file_kit_url );
-		$xml_imported = $this->process_xml_import( $import_file_url );
-		$form_imported = $this->process_form_import( $import_file_form_url );
-		if ( $kit_imported && $xml_imported && $easyel_settings_imported && $form_imported ) {
-			$this->assign_menu();
-			
-			$activated_theme = isset( $_POST['activated_theme'] ) ? sanitize_text_field( wp_unslash( $_POST['activated_theme'] ) ) : '';
-			if(!empty($activated_theme)) {
-				$theme = wp_get_theme( $activated_theme );
-				if ( $theme->exists() ) {
-					switch_theme( $theme->get_stylesheet() );
-				}
-			}
-			
-			$this->assign_default_homepage($default_homepage);
-			$this->clear_elementor_cache();
+        $ok = ( $kit_imported && $xml_imported && $easyel_settings_imported && $form_imported );
 
-			if ( function_exists( 'wp_suspend_cache_invalidation' ) ) {
-				wp_suspend_cache_invalidation( false );
-			}
-			if ( function_exists( 'wp_defer_term_counting' ) ) {
-				wp_defer_term_counting( false );
-			}
-			if ( function_exists( 'wp_defer_comment_counting' ) ) {
-				wp_defer_comment_counting( false );
-			}
+        if ( $ok ) {
+            $this->assign_menu();
+            $this->assign_default_homepage( $default_homepage );
+            $this->clear_elementor_cache();
+        }
 
-			// Discard any buffered output (warnings, notices) to keep JSON response clean.
-			if ( ob_get_level() > 0 ) {
-				ob_end_clean();
-			}
-			wp_send_json_success( array( 'message' => __( 'Content imported successfully.', 'easy-elements' ) ) );
-		} else {
-			if ( function_exists( 'wp_suspend_cache_invalidation' ) ) {
-				wp_suspend_cache_invalidation( false );
-			}
-			if ( function_exists( 'wp_defer_term_counting' ) ) {
-				wp_defer_term_counting( false );
-			}
-			if ( function_exists( 'wp_defer_comment_counting' ) ) {
-				wp_defer_comment_counting( false );
-			}
-			// Discard any buffered output (warnings, notices) to keep JSON response clean.
-			if ( ob_get_level() > 0 ) {
-				ob_end_clean();
-			}
-			wp_send_json_error( array( 'message' => __( 'Content import failed.', 'easy-elements' ) ) );
-		}
+        $this->restore_import_counting();
+
+        // Discard any buffered output (warnings, notices) to keep JSON response clean.
+        if ( ob_get_level() > 0 ) {
+            ob_end_clean();
+        }
+
+        return $ok;
+    }
+
+    /**
+     * Re-enable cache invalidation and term/comment counting after an import.
+     */
+    private function restore_import_counting() {
+        if ( function_exists( 'wp_suspend_cache_invalidation' ) ) {
+            wp_suspend_cache_invalidation( false );
+        }
+        if ( function_exists( 'wp_defer_term_counting' ) ) {
+            wp_defer_term_counting( false );
+        }
+        if ( function_exists( 'wp_defer_comment_counting' ) ) {
+            wp_defer_comment_counting( false );
+        }
     }
 
     private function process_xml_import( $url ) {
@@ -1248,7 +1506,6 @@ class Easyel_Starter_Template {
             define( 'WP_LOAD_IMPORTERS', true );
         }
 
-        // Load WordPress admin import infrastructure
         require_once ABSPATH . 'wp-admin/includes/import.php';
         if ( ! class_exists( 'WP_Importer' ) ) {
             $class_wp_importer = ABSPATH . 'wp-admin/includes/class-wp-importer.php';
@@ -1257,24 +1514,13 @@ class Easyel_Starter_Template {
             }
         }
 
-        // Ensure wordpress-importer is installed
-        self::install_wordpress_importer();
-
-        // Locate the installed wordpress-importer plugin directory
-        $wp_importer_dir = WP_PLUGIN_DIR . '/wordpress-importer';
-        if ( ! is_dir( $wp_importer_dir ) ) {
-            // Fallback: scan plugin dirs for it
-            if ( ! function_exists( 'get_plugins' ) ) {
-                require_once ABSPATH . 'wp-admin/includes/plugin.php';
-            }
-            foreach ( array_keys( get_plugins() ) as $plugin_file ) {
-                if ( basename( $plugin_file ) === 'wordpress-importer.php' ) {
-                    $wp_importer_dir = WP_PLUGIN_DIR . '/' . dirname( $plugin_file );
-                    break;
-                }
-            }
+        $wp_importer_status = self::get_wordpress_importer_status();
+        if ( ! $wp_importer_status['active'] ) {
+            wp_delete_file( $tmp_file );
+            return false;
         }
 
+        $wp_importer_dir = WP_PLUGIN_DIR . '/' . dirname( $wp_importer_status['plugin_file'] );
         if ( ! is_dir( $wp_importer_dir ) ) {
             wp_delete_file( $tmp_file );
             return false;
@@ -1285,12 +1531,11 @@ class Easyel_Starter_Template {
             require_once $wp_importer_dir . '/compat.php';
         }
 
-        // Load the php-toolkit autoloader (provides WordPress\DataLiberation\URL\WPURL etc.)
+       
         if ( ! class_exists( 'WordPress\\XML\\XMLProcessor' ) && file_exists( $wp_importer_dir . '/php-toolkit/load.php' ) ) {
             require_once $wp_importer_dir . '/php-toolkit/load.php';
         }
 
-        // Load all XML parsers
         $parsers_dir = $wp_importer_dir . '/parsers';
         if ( is_dir( $parsers_dir ) ) {
             foreach ( array(
@@ -1322,23 +1567,11 @@ class Easyel_Starter_Template {
 
 
         $importer = new \WP_Import();
-        // Disable attachment fetching to prevent Apache timeout.
-        // Starter templates use Elementor data where media URLs are embedded.
-        // Downloading 200+ remote media files over AJAX causes fatal Apache timeouts.
         $importer->fetch_attachments = false;
-        // Initialize options to prevent "Undefined array key rewrite_urls" warnings
-        // when bypassing the normal import() entry point.
+     
 		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
         $importer->options = apply_filters( 'wp_import_options', array( 'rewrite_urls' => false ) );
 
-        // -------------------------------------------------------
-        // KEY FIX: Do NOT call $importer->import() directly.
-        // That method calls import_start() which calls die() on
-        // ANY parse error — killing the entire AJAX process on
-        // Apache and causing the 500 Internal Server Error.
-        // Instead, we call parse() and process steps manually
-        // so we can handle errors gracefully.
-        // -------------------------------------------------------
 
         // 1. Parse the WXR file
         ob_start();
@@ -1397,14 +1630,16 @@ class Easyel_Starter_Template {
     }
 
     private function process_kit_import( $url ) {
+        // Return false (rather than emitting JSON) so the neutral run_import()
+        // engine can decide how to report failure to its caller.
         if ( ! did_action( 'elementor/loaded' ) ) {
-             wp_send_json_error( array( 'message' => __( 'Elementor is not loaded.', 'easy-elements' ) ) );
+             return false;
         }
 
         $tmp_file = download_url( $url );
 
         if ( is_wp_error( $tmp_file ) ) {
-            wp_send_json_error( array( 'message' => $tmp_file->get_error_message() ) );
+            return false;
         }
 
         try {
@@ -1478,20 +1713,51 @@ class Easyel_Starter_Template {
 	// Import settings
     public function process_easyel_settings_import($file) {
 
-		if($file === false) {
+		if ( empty( $file ) || $file === false ) {
 			return;
 		}
-        $content = file_get_contents($file);
-        $settings = json_decode($content, true);
 
-        // Save all imported settings
-		if ( ! is_array($settings) ) {
-            return;
-        }
+		require_once ABSPATH . 'wp-admin/includes/file.php';
 
-        foreach ($settings as $option_name => $option_value) {
-            update_option($option_name, $option_value);
-        }
+		$tmp_file = download_url( $file );
+		if ( is_wp_error( $tmp_file ) ) {
+			return;
+		}
+
+		$content = file_get_contents( $tmp_file );
+		wp_delete_file( $tmp_file );
+
+		if ( empty( $content ) ) {
+			return;
+		}
+
+		$settings = json_decode( $content, true );
+
+		if ( ! is_array( $settings ) ) {
+			return;
+		}
+
+		$easyel_allowed_prefixes = [ 'easy_element_', 'easyel_' ];
+
+		foreach ( $settings as $option_name => $option_value ) {
+			if ( ! is_string( $option_name ) || '' === $option_name ) {
+				continue;
+			}
+
+			$easyel_is_allowed = false;
+			foreach ( $easyel_allowed_prefixes as $easyel_prefix ) {
+				if ( 0 === strpos( $option_name, $easyel_prefix ) ) {
+					$easyel_is_allowed = true;
+					break;
+				}
+			}
+
+			if ( ! $easyel_is_allowed ) {
+				continue;
+			}
+
+			update_option( $option_name, $option_value );
+		}
 
 		return true;
     }
@@ -1503,7 +1769,16 @@ class Easyel_Starter_Template {
 			return false;
 		}
 
-		if ( ! class_exists( 'BoldForm_Lite_Activator' ) ) {
+		if ( ! function_exists( 'is_plugin_active' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
+		// BoldForm Lite must already be installed and activated by the user
+		// (via the Required Plugins step). We never activate it here.
+		if ( ! is_plugin_active( 'boldform-lite/boldform-lite.php' )
+			|| ! class_exists( 'BoldForm_Lite' )
+			|| ! class_exists( 'BoldForm_Lite_Export_Import' )
+		) {
 			return false;
 		}
 
@@ -1524,12 +1799,6 @@ class Easyel_Starter_Template {
 		$data = json_decode( $content, true );
 
 		if ( ! is_array( $data ) || empty( $data['plugin'] ) || 'boldform-lite' !== $data['plugin'] ) {
-			return false;
-		}
-
-		\BoldForm_Lite_Activator::activate();
-
-		if ( ! class_exists( 'BoldForm_Lite' ) || ! class_exists( 'BoldForm_Lite_Export_Import' ) ) {
 			return false;
 		}
 

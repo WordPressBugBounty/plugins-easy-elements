@@ -1,13 +1,4 @@
 <?php
-/**
- * Easy Elements Social Icon Widget
- * 
- * A custom Elementor widget for displaying social media icons with links.
- * Features customizable colors, hover effects, and responsive design.
- * 
- * @package EasyElements
- * @since 1.0.0
- */
 namespace Easyel\EasyElements\Widgets;
 use Elementor\Controls_Manager;
 use Elementor\Widget_Base;

@@ -903,6 +903,7 @@ class Easyel_Single_Nav_Widget extends \Elementor\Widget_Base {
         );
         $this->end_controls_section();
     }
+
     protected function render() {
         $settings = $this->get_settings_for_display();
         if ( empty( $settings['nav_items'] ) ) {
@@ -913,7 +914,7 @@ class Easyel_Single_Nav_Widget extends \Elementor\Widget_Base {
 
         if ( isset( $settings['enable_sticky_header'] ) && 'yes' === $settings['enable_sticky_header'] ) {
             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-            $GLOBALS['eel_force_sticky_header'] = true; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+            $GLOBALS['easyel_force_sticky_header'] = true; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             wp_enqueue_script(
                 'eel-sticky-header',
                 plugin_dir_url( dirname( dirname( __FILE__ ) ) ) . 'widgets/single-nav/js/eel-sticky-header.js',
@@ -941,7 +942,8 @@ class Easyel_Single_Nav_Widget extends \Elementor\Widget_Base {
 			wp_add_inline_script( 'eel-sticky-header', $inline_js );
 		}        
         ?>
-        <nav class="eel-single-nav">
+        <?php $bp_class = ( isset( $settings['mobile_menu_breakpoint'] ) && '' !== $settings['mobile_menu_breakpoint'] ) ? ' eel-mobile-bp-' . esc_attr( $settings['mobile_menu_breakpoint'] ) : ''; ?>
+        <nav class="eel-single-nav <?php echo esc_attr( $bp_class ); ?>">
             <ul class="eel-single-nav-list">
                 <?php $i = 0; foreach ( $settings['nav_items'] as $item ) :
                     $active_class = ( $i === 0 ) ? 'active' : '';
@@ -1030,25 +1032,5 @@ class Easyel_Single_Nav_Widget extends \Elementor\Widget_Base {
         ?>
         
         <?php
-        if ( isset( $settings['mobile_menu_breakpoint'] ) && '' !== $settings['mobile_menu_breakpoint'] ) :
-            $mobile_breakpoint = $settings['mobile_menu_breakpoint'] ?? 768;
-        ?>
-        <style>
-            @media (max-width: <?php echo esc_attr( $mobile_breakpoint ); ?>px) {
-                .eel-single-nav-list { display: none; }
-                .eel-single-nav-list.open { display: block; }
-                .mobile-nav-toggle { display: block; }
-                .eel-single-nav-list.eel-single-nav-list-mobile { display: block; }
-                .eel-single-nav .eel-nav-menu-icon { display: block; }
-            }
-            @media (min-width: <?php echo esc_attr( $mobile_breakpoint + 1 ); ?>px) {
-                .eel-single-nav-list { display: flex; }
-                .mobile-nav-toggle { display: none; }
-                .eel-single-nav .eel-nav-menu-icon { display: none; }
-                .eel-single-nav-list.eel-single-nav-list-mobile { display: block; }
-            }
-        </style>
-        <?php
-        endif;
     }
 }

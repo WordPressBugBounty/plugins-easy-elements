@@ -33,28 +33,28 @@ class EASY_EHF_Theme_Compatibility {
 	 * Initializes the class and hooks into WordPress.
 	 */
 	public function init_wp_hooks() {
-		if ( ee_easy_header_enabled() ) {
+		if ( easyel_easy_header_enabled() ) {
 			// Replace header.php.
-			add_action( 'get_header', [ $this, 'easyop_override_header' ] );
+			add_action( 'get_header', [ $this, 'easyel_override_header' ] );
 
 			add_action( 'wp_body_open', [ Easy_Header_Footer_Elementor::class, 'get_header_content' ] );
 			add_action( 'hfe_fallback_header', [ Easy_Header_Footer_Elementor::class, 'get_header_content' ] );
 		}
 
-		if ( ee_easy_header_enabled() && hfe_is_before_header_enabled() ) {
+		if ( easyel_easy_header_enabled() && easyel_is_before_header_enabled() ) {
 			add_action( 'easy_header_before', [ Easy_Header_Footer_Elementor::class, 'get_before_header_content' ], 20 );
 		}
 
-		if ( ee_hfe_is_before_footer_enabled() ) {
+		if ( easyel_hfe_is_before_footer_enabled() ) {
 			add_action( 'wp_footer', [ Easy_Header_Footer_Elementor::class, 'get_before_footer_content' ], 20 );
 		}
 
-		if ( ee_easy_footer_enabled() ) {
+		if ( easyel_easy_footer_enabled() ) {
 			add_action( 'wp_footer', [ Easy_Header_Footer_Elementor::class, 'get_footer_content' ], 50 );
 		}
 
-		if ( ee_easy_header_enabled() || ee_easy_footer_enabled() ) {
-			add_action( 'wp_enqueue_scripts', [ $this, 'easy_force_fullwidth' ] );
+		if ( easyel_easy_header_enabled() || easyel_easy_footer_enabled() ) {
+			add_action( 'wp_enqueue_scripts', [ $this, 'easyel_force_fullwidth' ] );
 		}
 	}
 
@@ -66,7 +66,7 @@ class EASY_EHF_Theme_Compatibility {
 	 *
 	 * @return void
 	 */
-	public function easy_force_fullwidth() {
+	public function easyel_force_fullwidth() {
 
 		$handle = 'easy-ehf-style';
 
@@ -86,13 +86,13 @@ class EASY_EHF_Theme_Compatibility {
 			left: 50%;
 		}';
 
-		if ( true === ee_easy_header_enabled() ) {
+		if ( true === easyel_easy_header_enabled() ) {
 			$css .= 'header#masthead {
 				display: none;
 			}';
 		}
 
-		if ( true === ee_easy_footer_enabled() ) {
+		if ( true === easyel_easy_footer_enabled() ) {
 			$css .= 'footer#colophon {
 				display: none;
 			}';
@@ -109,7 +109,7 @@ class EASY_EHF_Theme_Compatibility {
 	 *
 	 * @return void
 	 */
-	public function easyop_override_header() {
+	public function easyel_override_header() {
 		$templates   = [];
 		$templates[] = 'header.php';
 		locate_template( $templates, true );

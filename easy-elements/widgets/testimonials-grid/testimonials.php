@@ -983,8 +983,19 @@ class Easyel_Testimonials__Widget extends \Elementor\Widget_Base {
                         $logo_title = get_the_title( $logo_company_id );
                     }
 
-                    $skin = $settings['testimonials_skin'] ?? 'default';
-                    $template_path = plugin_dir_path(__FILE__) . 'skins/' . $skin . '.php';
+                    $raw_skin = $settings['testimonials_skin'] ?? 'default';
+                    // Sanitize to a slug so the value can never contain
+                    // path separators, dots, or anything that could let
+                    // realpath() resolve outside skins/ below.
+                    $skin = preg_replace( '/[^a-z0-9_-]/i', '', (string) $raw_skin );
+                    if ( '' === $skin ) {
+                        $skin = 'default';
+                    }
+
+                    $skins_root  = realpath( plugin_dir_path( __FILE__ ) . 'skins' );
+                    $skin_target = false !== $skins_root
+                        ? realpath( $skins_root . DIRECTORY_SEPARATOR . $skin . '.php' )
+                        : false;
 
                     $classes = 'not-hidden';
                     if ( isset( $count ) && $count > 6 ) {
@@ -992,12 +1003,16 @@ class Easyel_Testimonials__Widget extends \Elementor\Widget_Base {
                     }
                     ?>
                     <div class="grid-item <?php echo esc_attr($classes); ?> testimonials--<?php echo esc_attr($skin); ?>">
-                        <div class="ee--testimonial">                            
-                            <?php 
-                                if ( file_exists( $template_path ) ) {
-                                    include $template_path;
+                        <div class="ee--testimonial">
+                            <?php
+                                if ( false !== $skin_target
+                                    && false !== $skins_root
+                                    && 0 === strpos( $skin_target, $skins_root . DIRECTORY_SEPARATOR )
+                                    && substr( $skin_target, -4 ) === '.php'
+                                ) {
+                                    include $skin_target;
                                 }
-                            ?>                            
+                            ?>
                         </div>
                     </div>
                 <?php endforeach; ?>

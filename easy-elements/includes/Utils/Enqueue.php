@@ -137,73 +137,77 @@ class Enqueue {
             "eel-site-logo",
         );
 
-        foreach ( $widgets_assets as $widget => $assets ) {
+        if( is_array( $widgets_assets ) || is_object( $widgets_assets ) ) {
+            foreach ( $widgets_assets as $widget => $assets ) {
 
-            /**
-             * CSS register
-             */
-            if ( ! empty( $assets['css'] ) ) {
-                foreach ( $assets['css'] as $css ) {
+                /**
+                 * CSS register
+                 */
+                if ( ! empty( $assets['css'] ) ) {
+                    foreach ( $assets['css'] as $css ) {
 
-                    $handle = $widget;
-                    $path   = EASYELEMENTS_DIR_PATH . $css;
-                    $url    = EASYELEMENTS_DIR_URL . $css;
+                        $handle = $widget;
+                        $path   = EASYELEMENTS_DIR_PATH . $css;
+                        $url    = EASYELEMENTS_DIR_URL . $css;
 
-                    if ( ! file_exists( $path ) ) {
-                        continue;
-                    }
+                        if ( ! file_exists( $path ) ) {
+                            continue;
+                        }
 
-                    $version = filemtime( $path );
+                        $version = filemtime( $path );
 
-                    if ( is_singular( 'post' ) && in_array( $handle, $single_archive_widget, true ) ) {
+                        if ( is_singular( 'post' ) && in_array( $handle, $single_archive_widget, true ) ) {
 
-                        wp_enqueue_style(
-                            $handle,
-                            $url,
-                            [],
-                            $version
-                        );
+                            wp_enqueue_style(
+                                $handle,
+                                $url,
+                                [],
+                                $version
+                            );
 
-                    } else {
+                        } else {
 
-                        wp_register_style(
-                            $handle,
-                            $url,
-                            [],
-                            $version
-                        );
+                            wp_register_style(
+                                $handle,
+                                $url,
+                                [],
+                                $version
+                            );
+                        }
                     }
                 }
-            }
 
-            /**
-             * JS register
-             */
-            if ( ! empty( $assets['js'] ) ) {
-                foreach ( $assets['js'] as $js ) {
+                /**
+                 * JS register
+                 */
+                if ( ! empty( $assets['js'] ) ) {
+                    foreach ( $assets['js'] as $js ) {
 
-                    $handle = $widget;
-                    $path   = EASYELEMENTS_DIR_PATH . $js;
+                        $handle = $widget;
+                        $path   = EASYELEMENTS_DIR_PATH . $js;
 
-                    if ( file_exists( $path ) ) {
-                        wp_register_script(
-                            $handle,
-                            EASYELEMENTS_DIR_URL . $js,
-                            [ 'jquery' ],
-                            filemtime( $path ),
-                            true
-                        );
+                        if ( file_exists( $path ) ) {
+                            wp_register_script(
+                                $handle,
+                                EASYELEMENTS_DIR_URL . $js,
+                                [ 'jquery' ],
+                                filemtime( $path ),
+                                true
+                            );
 
-                        if ( $handle === 'eel-login-register' ) {
-                            wp_localize_script( $handle, 'eelLoginRegister', [
-                                'ajaxurl' => admin_url( 'admin-ajax.php' ),
-                                'nonce'   => wp_create_nonce( 'easy_elements_nonce' ),
-                            ] );
+                            if ( $handle === 'eel-login-register' ) {
+                                wp_localize_script( $handle, 'eelLoginRegister', [
+                                    'ajaxurl' => admin_url( 'admin-ajax.php' ),
+                                    'nonce'   => wp_create_nonce( 'easy_elements_nonce' ),
+                                ] );
+                            }
                         }
                     }
                 }
             }
         }
+
+       
 
     }
 

@@ -38,38 +38,7 @@ class ComposerStaticInit1b43dd21c1ca28f374a641878a025cea
     );
 
     public static $classMap = array (
-        'Appsero\\Client' => __DIR__ . '/..' . '/appsero/client/src/Client.php',
-        'Appsero\\Insights' => __DIR__ . '/..' . '/appsero/client/src/Insights.php',
-        'Appsero\\License' => __DIR__ . '/..' . '/appsero/client/src/License.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
-        'Easyel\\EasyElements\\Admin\\Admin_Settings' => __DIR__ . '/../..' . '/includes/Admin/Admin_Settings.php',
-        'Easyel\\EasyElements\\CustomCode\\Easyel_Custom_Code' => __DIR__ . '/../..' . '/includes/CustomCode/Easyel_Custom_Code.php',
-        'Easyel\\EasyElements\\Extensions\\CustomCss\\EasyelCustomCss' => __DIR__ . '/../..' . '/includes/Extensions/CustomCss/EasyelCustomCss.php',
-        'Easyel\\EasyElements\\Extensions\\Duplicator\\EasyelDuplicator' => __DIR__ . '/../..' . '/includes/Extensions/Duplicator/EasyelDuplicator.php',
-        'Easyel\\EasyElements\\Extensions\\ExtensionHook\\ExtensionModule' => __DIR__ . '/../..' . '/includes/Extensions/ExtensionHook/ExtensionModule.php',
-        'Easyel\\EasyElements\\Extensions\\ExtensionHook\\HookControl' => __DIR__ . '/../..' . '/includes/Extensions/ExtensionHook/HookControl.php',
-        'Easyel\\EasyElements\\Extensions\\Jarallax\\GlobalJarallax' => __DIR__ . '/../..' . '/includes/Extensions/Jarallax/GlobalJarallax.php',
-        'Easyel\\EasyElements\\Extensions\\Jarallax\\JaralaxControl' => __DIR__ . '/../..' . '/includes/Extensions/Jarallax/JaralaxControl.php',
-        'Easyel\\EasyElements\\Extensions\\LiveCopy\\CopyPaste' => __DIR__ . '/../..' . '/includes/Extensions/LiveCopy/CopyPaste.php',
-        'Easyel\\EasyElements\\Extensions\\ProgressBar\\ReadingProgressBar' => __DIR__ . '/../..' . '/includes/Extensions/ProgressBar/ReadingProgressBar.php',
-        'Easyel\\EasyElements\\Extensions\\PromoHelper' => __DIR__ . '/../..' . '/includes/Extensions/PromoHelper.php',
-        'Easyel\\EasyElements\\Extensions\\ScrollTop\\ScrollTop' => __DIR__ . '/../..' . '/includes/Extensions/ScrollTop/ScrollTop.php',
-        'Easyel\\EasyElements\\Extensions\\SettingExport\\EasyelExport' => __DIR__ . '/../..' . '/includes/Extensions/SettingExport/EasyelExport.php',
-        'Easyel\\EasyElements\\Extensions\\VisibilityControl\\VisibilityModule' => __DIR__ . '/../..' . '/includes/Extensions/VisibilityControl/VisibilityModule.php',
-        'Easyel\\EasyElements\\Extensions\\WrapperLink\\Controls\\LinkControls' => __DIR__ . '/../..' . '/includes/Extensions/WrapperLink/Controls/LinkControls.php',
-        'Easyel\\EasyElements\\Extensions\\WrapperLink\\EasyelWrapperLink' => __DIR__ . '/../..' . '/includes/Extensions/WrapperLink/EasyelWrapperLink.php',
-        'Easyel\\EasyElements\\Header_Footer_Builder\\Classes\\Easy_Header_Footer_Elementor' => __DIR__ . '/../..' . '/includes/Header_Footer_Builder/Classes/Easy_Header_Footer_Elementor.php',
-        'Easyel\\EasyElements\\NoticeDashboard\\NoticeDashboard' => __DIR__ . '/../..' . '/includes/NoticeDashboard/NoticeDashboard.php',
-        'Easyel\\EasyElements\\Popup_Builder\\Easyel_Popup_Builder' => __DIR__ . '/../..' . '/includes/Popup_Builder/Easyel_Popup_Builder.php',
-        'Easyel\\EasyElements\\PostType\\OffcanvasPostType' => __DIR__ . '/../..' . '/includes/PostType/OffcanvasPostType.php',
-        'Easyel\\EasyElements\\Starter_Template\\Easyel_Starter_Template' => __DIR__ . '/../..' . '/includes/Starter_Template/Easyel_Starter_Template.php',
-        'Easyel\\EasyElements\\Template_Library\\Easyel_Templates_Library' => __DIR__ . '/../..' . '/includes/Template_Library/Easyel_Templates_Library.php',
-        'Easyel\\EasyElements\\Theme_Builder\\Easyel_Theme_Builder_CPT' => __DIR__ . '/../..' . '/includes/Theme_Builder/Easyel_Theme_Builder_CPT.php',
-        'Easyel\\EasyElements\\Theme_Builder\\Easyel_Theme_Builder_Front' => __DIR__ . '/../..' . '/includes/Theme_Builder/Easyel_Theme_Builder_Front.php',
-        'Easyel\\EasyElements\\Tracking\\Appsero_Tracker' => __DIR__ . '/../..' . '/includes/Tracking/Appsero_Tracker.php',
-        'Easyel\\EasyElements\\Utils\\Enqueue' => __DIR__ . '/../..' . '/includes/Utils/Enqueue.php',
-        'Easyel\\EasyElements\\Utils\\QueryHelper' => __DIR__ . '/../..' . '/includes/Utils/QueryHelper.php',
-        'Easyel\\EasyElements\\Utils\\SearchSelect2' => __DIR__ . '/../..' . '/includes/Utils/SearchSelect2.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

@@ -535,3 +535,22 @@ body.logged-in{
 .eel-single-nav-list.eel-single-nav-list-mobile li a {
   padding: 10px 0;
 }
+
+/* Mobile menu breakpoint toggle (class set in render: .eel-mobile-bp-XXX on the menu container) */
+$eel-vmenu-breakpoints: 480, 576, 768, 992;
+
+@each $bp in $eel-vmenu-breakpoints {
+  @media (max-width: #{$bp}px) {
+    .eel-mobile-bp-#{$bp} {
+      .eel-vertical-menu-wrap > ul {
+        display: none !important;
+      }
+      .eel-vertical-menu-icon-mobile {
+        display: block !important;
+      }
+      .eel-vertical-menu-content-part.sub-menu {
+        width: 100% !important;
+      }
+    }
+  }
+}

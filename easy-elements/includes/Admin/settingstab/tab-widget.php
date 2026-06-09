@@ -39,13 +39,17 @@ foreach ( $available_elements as $easyel_key => $easyel_widget ) {
                 $easyel_enabled = get_option($easyel_option_name, '1');
 
                 $easyel_is_pro_enable = isset($easyel_widget['is_pro']) && $easyel_widget['is_pro'];
-                $easyel_is_pro = $easyel_is_pro_enable && ! class_exists('Easy_Elements_Pro');
-                $easyel_pro_attr_class = $easyel_is_pro ? ' easyel-pro-enable' : '';
+               
+                $easyel_pro_locked = $easyel_is_pro_enable && ! easyel_premium_addon_active();
                 $easyel_pro_widget = $easyel_is_pro_enable ? 'easyel-pro-widget' : '';
+                $easyel_pro_class  = $easyel_pro_locked ? ' easyel-pro-enable' : '';
                 $easyel_is_upcoming_enable = isset( $easyel_widget['upcoming'] ) ? $easyel_widget['upcoming'] : '';
 
+                // Pro-locked widgets must never appear enabled when the Pro plugin is inactive.
+                $easyel_is_checked = ! $easyel_pro_locked && '1' === (string) $easyel_enabled;
+
             ?>
-                <div class="easy-widget-item easyel-widget-card easyel-dflex easyel-justify-between easyel-align-center <?php echo esc_attr($easyel_pro_attr_class . ' ' . $easyel_pro_widget); ?>" data-widget-key="<?php echo esc_attr($easyel_key); ?>">
+                <div class="easy-widget-item easyel-widget-card easyel-dflex easyel-justify-between easyel-align-center <?php echo esc_attr( $easyel_pro_class . ' ' . $easyel_pro_widget ); ?>" data-widget-key="<?php echo esc_attr($easyel_key); ?>">
                     <div class="easyel-widget-card-content easyel-dflex easyel-align-center">
                         <div class="easyel-widget-icon">
                              <?php 
@@ -84,32 +88,16 @@ foreach ( $available_elements as $easyel_key => $easyel_widget ) {
                             </div>
                         </div>
                     </div>
-                    <div class="widget-toggle easyel-widget-card-switcher <?php echo esc_attr( $easyel_pro_attr_class ); ?>">
+                    <div class="widget-toggle easyel-widget-card-switcher">
                         <label class="easy-toggle-switch">
-                            <?php 
-                            if ( ! empty( $easyel_widget['is_pro'] ) && ! class_exists('Easy_Elements_Pro') ) { ?>
-                                
-                                <input type="checkbox" 
-                                    class="widget-toggle-checkbox" 
-                                    data-widget-key="<?php echo esc_attr($easyel_key); ?>"
-                                    data-tab="<?php echo esc_attr($easyel_tab_slug); ?>"
-                                    value="1"
-                                    name="easy-toggle-switch"
-                                    disabled />
-
-                            <?php } else { ?>
-
-                                <input type="checkbox" 
-                                    class="widget-toggle-checkbox" 
-                                    data-widget-key="<?php echo esc_attr($easyel_key); ?>"
-                                    data-tab="<?php echo esc_attr($easyel_tab_slug); ?>"
-                                    value="1"
-                                    name="easy-toggle-switch"
-                                    <?php checked( $easyel_enabled, '1' ); ?>
-                                    <?php disabled( $easyel_is_pro ); ?> />
-
-                            <?php } ?>
-
+                            <input type="checkbox"
+                                class="widget-toggle-checkbox"
+                                data-widget-key="<?php echo esc_attr( $easyel_key ); ?>"
+                                data-tab="<?php echo esc_attr( $easyel_tab_slug ); ?>"
+                                value="1"
+                                name="easy-toggle-switch"
+                                <?php checked( $easyel_is_checked ); ?>
+                                <?php disabled( $easyel_pro_locked ); ?> />
                             <span class="slider"></span>
                         </label>
                     </div>

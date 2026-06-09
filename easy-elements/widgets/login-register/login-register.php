@@ -360,7 +360,7 @@ class Easyel_Login_Register_Widget extends \Elementor\Widget_Base {
 							'nickname ' => esc_html__( 'Nice Name', 'easy-elements' ),
 							'user_url' => esc_html__( 'Website', 'easy-elements' ),
 							'description' => esc_html__( 'Description', 'easy-elements' ),
-							'consent' => esc_html__( 'Consent', 'easy-elements' ),
+							'easyel_consent' => esc_html__( 'Consent', 'easy-elements' ),
 							'custom' => esc_html__( 'Custom', 'easy-elements' ),
 							'static_text' => esc_html__( 'Static Text', 'easy-elements' ),
 						],
@@ -1590,7 +1590,7 @@ class Easyel_Login_Register_Widget extends \Elementor\Widget_Base {
 							$id = 'eel_' . $meta_key;						
 						}
 
-						if($type =='consent') {
+						if($type =='easyel_consent') {
 							?>
 								<div class="eel-authentication-form-field eel-authentication-form-checkbox-field" <?php echo !empty($width) ? 'style="width: '.esc_attr( $width ).';"' : '' ?>>
 									<div class="eel-authentication-form-field-inner">

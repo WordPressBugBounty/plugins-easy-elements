@@ -47,10 +47,10 @@ class EasyelCustomCss {
             return;
         }
 
-        if ( ! class_exists( 'Easy_Elements_Pro' ) ) {
+        if ( ! easyel_premium_addon_active() ) {
             self::easy_add_free_promo_section( $element );
         } else {
-            if ( did_action( 'plugins_loaded' ) && function_exists( 'easy_element_is_enabled' ) &&  easy_element_is_enabled( 'enable_easy_custom_css' ) ) {
+            if ( did_action( 'plugins_loaded' ) && function_exists( 'easyel_element_is_enabled' ) &&  easyel_element_is_enabled( 'enable_easy_custom_css' ) ) {
 
                 $pro_version = easyel_get_pro_clean_version();
                 
@@ -76,7 +76,7 @@ class EasyelCustomCss {
         $element->start_controls_section(
             'section_easy_custom_css_free',
             [
-                'label' => EASY_EXTENSION_BADGE . __( 'Custom CSS', 'easy-elements' ),
+                'label' => EASYEL_EXTENSION_BADGE . __( 'Custom CSS', 'easy-elements' ),
                 'tab'   => Controls_Manager::TAB_ADVANCED,
             ]
         );

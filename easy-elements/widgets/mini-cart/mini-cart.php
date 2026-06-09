@@ -46,10 +46,6 @@ class Easyel_Free_Mini_Cart_Widget extends \Elementor\Widget_Base {
 	}
 
 	public function get_script_depends() {
-		// Free version doesn't need any JS — clicking the icon simply navigates
-		// to the cart page. Add-on plugins that turn this widget into an
-		// interactive dropdown / off-canvas / modal are responsible for
-		// enqueueing their own scripts.
 		return [];
 	}
 
@@ -428,12 +424,4 @@ class Easyel_Free_Mini_Cart_Widget extends \Elementor\Widget_Base {
 		</div>
 		<?php
 	}
-
-	// content_template() is intentionally omitted: render() relies on PHP
-	// do_action hooks (cart panel, subtotal, render attributes) that JS
-	// templates cannot replicate, so Elementor must re-render via AJAX on
-	// every control change to keep the editor preview consistent.
 }
-
-// AJAX handlers are registered in plugin.php to ensure they load on all pages.
-// Do not register duplicate handlers here.

@@ -3,10 +3,8 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 $easyel_tab_slug = isset($current_tab) ? $current_tab : 'user_data';
 
-
-// assume this file is in the plugin root and fields/ is sibling
 include EASYELEMENTS_DIR_PATH . "includes/Admin/settings-framework/init.php";
-$easyel_fields_dir = __DIR__ . '../settings-framework/fields';
+$easyel_fields_dir = EASYELEMENTS_DIR_PATH . 'includes/Admin/settings-framework/fields/';
 
 $easyel_fm = new Easyel_FieldManager($easyel_fields_dir);
 
@@ -79,7 +77,6 @@ $easyel_settings_fields = [
                         <?php 
                         } else {
                             
-                            //  Single Field Support
                             $easyel_name = $easyel_field['name'];
                             $easyel_value = $easyel_settings[$easyel_name] ?? ($easyel_field['default'] ?? '');
                             $easyel_field['full_name'] = $easyel_name;

@@ -1,0 +1,89 @@
+.easyel-missing-elementor-notice {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	background: linear-gradient(135deg, #ede4ff 0%, #d8c6ff 60%, #c5b0ff 100%);
+	border: 1px solid #b69cff;
+	border-left: 5px solid #7455ff;
+	border-radius: 8px;
+	padding: 16px 20px;
+	color: #1a1240;
+	margin: 15px 20px 5px 0;
+	box-shadow: 0 4px 14px rgba(116, 85, 255, 0.18), 0 1px 3px rgba(116, 85, 255, 0.12);
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+	overflow: hidden;
+}
+.easyel-missing-elementor-notice::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: 8px;
+	pointer-events: none;
+	box-shadow: inset 0 0 0 1px rgba(255,255,255,0.45);
+}
+.easyel-missing-elementor-notice__icon {
+	flex: 0 0 auto;
+	width: 26px;
+	height: 26px;
+	border-radius: 50%;
+	background: #7455ff;
+	color: #fff;
+	font-weight: 700;
+	font-size: 15px;
+	line-height: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 0 0 0 4px rgba(116, 85, 255, 0.22);
+}
+.easyel-missing-elementor-notice__text {
+	flex: 1 1 auto;
+	font-size: 24px;
+	line-height: 1.4;
+	color: #1a1240;
+	font-weight: 500;
+	letter-spacing: 0.1px;
+	text-shadow: 0 1px 0 rgba(255,255,255,0.35);
+}
+.easyel-missing-elementor-notice__text strong {
+	font-weight: 700;
+	color: #4a2ed9;
+}
+.easyel-missing-elementor-notice__button {
+	flex: 0 0 auto;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	background: #e02424;
+	color: #fff !important;
+	font-weight: 600;
+	font-size: 13px;
+	padding: 9px 18px;
+	border-radius: 6px;
+	text-decoration: none;
+	box-shadow: 0 1px 0 rgba(0,0,0,0.05), 0 0 0 0 rgba(224, 36, 36, 0);
+	transition: background .15s ease, box-shadow .15s ease, transform .15s ease;
+	border: none;
+	animation: easyelMissingElementorPulse 2s infinite;
+}
+.easyel-missing-elementor-notice__button:hover,
+.easyel-missing-elementor-notice__button:focus {
+	background: #b91c1c;
+	color: #fff !important;
+	box-shadow: 0 0 0 3px rgba(224, 36, 36, 0.30);
+	outline: none;
+	transform: translateY(-1px);
+	animation: none;
+}
+@keyframes easyelMissingElementorPulse {
+	0%   { box-shadow: 0 1px 0 rgba(0,0,0,0.05), 0 0 0 0 rgba(224, 36, 36, 0.55); }
+	70%  { box-shadow: 0 1px 0 rgba(0,0,0,0.05), 0 0 0 8px rgba(224, 36, 36, 0); }
+	100% { box-shadow: 0 1px 0 rgba(0,0,0,0.05), 0 0 0 0 rgba(224, 36, 36, 0); }
+}
+.easyel-missing-elementor-notice__button .dashicons {
+	width: 16px;
+	height: 16px;
+	font-size: 16px;
+	line-height: 1;
+}

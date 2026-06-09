@@ -23,12 +23,24 @@ class Easyel_FieldManager {
     }
 
     public function register_type($type, $callable_file){
-        if(file_exists($callable_file)){
-            include_once $callable_file;
-            $this->registered_types[$type] = true;
-            return true;
+       
+        $resolved = realpath( $callable_file );
+        if ( false === $resolved ) {
+            return false;
         }
-        return false;
+
+        $allowed_root = realpath( defined( 'EASYELEMENTS_DIR_PATH' ) ? EASYELEMENTS_DIR_PATH : dirname( __FILE__, 4 ) );
+        if ( false === $allowed_root || 0 !== strpos( $resolved, $allowed_root . DIRECTORY_SEPARATOR ) ) {
+            return false;
+        }
+
+        if ( substr( $resolved, -4 ) !== '.php' ) {
+            return false;
+        }
+
+        include_once $resolved;
+        $this->registered_types[$type] = true;
+        return true;
     }
 
     public function render_field($sub_field, $value, $field_context = []){

@@ -66,7 +66,7 @@ class Easyel_Login_Register {
         ? map_deep( wp_unslash( $_POST['custom_meta'] ), 'sanitize_text_field' )
         : [];
 
-        $consent     = !empty($_POST['consent']) ? 'yes' : 'no';
+        $easyel_consent     = !empty($_POST['easyel_consent']) ? 'yes' : 'no';
 
         $safe_role = $this->easyel_get_safe_registration_role();
 
@@ -128,7 +128,7 @@ class Easyel_Login_Register {
             update_user_meta( $user_id, $key, $value );
         }
 
-        update_user_meta( $user_id, 'consent', $consent );
+        update_user_meta( $user_id, 'easyel_consent', $easyel_consent );
 
         $msg = 'User created successfully';
 

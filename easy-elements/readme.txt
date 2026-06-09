@@ -2,9 +2,9 @@
 Contributors: themewant
 Tags: elementor, elementor widgets, custom elements, elementor addons, page builder
 Requires at least: 6.3
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.4.5
+Stable tag: 1.4.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -168,19 +168,43 @@ If you like **Easy Elements**, then consider checking our other WordPress Plugin
 
 == External services ==
 
-This plugin connects to the wpeasyelements API to fetch ready-made templates.
-It sends a request to https://wpeasyelements.com/demotemplate/
-to retrieve template data.
+This plugin connects to the following external services. Each entry explains what data is sent, when it is sent, and links to the provider's Terms of Service and Privacy Policy.
 
-No user personal data is sent to this service.
-This service is provided by: Themewant (https://wpeasyelements.com/demotemplate/)
+=  wpeasyelements Starter Templates API =
 
-This plugin may send non-sensitive data to https://reactheme.com/products/license/ to load dashboard widget content. No personal data is collected, and all requests are made securely over HTTPS.
+This plugin connects to the wpeasyelements Starter Templates API to retrieve starter templates and preview thumbnails that are displayed in the Starter Template library.
 
-## Privacy Policy 
+Service endpoints:
+
+https://wpeasyelements.com/demotemplate/wp-json/rtTemplates/v1/starter-templates?package=free
+
+https://wpeasyelements.com/demotemplate/
+
+What the service is used for:
+
+To display available starter templates and import selected templates into the website.
+
+What data is sent and when:
+
+A request is sent only when an administrator opens the Starter Template library or imports a starter template. The request contains the standard information required to perform an HTTP request, such as the site's user agent and connection metadata.
+
+Service provider:
+
+Themewant / wpeasyelements
+
+Terms of Service:
+
+https://themewant.com/terms-of-condition/
+
+Privacy Policy:
+
+https://themewant.com/privacy-policy/
+
+
+## Privacy Policy
 Easy Elements for Elementor &#8211; Elementor Addons &amp; Website Templates Powered by GSAP uses [Appsero](https://appsero.com) SDK to collect some telemetry data upon user's confirmation. This helps us to troubleshoot problems faster & make product improvements.
 
-Appsero SDK **does not gather any data by default.** The SDK only starts gathering basic telemetry data **when a user allows it via the admin notice**. We collect the data to ensure a great user experience for all our users. 
+Appsero SDK **does not gather any data by default.** The SDK only starts gathering basic telemetry data **when a user allows it via the admin notice**. We collect the data to ensure a great user experience for all our users.
 
 Integrating Appsero SDK **DOES NOT IMMEDIATELY** start gathering data, **without confirmation from users in any case.**
 
@@ -226,6 +250,19 @@ Free version includes Logo Grid & Pro version includes Logo Slider.
 
 
 == Changelog ==
+
+= 1.4.7 
+* Fixed: Review fixes
+* Fixed: loadtextdomain issue fixes
+* Fixed: Inline style and script issue fixes
+* Fixed: Prefix issue fixes
+
+= 1.4.6 – 05/19/26 =
+* Tested: WordPress 7.0 compatable.
+* Improved: Admin feature improvements.
+* Fixed: Sticky issue fixes
+* Fixed: CSS issue fixes
+
 
 = 1.4.5 – 05/17/26 =
 * Added: New Team Grid layout added.

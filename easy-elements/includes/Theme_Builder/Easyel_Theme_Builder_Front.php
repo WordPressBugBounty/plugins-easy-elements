@@ -174,7 +174,7 @@ class Easyel_Theme_Builder_Front {
 
             if ( ($cond['include'] ?? 'include') !== 'include' ) continue;
 
-            // Only allow "all archive" and "all singular"
+            // Free archive rules: "All Archives" and "Posts Archive".
             if ( ( $type === 'archive' && $sub === 'index' ) ) {
 
                 if ( class_exists('WooCommerce') && ( is_shop() || is_product_category() || is_product_tag() || is_product_taxonomy() ) ) {
@@ -183,6 +183,18 @@ class Easyel_Theme_Builder_Front {
                     if ( is_home() || is_archive() || is_search() || is_date() || is_author() ) {
                         return true;
                     }
+                }
+            }
+
+            if ( $type === 'archive' && $sub === 'post_archive' ) {
+                $posts_page_id = (int) get_option( 'page_for_posts' );
+
+                if ( $posts_page_id && is_home() && get_queried_object_id() === $posts_page_id ) {
+                    return true;
+                }
+
+                if ( ! $posts_page_id && is_home() && is_front_page() ) {
+                    return true;
                 }
             }
 

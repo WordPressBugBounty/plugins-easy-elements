@@ -16,6 +16,7 @@ class Admin_Settings {
 
         add_action( 'admin_menu', array( $this, 'easyel_elements_settings_menu' )  );
         add_action( 'admin_menu', array( $this, 'easyel_elements_settings_menu2' ) ,999 );
+        add_action( 'admin_enqueue_scripts', array( $this, 'easyel_enqueue_upgrade_menu_assets' ) );
         add_action( 'admin_init', array( $this, 'easyel_elements_register_settings' ) );
 
         add_action( 'easyel_smooth_scroller_popup', array( $this, 'easyel_smooth_scroller_popup_callback' ), 5 );
@@ -106,14 +107,18 @@ class Admin_Settings {
         $submenu[$slug][] = [ __('Widgets', 'easy-elements'), 'manage_options', 'admin.php?page='.$slug.'#widget' ];
         $submenu[$slug][] = [ __('All Extensions', 'easy-elements'), 'manage_options', 'admin.php?page='.$slug.'#extensions' ];
 
-        // Header & Footer Submenu
-        add_submenu_page(
-            'easy-elements-dashboard',
-            __('Header & Footer', 'easy-elements'),
-            __('Header & Footer', 'easy-elements'),
-            'manage_options',
-            'edit.php?post_type=ee-elementor-hf'
-        );
+        if ( ! function_exists( 'is_plugin_active' ) ) {
+            require_once ABSPATH . 'wp-admin/includes/plugin.php';
+        }
+        if ( did_action( 'elementor/loaded' ) || is_plugin_active( 'elementor/elementor.php' ) ) {
+            add_submenu_page(
+                'easy-elements-dashboard',
+                __('Header & Footer', 'easy-elements'),
+                __('Header & Footer', 'easy-elements'),
+                'manage_options',
+                'edit.php?post_type=ee-elementor-hf'
+            );
+        }
 
         // Upload Custom Fonts Submenu
         add_submenu_page(
@@ -191,77 +196,32 @@ class Admin_Settings {
 
         // Main slug
         $slug = 'easy-elements-dashboard';
-        /**
-         * ----------------------------------------
-         * Activate License
-         * ----------------------------------------
-         */
-        if ( defined( 'EASY_ELEMENTS_PRO_ACTIVE' ) && EASY_ELEMENTS_PRO_ACTIVE ) {
-            $submenu[ $slug ][] = [
-                __( 'Activate License', 'easy-elements' ),
-                'manage_options',
-                'admin.php?page=' . $slug . '#activate_license',
-            ];
-        }
 
-        $license_status = 'invalid';
+        $submenu[ $slug ][] = [
+            __( 'Upgrade to Pro', 'easy-elements' ),
+            'manage_options',
+            'https://wpeasyelements.com/pricing/',
+            '',
+            '',
+        ];
+    }
 
-        $pro_version = easyel_get_pro_clean_version();
+    public function easyel_enqueue_upgrade_menu_assets() {
 
-        if ( $pro_version && version_compare( $pro_version, '1.0.8', '>=' ) ) {
+        wp_enqueue_style(
+            'easy-elements-upgrade-menu',
+            EASYELEMENTS_DIR_URL . 'assets/css/admin/upgrade-menu.css',
+            array(),
+            EASYELEMENTS_VER
+        );
 
-            if ( did_action( 'plugins_loaded' ) && class_exists( '\EasyElements_Elementor\Pro\Licenses\EasyelLicense' ) ) {
-                $manager = \EasyElements_Elementor\Pro\Licenses\EasyelLicense::get_instance();
-                if ( method_exists( $manager, 'check_license_validity' ) ) {
-                    $license_status = $manager->check_license_validity();
-                }
-            }
-
-        } else {
-
-            if ( did_action( 'plugins_loaded' ) && class_exists( '\Easyel_License_Manager' ) ) {
-                $license_manager = new \Easyel_License_Manager();
-                if ( $license_manager && method_exists( $license_manager, 'check_license_validity' ) ) {
-                    $license_status = $license_manager->check_license_validity();
-                }
-            }
-
-        }
-
-        if ( 'valid' !== $license_status ) {
-
-            $submenu[ $slug ][] = [
-                __( 'Upgrade to Pro', 'easy-elements' ),
-                'manage_options',
-                'https://wpeasyelements.com/pricing/',
-                '', 
-                '', 
-            ];
-
-            // Hook CSS to highlight it
-            add_action('admin_head', function() use ($slug) {
-                ?>
-                <style>
-                    #toplevel_page_<?php echo esc_attr($slug); ?> .wp-submenu li a[href="https://wpeasyelements.com/pricing/"] {
-                        color: #fff !important;
-                        background-color: #7455FF !important;
-                        font-weight: bold;
-                        border-radius: 4px;
-                    }
-
-                    #toplevel_page_<?php echo esc_attr($slug); ?> .wp-submenu li a[href="https://wpeasyelements.com/pricing/"]:hover {
-                        background-color: #7455FF !important;
-                        color: #fff !important;
-                    }
-                </style>
-                <script>
-                    jQuery(document).ready(function($){
-                        $('#toplevel_page_<?php echo esc_js($slug); ?> .wp-submenu li a[href="https://wpeasyelements.com/pricing/"]').attr('target','_blank');
-                    });
-                </script>
-                <?php
-            });
-        }
+        wp_enqueue_script(
+            'easy-elements-upgrade-menu',
+            EASYELEMENTS_DIR_URL . 'assets/js/admin-upgrade-menu.js',
+            array( 'jquery' ),
+            EASYELEMENTS_VER,
+            true
+        );
     }
 
     public function easyel_elements_register_settings() {
@@ -292,7 +252,7 @@ class Admin_Settings {
         $available_elements = $this->easyel_elements_get_available_widgets();
         $updated_count = 0;
 
-        $is_pro_active = class_exists('Easy_Elements_Pro');
+        $is_pro_active = easyel_premium_addon_active();
 
         foreach ($available_elements as $key => $widget) {
 
@@ -376,6 +336,20 @@ class Admin_Settings {
             wp_send_json_error(['message' => __('Invalid key', 'easy-elements')]);
         }
 
+        if ( function_exists( 'easyel_get_extension_fields' ) ) {
+            $extension_fields = easyel_get_extension_fields();
+            if (
+                isset( $extension_fields[ $key ] )
+                && ! empty( $extension_fields[ $key ]['is_pro'] )
+                && ! easyel_premium_addon_active()
+            ) {
+                wp_send_json_error( [
+                    'message'        => '',
+                    'requires_addon' => true,
+                ] );
+            }
+        }
+
         $settings = get_option('easy_element_' . $tab, []);
         $settings[$key] = $status;
 
@@ -392,23 +366,34 @@ class Admin_Settings {
             wp_send_json_error(__('Unauthorized', 'easy-elements'));
         }
         check_ajax_referer('easy_elements_widget_settings_nonce', 'nonce');
-        
+
         $widget_key = isset($_POST['widget_key']) ? sanitize_text_field( wp_unslash($_POST['widget_key'] ) ) : '';
         $status = isset($_POST['status']) && $_POST['status'] === '1' ? '1' : '0';
         $tab_slug   = isset($_POST['tab']) ? sanitize_text_field( wp_unslash( $_POST['tab'] ) ) : 'widget';
-        
-        if (!empty( $widget_key ) ) {
-            $option_name = 'easy_element_' . $tab_slug . '_' . $widget_key;
 
-            update_option($option_name, $status);
-
-            wp_send_json_success([
-                'message' => __('Widget setting updated successfully', 'easy-elements'),
-                'status'  => $status,
-            ]);
-        } else {
+        if ( empty( $widget_key ) ) {
             wp_send_json_error(['message' => __('Invalid widget key', 'easy-elements')]);
         }
+
+        $available_elements = $this->easyel_elements_get_available_widgets();
+        if (
+            isset( $available_elements[ $widget_key ] )
+            && ! empty( $available_elements[ $widget_key ]['is_pro'] )
+            && ! easyel_premium_addon_active()
+        ) {
+            wp_send_json_error( [
+                'message'        => '',
+                'requires_addon' => true,
+            ] );
+        }
+
+        $option_name = 'easy_element_' . $tab_slug . '_' . $widget_key;
+        update_option($option_name, $status);
+
+        wp_send_json_success([
+            'message' => __('Widget setting updated successfully', 'easy-elements'),
+            'status'  => $status,
+        ]);
     }
 
     // AJAX handler for bulk actions
@@ -425,7 +410,7 @@ class Admin_Settings {
         $available_elements = $this->easyel_elements_get_available_widgets();
         $updated_count = 0;
 
-        $is_pro_active = class_exists('Easy_Elements_Pro');
+        $is_pro_active = easyel_premium_addon_active();
 
         foreach ($available_elements as $key => $widget) {
             if (isset($widget['tab']) && $widget['tab'] === $tab) {
@@ -457,14 +442,10 @@ class Admin_Settings {
             'extensions' => __('All Extensions', 'easy-elements'),
             'advsettings' => __('Advanced Settings', 'easy-elements'),
             'userData' => __('API Settings', 'easy-elements'),
-           
         ];
 
-        if ( defined( 'EASY_ELEMENTS_PRO_ACTIVE' ) && EASY_ELEMENTS_PRO_ACTIVE ) {
-            $easyel_tabs['activate_license'] = __('Activate License', 'easy-elements');
-        }
-
-        $easyel_tab_list = apply_filters("easyel_all_tab_list",  $easyel_tabs );
+        // Extensions (e.g. the companion Pro plugin) can append tabs here.
+        $easyel_tabs = (array) apply_filters( 'easyel_all_tab_list', $easyel_tabs );
 
         ?>
         <div class="easyel-plugin-main-settings-page">
@@ -482,10 +463,24 @@ class Admin_Settings {
                         <a href="#widget" class="easyel-nav-tab" data-tab="widget"><i class="easyelIcon-widgets"></i><?php esc_html_e('All Widgets','easy-elements'); ?></a>
                         <a href="#extensions" class="easyel-nav-tab" data-tab="extensions"><i class="easyelIcon-extension"></i><?php esc_html_e('All Extensions','easy-elements'); ?></a>
                         <a href="#userData" class="easyel-nav-tab" data-tab="userData"><i class="easyelIcon-setting"></i><?php esc_html_e('API Settings','easy-elements'); ?></a>
+                        <?php
+                        
+                        if ( ! function_exists( 'is_plugin_active' ) ) {
+                            require_once ABSPATH . 'wp-admin/includes/plugin.php';
+                        }
+                        $easyel_elementor_active = did_action( 'elementor/loaded' ) || is_plugin_active( 'elementor/elementor.php' );
+                        if ( $easyel_elementor_active ) : ?>
                         <a href="<?php echo esc_url( admin_url( 'admin.php?page=starter-templates-dashboard' ) ); ?>" class="easyel-nav-tab"><i class="easyelIcon-monitor"></i><?php esc_html_e('Starter Templates','easy-elements'); ?></a>
-                        <?php if ( defined( 'EASY_ELEMENTS_PRO_ACTIVE' ) && EASY_ELEMENTS_PRO_ACTIVE ) : ?>
-                        <a href="#activate_license" class="easyel-nav-tab" data-tab="activate_license"><i class="easyelIcon-license-pro"></i><?php esc_html_e('Activate License','easy-elements'); ?></a>
                         <?php endif; ?>
+                        <?php
+                        /**
+                         * Render extra nav-tab links.
+                         *
+                         * Free plugin renders nothing; the companion Pro plugin
+                         * hooks in to draw its Activate License tab link.
+                         */
+                        do_action( 'easyel_render_settings_extra_tabs' );
+                        ?>
                         <div class="easyel-tab-pro-link">
                             <a href="https://wpeasyelements.com/pricing/" class="easyel-nav-tab-pro" target="_blank">
                                 <i class="easyelIcon-crown"></i>
@@ -526,45 +521,32 @@ class Admin_Settings {
                                     </div>
                                 </div>
                             <?php endif; ?>
-                            <?php 
+                            <?php
+                          
+                            $tab_slug_safe = preg_replace( '/[^a-zA-Z0-9_-]/', '', (string) $tab_slug );
+                            $tabs_root  = realpath( EASYELEMENTS_DIR_PATH . 'includes/Admin/settingstab' );
+                            $tab_target = ( '' !== $tab_slug_safe && false !== $tabs_root )
+                                ? realpath( $tabs_root . DIRECTORY_SEPARATOR . 'tab-' . $tab_slug_safe . '.php' )
+                                : false;
 
-                            $tab_file = EASYELEMENTS_DIR_PATH . 'includes/Admin/settingstab/tab-' . $tab_slug . '.php';
-                        
-                            if ( file_exists( $tab_file ) ) {
-                                include $tab_file; 
-                            } 
-
-                            $pro_version = easyel_get_pro_clean_version();
-
-                            if (
-                                $pro_version &&
-                                version_compare( $pro_version, '1.0.8', '>=' )
+                            if ( false !== $tab_target
+                                && false !== $tabs_root
+                                && 0 === strpos( $tab_target, $tabs_root . DIRECTORY_SEPARATOR )
+                                && substr( $tab_target, -4 ) === '.php'
                             ) {
-                                if (
-                                    did_action( 'plugins_loaded' ) &&
-                                    class_exists( '\EasyElements_Elementor\Pro\Licenses\EasyelLicense' ) &&
-                                    $tab_slug === 'activate_license'
-                                ) {
-                                    $manager = \EasyElements_Elementor\Pro\Licenses\EasyelLicense::get_instance();
-
-                                    if ( method_exists( $manager, 'license_page_html' ) ) {
-                                        $manager->license_page_html();
-                                    }
-                                }
-
-                            } else {
-                                if (
-                                    did_action( 'plugins_loaded' ) &&
-                                    class_exists( '\Easyel_License_Manager' ) &&
-                                    $tab_slug === 'activate_license'
-                                ) {
-                                    $manager = new \Easyel_License_Manager();
-                                    if ( method_exists( $manager, 'license_page_html' ) ) {
-                                        $manager->license_page_html();
-                                    }
-                                }
+                                include $tab_target;
                             }
-                        
+
+                            if ( $tab_slug === 'activate_license' ) {
+                                /**
+                                 * Render the Activate License panel.
+                                 *
+                                 * Free plugin renders nothing; the companion Pro plugin
+                                 * hooks in to draw its own license UI.
+                                 */
+                                do_action( 'easyel_render_license_page' );
+                            }
+
                             ?>
                         </div>
                     <?php endforeach; ?>
@@ -848,6 +830,7 @@ class Admin_Settings {
                 'demo_url'    => 'https://wpeasyelements.com/contact-form-7',
                 'docx_url'    => 'https://wpeasyelements.com/docs/contact-form-7',
                 'is_pro'      => false,
+                'group'       => 'Form Widgets',
                 'tab' => 'widget',
             ],      
             'video' => [
@@ -1007,12 +990,13 @@ class Admin_Settings {
                 'tab' => 'widget',
             ],
             'domain_search' => [
-                'icon'        => 'easyelIcon-domain-search',    
+                'icon'        => 'easyelIcon-domain-search',
                 'title'       => 'Domain Search',
                 'description' => 'Domain Search.',
                 'demo_url'    => 'https://wpeasyelements.com/domain-search/',
                 'docx_url'    => 'https://wpeasyelements.com/docs/domain-search/',
                 'is_pro'      => false,
+                'group'       => 'Form Widgets',
                 'tab' => 'widget',
             ],
             'featured_project' => [
@@ -1088,7 +1072,7 @@ class Admin_Settings {
                 'demo_url'    => 'https://wpeasyelements.com/search',
                 'docx_url'    => 'https://wpeasyelements.com/docs/search',
                 'is_pro'      => false,
-                'group'       => 'Header & Footer Widget',
+                'group'       => 'Form Widgets',
                 'tab' => 'widget',
             ],
             'navigation_menu' => [
@@ -1115,8 +1099,8 @@ class Admin_Settings {
                 'icon'        => 'easyelIcon-navigation',
                 'title'       => 'Mega Menu',
                 'description' => 'Mega Menu.',
-                'demo_url'    => 'https://wpeasyelements.com/mega-menu/',
-                'docx_url'    => 'https://wpeasyelements.com/docs/mega-menu/',
+                'demo_url'    => 'https://wpeasyelements.com/megamenu-builder/',
+                'docx_url'    => 'https://wpeasyelements.com/docs/megamenu-builder/',
                 'is_pro'      => true,
                 'group'       => 'Header & Footer Widget',
                 'tab' => 'widget',
@@ -1146,7 +1130,7 @@ class Admin_Settings {
                 'title'       => 'Current Post Tags',
                 'description' => 'Current Post Tags.',
                 'demo_url'    => 'https://wpeasyelements.com/maximize-value-from-your-marketing-subscription/#single__link',
-                'docx_url'    => '#',
+                'docx_url'    => 'https://wpeasyelements.com/maximize-value-from-your-marketing-subscription/',
                 'is_pro'      => false,
                 'group'       => 'Theme Builder Widget',
                 'tab' => 'widget',
@@ -1156,7 +1140,7 @@ class Admin_Settings {
                 'title'       => 'Post Author Info',
                 'description' => 'Post Author Info.',
                 'demo_url'    => 'https://wpeasyelements.com/maximize-value-from-your-marketing-subscription/#single__link',
-                'docx_url'    => '#',
+                'docx_url'    => 'https://wpeasyelements.com/maximize-value-from-your-marketing-subscription/',
                 'is_pro'      => false,
                 'group'       => 'Theme Builder Widget',
                 'tab' => 'widget',
@@ -1601,9 +1585,9 @@ class Admin_Settings {
         ];
 
         //  Condition apply
-        if ( function_exists( 'easy_element_is_enabled' ) ) {
+        if ( function_exists( 'easyel_element_is_enabled' ) ) {
             foreach ( $feature_widget_map as $feature => $widget_key ) {
-                if ( ! easy_element_is_enabled( $feature ) ) {
+                if ( ! easyel_element_is_enabled( $feature ) ) {
                     unset( $widgets[ $widget_key ] );
                 }
             }

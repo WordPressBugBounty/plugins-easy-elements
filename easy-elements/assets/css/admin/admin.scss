@@ -1702,21 +1702,24 @@ body.toplevel_page_easy-elements-dashboard #wpbody-content{
     cursor: pointer;
 }
 
-/* Locked widget feel */
-.easy-widget-item.easyel-pro-enable {
+/* Locked widget feel — applies to both widget cards and extension cards.
+   The checkbox itself can't be clicked (pointer-events:none) so the
+   switcher wrapper's click bubbles up to the document delegate that
+   opens the upgrade modal. No `disabled` attribute on the input. */
+.easy-widget-item.easyel-pro-enable,
+.easyel-extension-item.easyel-pro-enable {
     cursor: pointer;
 }
 
-.easy-widget-item.easyel-pro-enable .widget-toggle-checkbox {
+.easy-widget-item.easyel-pro-enable .widget-toggle-checkbox,
+.easyel-extension-item.easyel-pro-enable .easyel-extension-toggle {
     cursor: not-allowed;
-}
-
-.easy-widget-item.easyel-pro-enable .easyel-widget-card-switcher {
-    cursor: pointer;
-}
-
-.easy-widget-item.easyel-pro-enable .widget-toggle-checkbox {
     pointer-events: none;
+}
+
+.easy-widget-item.easyel-pro-enable .easyel-widget-card-switcher,
+.easyel-extension-item.easyel-pro-enable .easyel-widget-card-switcher {
+    cursor: pointer;
 }
 
 .easyel-readingprogress-bar-popup-setting {

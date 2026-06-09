@@ -1,14 +1,5 @@
 <?php
-/**
- * Product Grid Lite widget.
- *
- * A lightweight WooCommerce product grid for the free Easy Elements plugin.
- *
- * @package Easyel\EasyElements\Widgets
- */
-
 namespace Easyel\EasyElements\Widgets;
-
 use Elementor\Controls_Manager;
 use Elementor\Group_Control_Background;
 use Elementor\Group_Control_Border;

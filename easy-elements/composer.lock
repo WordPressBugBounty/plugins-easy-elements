@@ -1,9 +1,14 @@
 {
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "519ae46fbb315627a032b1d0c7da0d52",
     "packages": [
         {
             "name": "appsero/client",
             "version": "v2.0.6",
-            "version_normalized": "2.0.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Appsero/client.git",
@@ -26,9 +31,7 @@
                 "tareq1988/wp-php-cs-fixer": "dev-master",
                 "wp-coding-standards/wpcs": "dev-develop"
             },
-            "time": "2026-02-24T04:46:05+00:00",
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Appsero\\": "src/"
@@ -55,9 +58,21 @@
                 "issues": "https://github.com/Appsero/client/issues",
                 "source": "https://github.com/Appsero/client/tree/v2.0.6"
             },
-            "install-path": "../appsero/client"
+            "time": "2026-02-24T04:46:05+00:00"
         }
     ],
-    "dev": true,
-    "dev-package-names": []
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": {},
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "ext-simplexml": "*",
+        "ext-json": "*",
+        "ext-dom": "*",
+        "ext-xmlreader": "*"
+    },
+    "platform-dev": {},
+    "plugin-api-version": "2.9.0"
 }

@@ -792,205 +792,27 @@ class Easyel_Theme_Builder_CPT {
             'group' => 'Core'
         ];
 
-        $archives['core'][] = [
-            'value' => 'author',
-            'label' => __('Author Archive [Pro]', 'easy-elements'),
-            'pro'   => true,
-            'group' => 'Core'
-        ];
-
-        $archives['core'][] = [
-            'value' => 'search',
-            'label' => __('Search Results [Pro]', 'easy-elements'),
-            'pro'   => true,
-            'group' => 'Core'
-        ];
-
-        $archives['core'][] = [
-            'value' => 'date',
-            'label' => __('Date Archive [Pro]', 'easy-elements'),
-            'pro'   => true,
-            'group' => 'Core'
-        ];
-
         /**
          * --------------------------------------------------
-         * Default Posts Archive (Handled separately)
+         * Default Posts Archive — free, fully functional.
          * --------------------------------------------------
          */
         $archives['posts_archive'][] = [
             'value' => 'post_archive',
-            'label' => __('Posts Archive [Pro]', 'easy-elements'),
-            'pro'   => true,
+            'label' => __('Posts Archive', 'easy-elements'),
+            'pro'   => false,
             'group' => 'Posts'
         ];
-
-        $archives['posts_archive'][] = [
-            'value' => 'category',
-            'label' => __('Categories [Pro]', 'easy-elements'),
-            'pro'   => true,
-            'group' => 'Posts'
-        ];
-
-        $archives['posts_archive'][] = [
-            'value' => 'child_of_category',
-            'label' => __('Direct Child Category of [Pro]', 'easy-elements'),
-            'pro'   => true,
-            'group' => 'Posts'
-        ];
-
-        $archives['posts_archive'][] = [
-            'value' => 'any_child_of_category',
-            'label' => __('Any Child Category of [Pro]', 'easy-elements'),
-            'pro'   => true,
-            'group' => 'Posts'
-        ];
-
-        // Post Tags (only if tags exist)
-        $tags = get_terms([
-            'taxonomy'   => 'post_tag',
-            'hide_empty' => false
-        ]);
-
-        if ( ! empty( $tags ) && ! is_wp_error( $tags ) ) {
-            $archives['posts_archive'][] = [
-                'value' => 'post_tag',
-                'label' => __('Tags [Pro]', 'easy-elements'),
-                'pro'   => true,
-                'group' => 'Posts'
-            ];
-        }
 
         /**
          * --------------------------------------------------
-         * Dynamic Custom Post Types & Taxonomies
-         * --------------------------------------------------
-         */
-
-        $post_types = easyel_get_valid_archive_post_types();
-
-        unset( $post_types['attachment'], $post_types['post'], $post_types['product'] );
-
-        foreach ( $post_types as $post_type => $pt ) {
-
-            $group_label = sprintf( '%s Archive', $pt->label );
-
-            if ( ! isset( $archives['dynamic'][ $group_label ] ) ) {
-                $archives['dynamic'][ $group_label ] = [];
-            }
-
-            /**
-             * Post Type Archive
-             */
-            if ( $pt->has_archive ) {
-                $archives['dynamic'][ $group_label ][] = [
-                    'value' => $post_type."_archive",
-                    // translators: %s will be replaced with the post type label (e.g., 'Portfolio')
-                    'label' => sprintf( '%s Archive [Pro]', $pt->label ),
-                    'pro'   => true,
-                ];
-            }
-
-            /**
-             * Taxonomy Archives
-             */
-            $taxonomies = get_object_taxonomies( $post_type, 'objects' );
-            $taxonomies = wp_filter_object_list(
-                $taxonomies,
-                [
-                    'public'            => true,
-                    'show_in_nav_menus' => true,
-                ]
-            );
-
-            foreach ( $taxonomies as $tax ) {
-
-                if ( $tax->name === 'post_format' ) {
-                    continue;
-                }
-
-                // Normal taxonomy
-                $archives['dynamic'][ $group_label ][] = [
-                    'value' => $tax->name,
-                    // translators: %s will be replaced with the taxonomy label (e.g., 'Category')
-                    'label' => sprintf( '%s [Pro]', $tax->label ),
-                    'pro'   => true,
-                ];
-
-                // Hierarchical taxonomy rules
-                if ( is_taxonomy_hierarchical( $tax->name ) ) {
-
-                    $archives['dynamic'][ $group_label ][] = [
-                        'value' => 'child_of_' . $tax->name,
-                        // translators: %s will be replaced with the taxonomy label (e.g., 'Category')
-                        'label' => sprintf('Direct child %s  [Pro]',$tax->label),
-                        'pro' => true,
-                    ];
-
-                    $archives['dynamic'][ $group_label ][] = [
-                        'value' => 'any_child_of_' . $tax->name,
-                        // translators: %s will be replaced with the taxonomy label (e.g., 'Category')
-                        'label' => sprintf('Any child %s [Pro]',$tax->label),
-                        'pro' => true,
-                    ];
-                }
-            }
-        }
-
-        /**
-         * --------------------------------------------------
-         * WooCommerce Product Archives
-         * --------------------------------------------------
-         */
-        if ( class_exists( 'WooCommerce' ) ) {
-
-            $archives['products_archive'][] = [
-                'value' => 'all_product_archive',
-                'label' => __('All Product Archives [Pro]', 'easy-elements'),
-                'pro'   => true,
-                'group' => 'Products'
-            ];
-
-            $woo_taxonomies = [
-                'shop_page',
-                'product_search',
-                'product_brand',
-                'product_cat',
-                'product_tag'
-            ];
-
-            foreach ( $woo_taxonomies as $tax ) {
-
-                switch ( $tax ) {
-                    case 'shop_page':
-                        $label = __('Shop Page [Pro]', 'easy-elements');
-                        break;
-
-                    case 'product_search':
-                        $label = __('Search Results [Pro]', 'easy-elements');
-                        break;
-
-                    default:
-                        $taxonomy_obj = get_taxonomy( $tax );
-                        $label = $taxonomy_obj
-                            ? 'Product ' . $taxonomy_obj->labels->singular_name . ' [Pro]'
-                            : '';
-                }
-
-                if ( $label ) {
-                    $archives['products_archive'][] = [
-                        'value' => $tax,
-                        'label' => $label,
-                        'pro'   => true,
-                        'group' => 'Products'
-                    ];
-                }
-            }
-        }
-
-        /**
-         * --------------------------------------------------
-         * Final Filter & Response
+         * Final Filter & Response.
+         *
+         * The free plugin ships the "All Archives" and "Posts Archive" rules
+         * above. Every other archive target (author, search, date, categories,
+         * tags, custom post type & taxonomy archives, WooCommerce archives) is a
+         * premium feature added by the Easy Elements Pro add-on through the
+         * `easyel_archives_data` filter. No locked options are generated here.
          * --------------------------------------------------
          */
         $archives = apply_filters( 'easyel_archives_data', $archives );
@@ -1016,125 +838,17 @@ class Easyel_Theme_Builder_CPT {
         ];
 
         $singulars[] = [
-            'value' => 'front_page',
-            'label' => __('Front Page [Pro]','easy-elements'),
-            'pro'   => true,
-            'group' => null
+            'value' => 'post',
+            'label' => __('Posts','easy-elements'),
+            'group' => 'Posts',
+            'pro'   => false,
         ];
-
-        $post_items = [
-            ['value'=>'post','label'=>__('Posts','easy-elements'),'pro'=>false],
-            ['value'=>'in_category','label'=>__('In Category [Pro]','easy-elements'),'pro'=>true],
-            ['value'=>'in_category_children','label'=>__('In child Categories [Pro]','easy-elements'),'pro'=>true],
-            ['value'=>'in_post_tag','label'=>__('In Tag [Pro]','easy-elements'),'pro'=>true],
-            ['value'=>'post_by_author','label'=>__('Posts By Author [Pro]','easy-elements'),'pro'=>true],
-        ];
-
-        foreach( $post_items as $item ){
-            $item['group'] = 'Posts';
-            $singulars[] = $item;
-        }
-
-        // --------------------
-        // CUSTOM POST TYPES (DYNAMIC)
-        // --------------------
-        $singular_post_types = easyel_get_valid_archive_post_types();
-
-        $excluded = ['post', 'page', 'attachment'];
-
-        foreach ( $singular_post_types as $post_type => $obj ) {
-
-            if ( in_array( $post_type, $excluded, true ) ) {
-                continue;
-            }
-
-            $label = $obj->labels->singular_name;
-
-            // Main singular
-            $singulars[] = [
-                'value' => $post_type,
-                // translators: %s will be replaced with the placeholder text 'All Singular'
-                'label' => sprintf( __( '%s [Pro]', 'easy-elements' ), $label ),
-                'group' => $label,
-                'pro'   => true,
-            ];
-
-            // ---------- TAXONOMY CONDITIONS ----------
-            $taxonomies = get_object_taxonomies( $post_type, 'objects' );
-
-            foreach ( $taxonomies as $tax_slug => $tax ) {
-
-                if (
-                    ! $tax->public ||
-                    ! $tax->show_ui ||
-                    ! $tax->query_var
-                ) {
-                    continue;
-                }
-
-                // In taxonomy
-                $singulars[] = [
-                    'value' => 'in_' . $tax_slug,
-                    'label' => sprintf(
-                        // translators: %s will be replaced with the singular name of the taxonomy (e.g., 'Category')
-                        __( 'In %s [Pro]', 'easy-elements' ),
-                        $tax->labels->singular_name
-                    ),
-                    'group' => $label,
-                    'pro'   => true,
-                ];
-
-                // In taxonomy children (only if hierarchical)
-                if ( $tax->hierarchical ) {
-                    $singulars[] = [
-                        'value' => 'in_' . $tax_slug . '_children',
-                        'label' => sprintf(
-                            // translators: %s will be replaced with the plural name of the taxonomy (e.g., 'Categories')
-                            __( 'In child %s [Pro]', 'easy-elements' ),
-                            $tax->labels->name
-                        ),
-                        'group' => $label,
-                        'pro'   => true,
-                    ];
-                }
-            }
-        
-            // By author
-            $singulars[] = [
-                'value' => $post_type . '_by_author',
-                // translators: %s will be replaced with the singular label of the post type (e.g., 'Post')
-                'label' => sprintf( __( '%s By Author [Pro]', 'easy-elements' ), $label ),
-                'group' => $label,
-                'pro'   => true,
-            ];
-
-        }
-
-        $page_items = [
-            ['value'=>'page','label'=>__('Pages [Pro]','easy-elements'),'pro'=>true],
-            ['value'=>'page_by_author','label'=>__('Pages By Author [Pro]','easy-elements'),'pro'=>true],
-        ];
-
-        foreach( $page_items as $item ){
-            $item['group'] = 'Page';
-            $singulars[] = $item;
-        }
-
-        $others = [
-            ['value'=>'child_of','label'=>__('Direct Child Of [Pro]','easy-elements'),'pro'=>true],
-            ['value'=>'any_child_of','label'=>__('Any Child Of [Pro]','easy-elements'),'pro'=>true],
-            ['value'=>'by_author','label'=>__('By Author [Pro]','easy-elements'),'pro'=>true],
-            ['value'=>'not_found404','label'=>__('404 Page [Pro]','easy-elements'),'pro'=>true ],
-        ];
-
-        foreach( $others as $item ){
-            $item['group'] = null;
-            $singulars[] = $item;
-        }
 
         /**
          * Filter: easyel_singulars_data
-         * Allows modification of singulars array (e.g., to make Pro items free)
+         * Lets the Easy Elements Pro add-on add premium singular conditions
+         * (front page, taxonomy/author targeting, pages, custom post types,
+         * 404, …). The free plugin generates none of them.
          *
          * @param array $singulars Array of singulars
          */

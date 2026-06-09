@@ -25,29 +25,29 @@ class EE_HFE_Default_Compat {
 	 * Run all the Actions / Filters.
 	 */
 	public function init_wp_hooks() {
-		if ( ee_easy_header_enabled() ) {
+		if ( easyel_easy_header_enabled() ) {
 			// Replace header.php template.
 			add_action( 'get_header', [ $this, 'easy_override_header' ] );
 
 			// Display HFE's header in the replaced header.
-			add_action( 'easy_header', 'ee_hfe_render_header' );
+			add_action( 'easy_header', 'easyel_hfe_render_header' );
 		}
 
-		if ( ee_easy_header_enabled() && hfe_is_before_header_enabled() ) {
+		if ( easyel_easy_header_enabled() && easyel_is_before_header_enabled() ) {
 			add_action( 'easy_header_before', [ Easy_Header_Footer_Elementor::class, 'get_before_header_content' ], 20 );
 		}
 
-		if ( ee_easy_footer_enabled() || ee_hfe_is_before_footer_enabled() ) {
+		if ( easyel_easy_footer_enabled() || easyel_hfe_is_before_footer_enabled() ) {
 			// Replace footer.php template.
 			add_action( 'get_footer', [ $this, 'easy_override_footer' ] );
 		}
 
-		if ( ee_easy_footer_enabled() ) {
+		if ( easyel_easy_footer_enabled() ) {
 			// Display HFE's footer in the replaced header.
-			add_action( 'easy_footer', 'ee_hfe_render_footer' );
+			add_action( 'easy_footer', 'easyel_hfe_render_footer' );
 		}
 
-		if ( ee_hfe_is_before_footer_enabled() ) {
+		if ( easyel_hfe_is_before_footer_enabled() ) {
 			add_action( 'easy_footer_before', [ Easy_Header_Footer_Elementor::class, 'get_before_footer_content' ] );
 		}
 	}
