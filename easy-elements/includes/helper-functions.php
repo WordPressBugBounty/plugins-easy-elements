@@ -995,6 +995,22 @@ function easyel_element_is_enabled( $setting_key ) {
     return ( $value === 1 );
 }
 
+/**
+ * Alias of easyel_element_is_enabled().
+ *
+ * Easy Elements Pro checks `easy_element_is_enabled()` (without the "el"),
+ * e.g. to initialise the Mega Menu Builder which loads its nav walker. The
+ * canonical helper here is `easyel_element_is_enabled()`, so without this alias
+ * the Pro function_exists() check fails, the Mega Menu extension never loads,
+ * and rendering a Mega Menu widget fatals with
+ * "Class Easyel_Mega_Menu_Nav_Walker not found".
+ */
+if ( ! function_exists( 'easy_element_is_enabled' ) ) {
+    function easy_element_is_enabled( $setting_key ) {
+        return easyel_element_is_enabled( $setting_key );
+    }
+}
+
 
 function easyel_translate_hfe_template( $template_id ) {
     if ( function_exists( 'pll_get_post' ) ) {

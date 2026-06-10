@@ -3,7 +3,7 @@
  * Plugin Name: Easy Elements
  * Plugin URI:  https://wpeasyelements.com/
  * Description: Provides a set of custom Elementor widgets, shortcodes, and enhancements.
- * Version:     1.4.7
+ * Version:     1.4.8
  * Author:      Themewant
  * Author URI:  https://wpeasyelements.com/
  * Text Domain: easy-elements
@@ -23,9 +23,9 @@ if ( defined( 'EASYELEMENTS_VER' ) ) {
 
 define( 'EASY_ELEMENTS_DEV', false );
 if ( defined( 'EASY_ELEMENTS_DEV' ) && true == EASY_ELEMENTS_DEV ) {
-	define('EASYELEMENTS_VER', '1.4.7' . time() );
+	define('EASYELEMENTS_VER', '1.4.8' . time() );
 } else {
-	define( 'EASYELEMENTS_VER', '1.4.7' );
+	define( 'EASYELEMENTS_VER', '1.4.8' );
 }
 
 // Define constants
