@@ -889,6 +889,74 @@ class Easyel_Navigation_Menu_Widget extends \Elementor\Widget_Base {
 		);
 
 		$this->add_responsive_control(
+			'item_menu_padding_top',
+			[
+				'label'      => esc_html__( 'Padding Top', 'easy-elements' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', 'em', '%' ],
+				'range'      => [
+					'px' => [ 'min' => 0, 'max' => 200 ],
+					'em' => [ 'min' => 0, 'max' => 20 ],
+					'%'  => [ 'min' => 0, 'max' => 100 ],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .eel-nav-menu > .menu-item > a.eel-menu-item' => 'padding-top: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'item_menu_padding_right',
+			[
+				'label'      => esc_html__( 'Padding Right', 'easy-elements' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', 'em', '%' ],
+				'range'      => [
+					'px' => [ 'min' => 0, 'max' => 200 ],
+					'em' => [ 'min' => 0, 'max' => 20 ],
+					'%'  => [ 'min' => 0, 'max' => 100 ],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .eel-nav-menu > .menu-item > a.eel-menu-item' => 'padding-right: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'item_menu_padding_bottom',
+			[
+				'label'      => esc_html__( 'Padding Bottom', 'easy-elements' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', 'em', '%' ],
+				'range'      => [
+					'px' => [ 'min' => 0, 'max' => 200 ],
+					'em' => [ 'min' => 0, 'max' => 20 ],
+					'%'  => [ 'min' => 0, 'max' => 100 ],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .eel-nav-menu > .menu-item > a.eel-menu-item' => 'padding-bottom: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'item_menu_padding_left',
+			[
+				'label'      => esc_html__( 'Padding Left', 'easy-elements' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', 'em', '%' ],
+				'range'      => [
+					'px' => [ 'min' => 0, 'max' => 200 ],
+					'em' => [ 'min' => 0, 'max' => 20 ],
+					'%'  => [ 'min' => 0, 'max' => 100 ],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .eel-nav-menu > .menu-item > a.eel-menu-item' => 'padding-left: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
 			'item_menu_margin',
 			[
 				'label' => esc_html__( 'Margin', 'easy-elements' ),
@@ -1193,6 +1261,86 @@ class Easyel_Navigation_Menu_Widget extends \Elementor\Widget_Base {
 			);
 
 			$this->add_responsive_control(
+				'item__full_padding_top',
+				[
+					'label'      => esc_html__( 'Padding Top', 'easy-elements' ),
+					'type'       => Controls_Manager::SLIDER,
+					'size_units' => [ 'px', 'em', '%' ],
+					'range'      => [
+						'px' => [ 'min' => 0, 'max' => 200 ],
+						'em' => [ 'min' => 0, 'max' => 20 ],
+						'%'  => [ 'min' => 0, 'max' => 100 ],
+					],
+					'selectors'  => [
+						'{{WRAPPER}} .eel-nav-menu ul.sub-menu:not(.easyel--elementor-template-mega-menu) .menu-item > a' => 'padding-top: {{SIZE}}{{UNIT}};',
+					],
+					'condition' => [
+						'layout' => 'horizontal',
+					],
+				]
+			);
+
+			$this->add_responsive_control(
+				'item__full_padding_right',
+				[
+					'label'      => esc_html__( 'Padding Right', 'easy-elements' ),
+					'type'       => Controls_Manager::SLIDER,
+					'size_units' => [ 'px', 'em', '%' ],
+					'range'      => [
+						'px' => [ 'min' => 0, 'max' => 200 ],
+						'em' => [ 'min' => 0, 'max' => 20 ],
+						'%'  => [ 'min' => 0, 'max' => 100 ],
+					],
+					'selectors'  => [
+						'{{WRAPPER}} .eel-nav-menu ul.sub-menu:not(.easyel--elementor-template-mega-menu) .menu-item > a' => 'padding-right: {{SIZE}}{{UNIT}};',
+					],
+					'condition' => [
+						'layout' => 'horizontal',
+					],
+				]
+			);
+
+			$this->add_responsive_control(
+				'item__full_padding_bottom',
+				[
+					'label'      => esc_html__( 'Padding Bottom', 'easy-elements' ),
+					'type'       => Controls_Manager::SLIDER,
+					'size_units' => [ 'px', 'em', '%' ],
+					'range'      => [
+						'px' => [ 'min' => 0, 'max' => 200 ],
+						'em' => [ 'min' => 0, 'max' => 20 ],
+						'%'  => [ 'min' => 0, 'max' => 100 ],
+					],
+					'selectors'  => [
+						'{{WRAPPER}} .eel-nav-menu ul.sub-menu:not(.easyel--elementor-template-mega-menu) .menu-item > a' => 'padding-bottom: {{SIZE}}{{UNIT}};',
+					],
+					'condition' => [
+						'layout' => 'horizontal',
+					],
+				]
+			);
+
+			$this->add_responsive_control(
+				'item__full_padding_left',
+				[
+					'label'      => esc_html__( 'Padding Left', 'easy-elements' ),
+					'type'       => Controls_Manager::SLIDER,
+					'size_units' => [ 'px', 'em', '%' ],
+					'range'      => [
+						'px' => [ 'min' => 0, 'max' => 200 ],
+						'em' => [ 'min' => 0, 'max' => 20 ],
+						'%'  => [ 'min' => 0, 'max' => 100 ],
+					],
+					'selectors'  => [
+						'{{WRAPPER}} .eel-nav-menu ul.sub-menu:not(.easyel--elementor-template-mega-menu) .menu-item > a' => 'padding-left: {{SIZE}}{{UNIT}};',
+					],
+					'condition' => [
+						'layout' => 'horizontal',
+					],
+				]
+			);
+
+			$this->add_responsive_control(
 				'width_dropdown_item',
 				[
 					'label'              => __( 'Dropdown Width (px)', 'easy-elements' ),
@@ -1325,6 +1473,86 @@ class Easyel_Navigation_Menu_Widget extends \Elementor\Widget_Base {
 					'size_units' => [ 'px', 'em', '%' ],
 					'selectors'  => [
 						'{{WRAPPER}} .eel-nav-menu ul.sub-menu:not(.easyel--elementor-template-mega-menu)' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+					],
+					'condition' => [
+						'layout' => 'horizontal',
+					],
+				]
+			);
+
+			$this->add_responsive_control(
+				'ul__full_padding_top',
+				[
+					'label'      => esc_html__( 'Padding Top', 'easy-elements' ),
+					'type'       => Controls_Manager::SLIDER,
+					'size_units' => [ 'px', 'em', '%' ],
+					'range'      => [
+						'px' => [ 'min' => 0, 'max' => 200 ],
+						'em' => [ 'min' => 0, 'max' => 20 ],
+						'%'  => [ 'min' => 0, 'max' => 100 ],
+					],
+					'selectors'  => [
+						'{{WRAPPER}} .eel-nav-menu ul.sub-menu:not(.easyel--elementor-template-mega-menu)' => 'padding-top: {{SIZE}}{{UNIT}};',
+					],
+					'condition' => [
+						'layout' => 'horizontal',
+					],
+				]
+			);
+
+			$this->add_responsive_control(
+				'ul__full_padding_right',
+				[
+					'label'      => esc_html__( 'Padding Right', 'easy-elements' ),
+					'type'       => Controls_Manager::SLIDER,
+					'size_units' => [ 'px', 'em', '%' ],
+					'range'      => [
+						'px' => [ 'min' => 0, 'max' => 200 ],
+						'em' => [ 'min' => 0, 'max' => 20 ],
+						'%'  => [ 'min' => 0, 'max' => 100 ],
+					],
+					'selectors'  => [
+						'{{WRAPPER}} .eel-nav-menu ul.sub-menu:not(.easyel--elementor-template-mega-menu)' => 'padding-right: {{SIZE}}{{UNIT}};',
+					],
+					'condition' => [
+						'layout' => 'horizontal',
+					],
+				]
+			);
+
+			$this->add_responsive_control(
+				'ul__full_padding_bottom',
+				[
+					'label'      => esc_html__( 'Padding Bottom', 'easy-elements' ),
+					'type'       => Controls_Manager::SLIDER,
+					'size_units' => [ 'px', 'em', '%' ],
+					'range'      => [
+						'px' => [ 'min' => 0, 'max' => 200 ],
+						'em' => [ 'min' => 0, 'max' => 20 ],
+						'%'  => [ 'min' => 0, 'max' => 100 ],
+					],
+					'selectors'  => [
+						'{{WRAPPER}} .eel-nav-menu ul.sub-menu:not(.easyel--elementor-template-mega-menu)' => 'padding-bottom: {{SIZE}}{{UNIT}};',
+					],
+					'condition' => [
+						'layout' => 'horizontal',
+					],
+				]
+			);
+
+			$this->add_responsive_control(
+				'ul__full_padding_left',
+				[
+					'label'      => esc_html__( 'Padding Left', 'easy-elements' ),
+					'type'       => Controls_Manager::SLIDER,
+					'size_units' => [ 'px', 'em', '%' ],
+					'range'      => [
+						'px' => [ 'min' => 0, 'max' => 200 ],
+						'em' => [ 'min' => 0, 'max' => 20 ],
+						'%'  => [ 'min' => 0, 'max' => 100 ],
+					],
+					'selectors'  => [
+						'{{WRAPPER}} .eel-nav-menu ul.sub-menu:not(.easyel--elementor-template-mega-menu)' => 'padding-left: {{SIZE}}{{UNIT}};',
 					],
 					'condition' => [
 						'layout' => 'horizontal',
@@ -1644,15 +1872,12 @@ class Easyel_Navigation_Menu_Widget extends \Elementor\Widget_Base {
 	if ( isset( $settings['enable_sticky_header'] ) && 'yes' === $settings['enable_sticky_header'] ) {
 		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 		$GLOBALS['easyel_force_sticky_header'] = true;  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-		wp_enqueue_script(
-			'eel-sticky-header',
-			plugin_dir_url( dirname( dirname( __FILE__ ) ) ) . 'widgets/navigation-menu/js/eel-sticky-header.js',
-			[ 'jquery' ],
-			EASYELEMENTS_VER,
-			true
-		);
 
-		wp_localize_script('eel-sticky-header', 'eelStickyHeaderSettings', [
+		// The sticky-header logic now lives in the always-loaded custom.js
+		// (handle: eel-custom-js). Localizing the settings here is what
+		// switches it on — when sticky is off, eelStickyHeaderSettings is
+		// absent and the script no-ops.
+		wp_localize_script('eel-custom-js', 'eelStickyHeaderSettings', [
 			'enableSticky'  => $enableSticky,
 			'enablePadding' => $enablePadding
 		]);
@@ -1669,7 +1894,7 @@ class Easyel_Navigation_Menu_Widget extends \Elementor\Widget_Base {
 				});
 			";
 
-			wp_add_inline_script( 'eel-sticky-header', $inline_js );
+			wp_add_inline_script( 'eel-custom-js', $inline_js );
 		}
 	}
 

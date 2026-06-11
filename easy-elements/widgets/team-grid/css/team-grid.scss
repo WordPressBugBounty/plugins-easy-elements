@@ -600,9 +600,94 @@
 
 
 
-
-
-
-
-
-
+/* Skin 05 - Slide-up info panel with hover contact reveal */
+.eel-team-grid .ee--team-img.skin5 {
+  position: relative;
+  overflow: hidden;
+}
+.eel-team-grid .ee--team-img.skin5 .eel-team-img-area,
+.eel-team-grid .ee--team-img.skin5 .eel-team-img-box {
+  overflow: hidden;
+}
+.eel-team-grid .ee--team-img.skin5 .eel-team-img-area .eel-team-img {
+  transition: transform 1.3s ease;
+}
+.eel-team-grid .ee--team-img.skin5 .eel-name-deg-wrap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #fff;
+  text-align: center;
+  border-radius: 0;
+  z-index: 2;
+}
+.eel-team-grid .ee--team-img.skin5 .eel-designation {
+  color: #6E777D;
+}
+.eel-team-grid .ee--team-img.skin5 .eel-author-contact {
+  margin-top: 0;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease, margin-top 0.5s ease, opacity 0.4s ease;
+}
+.eel-team-grid .ee--team-img.skin5 .eel-author-contact .eel-contact-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transform: translateY(12px);
+  transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.eel-team-grid .ee--team-img.skin5 .eel-author-contact .eel-contact-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #F2F3F5;
+  color: #6E777D;
+  font-weight: 500;
+  border-radius: 100px;
+  min-width: 215px;
+  max-width: -moz-max-content;
+  max-width: max-content;
+  padding-right: 28px;
+  transition: all 0.3s ease;
+}
+.eel-team-grid .ee--team-img.skin5 .eel-author-contact .eel-contact-item:hover {
+  color: #2563eb;
+}
+.eel-team-grid .ee--team-img.skin5 .eel-author-contact .eel-contact-item .eel-contact-icon {
+  flex-shrink: 0;
+  height: 50px;
+  width: 50px;
+  border-radius: 100px;
+  background: #2563eb;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.eel-team-grid .ee--team-img.skin5 .eel-author-contact .eel-contact-item .eel-contact-icon i,
+.eel-team-grid .ee--team-img.skin5 .eel-author-contact .eel-contact-item .eel-contact-icon svg {
+  height: 1em;
+  fill: currentColor;
+  font-size: 16px;
+}
+.eel-team-grid .ee--team-img.skin5:hover .eel-team-img-area .eel-team-img {
+  transform: scale(1.15);
+}
+.eel-team-grid .ee--team-img.skin5 .eel-author-contact{
+    display: grid;
+    justify-content: center;
+}
+.eel-team-grid .ee--team-img.skin5:hover .eel-author-contact {
+  max-height: 200px;
+  margin-top: 20px;
+  opacity: 1;
+}
+.eel-team-grid .ee--team-img.skin5:hover .eel-author-contact .eel-contact-inner {
+  transform: translateY(0);
+}
+.eel-team-grid .ee--team-img.skin5 .eel-image-content:not(.has-description) .eel-description {
+  display: none;
+}

@@ -1,5 +1,10 @@
 (function($) {
 	function initStickyHeaderScript($scope) {
+		// Skip on mobile — the margin-top mutation on scroll causes layout
+		// shift that delays Elementor's IntersectionObserver, making motion
+		// fx widgets load late.
+		if (window.innerWidth < 768) return;
+
 		var header = $('header.easy-site-header');
 		var page = $('#page');
 		var topbar = $('.topbar-sticky-hide-yes');
@@ -9,8 +14,6 @@
 		if (!header.length || !page.length) {
 			return;
 		}
-
-		//header.addClass("eel-sticky-header-on");
 
 		function updatePaddingAndMargin(scrollDirection, scroll) {
 			var headerHeight = header.outerHeight();

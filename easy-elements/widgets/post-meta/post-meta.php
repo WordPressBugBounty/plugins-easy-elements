@@ -342,7 +342,7 @@ class Easyel_Free_Post_Meta_Widget extends \Elementor\Widget_Base {
 				'type' => Controls_Manager::SWITCHER,
 				'label_on' => esc_html__( 'Yes', 'easy-elements' ),
 				'label_off' => esc_html__( 'No', 'easy-elements' ),
-				'default' => '',
+				'default' => 'yes',
 			]
 		);
 
@@ -497,7 +497,10 @@ class Easyel_Free_Post_Meta_Widget extends \Elementor\Widget_Base {
 					],
 				],
 				'selectors' => [
-                    '{{WRAPPER}} .eel--separator--line li + li' => 'padding-left: {{SIZE}}{{UNIT}};',
+					// Was scoped to ".eel--separator--line li + li" so dot/no-separator
+					// layouts couldn't control padding-left at all. Broadened to every
+					// secondary li so the control works regardless of separator type.
+					'{{WRAPPER}} .eel--blog-meta li + li' => 'padding-left: {{SIZE}}{{UNIT}};',
 				],
 			]
 		);
@@ -604,10 +607,11 @@ class Easyel_Free_Post_Meta_Widget extends \Elementor\Widget_Base {
 			]
 		);
 
+		// Dot size (round dot — width = height).
 		$this->add_control(
 			'separator_size',
 			[
-				'label' => esc_html__( 'Separator Size', 'easy-elements' ),
+				'label' => esc_html__( 'Dot Size', 'easy-elements' ),
 				'type' => Controls_Manager::SLIDER,
 				'size_units' => [ 'px' ],
 				'range' => [
@@ -617,18 +621,63 @@ class Easyel_Free_Post_Meta_Widget extends \Elementor\Widget_Base {
 					],
 				],
 				'selectors' => [
-					'{{WRAPPER}} .eel--separator--yes li + li::before' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .eel--separator--dot li + li::before' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
 				],
-                'condition' => [
-                    'separator_type' => 'dot',
-                ],
+				'condition' => [
+					'separator_type' => 'dot',
+				],
 			]
 		);
 
+		// Line thickness (width).
+		$this->add_control(
+			'separator_line_thickness',
+			[
+				'label' => esc_html__( 'Line Thickness', 'easy-elements' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px' ],
+				'range' => [
+					'px' => [
+						'min' => 1,
+						'max' => 10,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .eel--separator--line li + li::before' => 'width: {{SIZE}}{{UNIT}};',
+				],
+				'condition' => [
+					'separator_type' => 'line',
+				],
+			]
+		);
+
+		// Line height (length).
+		$this->add_control(
+			'separator_line_height',
+			[
+				'label' => esc_html__( 'Line Height', 'easy-elements' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px' ],
+				'range' => [
+					'px' => [
+						'min' => 1,
+						'max' => 40,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .eel--separator--line li + li::before' => 'height: {{SIZE}}{{UNIT}};',
+				],
+				'condition' => [
+					'separator_type' => 'line',
+				],
+			]
+		);
+
+		// Vertical offset — works for BOTH dot and line types now.
 		$this->add_responsive_control(
 			'separator_offset',
 			[
-				'label' => esc_html__( 'Separator Offset', 'easy-elements' ),
+				'label' => esc_html__( 'Vertical Offset', 'easy-elements' ),
 				'type' => Controls_Manager::SLIDER,
 				'size_units' => [ 'px' ],
 				'range' => [
@@ -640,9 +689,25 @@ class Easyel_Free_Post_Meta_Widget extends \Elementor\Widget_Base {
 				'selectors' => [
 					'{{WRAPPER}} .eel--separator--yes li + li::before' => 'top: {{SIZE}}{{UNIT}};',
 				],
-                'condition' => [
-                    'separator_type' => 'dot',
-                ],
+			]
+		);
+
+		// Horizontal offset — new control to position the separator left/right.
+		$this->add_responsive_control(
+			'separator_offset_horizontal',
+			[
+				'label' => esc_html__( 'Horizontal Offset', 'easy-elements' ),
+				'type' => Controls_Manager::SLIDER,
+				'size_units' => [ 'px' ],
+				'range' => [
+					'px' => [
+						'min' => -50,
+						'max' => 100,
+					],
+				],
+				'selectors' => [
+					'{{WRAPPER}} .eel--separator--yes li + li::before' => 'left: {{SIZE}}{{UNIT}};',
+				],
 			]
 		);
 

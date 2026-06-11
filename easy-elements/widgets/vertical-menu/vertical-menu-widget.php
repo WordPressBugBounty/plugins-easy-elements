@@ -428,6 +428,74 @@ class Easyel_vertical_Menu_Widget extends \Elementor\Widget_Base  {
         );
 
         $this->add_responsive_control(
+            'nav_padding_top',
+            [
+                'label'      => esc_html__( 'Padding Top', 'easy-elements' ),
+                'type'       => Controls_Manager::SLIDER,
+                'size_units' => [ 'px', 'em', '%' ],
+                'range'      => [
+                    'px' => [ 'min' => 0, 'max' => 200 ],
+                    'em' => [ 'min' => 0, 'max' => 20 ],
+                    '%'  => [ 'min' => 0, 'max' => 100 ],
+                ],
+                'selectors'  => [
+                    '{{WRAPPER}} .eel-vertical-menu-wrap .menu > .menu-item > a' => 'padding-top: {{SIZE}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'nav_padding_right',
+            [
+                'label'      => esc_html__( 'Padding Right', 'easy-elements' ),
+                'type'       => Controls_Manager::SLIDER,
+                'size_units' => [ 'px', 'em', '%' ],
+                'range'      => [
+                    'px' => [ 'min' => 0, 'max' => 200 ],
+                    'em' => [ 'min' => 0, 'max' => 20 ],
+                    '%'  => [ 'min' => 0, 'max' => 100 ],
+                ],
+                'selectors'  => [
+                    '{{WRAPPER}} .eel-vertical-menu-wrap .menu > .menu-item > a' => 'padding-right: {{SIZE}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'nav_padding_bottom',
+            [
+                'label'      => esc_html__( 'Padding Bottom', 'easy-elements' ),
+                'type'       => Controls_Manager::SLIDER,
+                'size_units' => [ 'px', 'em', '%' ],
+                'range'      => [
+                    'px' => [ 'min' => 0, 'max' => 200 ],
+                    'em' => [ 'min' => 0, 'max' => 20 ],
+                    '%'  => [ 'min' => 0, 'max' => 100 ],
+                ],
+                'selectors'  => [
+                    '{{WRAPPER}} .eel-vertical-menu-wrap .menu > .menu-item > a' => 'padding-bottom: {{SIZE}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'nav_padding_left',
+            [
+                'label'      => esc_html__( 'Padding Left', 'easy-elements' ),
+                'type'       => Controls_Manager::SLIDER,
+                'size_units' => [ 'px', 'em', '%' ],
+                'range'      => [
+                    'px' => [ 'min' => 0, 'max' => 200 ],
+                    'em' => [ 'min' => 0, 'max' => 20 ],
+                    '%'  => [ 'min' => 0, 'max' => 100 ],
+                ],
+                'selectors'  => [
+                    '{{WRAPPER}} .eel-vertical-menu-wrap .menu > .menu-item > a' => 'padding-left: {{SIZE}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
             'nav_margin',
             [
                 'label'      => esc_html__( 'Margin', 'easy-elements' ),
@@ -573,6 +641,74 @@ class Easyel_vertical_Menu_Widget extends \Elementor\Widget_Base  {
 		);
 
 		$this->add_responsive_control(
+			'dropdown_padding_top',
+			[
+				'label'      => esc_html__( 'Padding Top', 'easy-elements' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', 'em', '%' ],
+				'range'      => [
+					'px' => [ 'min' => 0, 'max' => 200 ],
+					'em' => [ 'min' => 0, 'max' => 20 ],
+					'%'  => [ 'min' => 0, 'max' => 100 ],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .eel-vertical-menu-wrap .sub-menu:not(.eel-vertical-menu-content-part), {{WRAPPER}} .eel-vertical-menu-area .eel-vertical-menu-wrap ul.eel-vertical-verticalmenu .menu-item-has-children .sub-menu:not(.eel-vertical-menu-content-part)' => 'padding-top: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'dropdown_padding_right',
+			[
+				'label'      => esc_html__( 'Padding Right', 'easy-elements' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', 'em', '%' ],
+				'range'      => [
+					'px' => [ 'min' => 0, 'max' => 200 ],
+					'em' => [ 'min' => 0, 'max' => 20 ],
+					'%'  => [ 'min' => 0, 'max' => 100 ],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .eel-vertical-menu-wrap .sub-menu:not(.eel-vertical-menu-content-part), {{WRAPPER}} .eel-vertical-menu-area .eel-vertical-menu-wrap ul.eel-vertical-verticalmenu .menu-item-has-children .sub-menu:not(.eel-vertical-menu-content-part)' => 'padding-right: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'dropdown_padding_bottom',
+			[
+				'label'      => esc_html__( 'Padding Bottom', 'easy-elements' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', 'em', '%' ],
+				'range'      => [
+					'px' => [ 'min' => 0, 'max' => 200 ],
+					'em' => [ 'min' => 0, 'max' => 20 ],
+					'%'  => [ 'min' => 0, 'max' => 100 ],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .eel-vertical-menu-wrap .sub-menu:not(.eel-vertical-menu-content-part), {{WRAPPER}} .eel-vertical-menu-area .eel-vertical-menu-wrap ul.eel-vertical-verticalmenu .menu-item-has-children .sub-menu:not(.eel-vertical-menu-content-part)' => 'padding-bottom: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'dropdown_padding_left',
+			[
+				'label'      => esc_html__( 'Padding Left', 'easy-elements' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', 'em', '%' ],
+				'range'      => [
+					'px' => [ 'min' => 0, 'max' => 200 ],
+					'em' => [ 'min' => 0, 'max' => 20 ],
+					'%'  => [ 'min' => 0, 'max' => 100 ],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .eel-vertical-menu-wrap .sub-menu:not(.eel-vertical-menu-content-part), {{WRAPPER}} .eel-vertical-menu-area .eel-vertical-menu-wrap ul.eel-vertical-verticalmenu .menu-item-has-children .sub-menu:not(.eel-vertical-menu-content-part)' => 'padding-left: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
 			'dropdown_border_radius',
 			[
 				'label' => esc_html__( 'Border Radius', 'easy-elements' ),
@@ -668,6 +804,74 @@ class Easyel_vertical_Menu_Widget extends \Elementor\Widget_Base  {
 				'type'  => Controls_Manager::DIMENSIONS,
 				'selectors' => [
 					'{{WRAPPER}} .eel-vertical-menu-wrap .sub-menu:not(.eel-vertical-menu-content-part) li > a' =>'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'per_item_padding_top',
+			[
+				'label'      => esc_html__( 'Padding Top', 'easy-elements' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', 'em', '%' ],
+				'range'      => [
+					'px' => [ 'min' => 0, 'max' => 200 ],
+					'em' => [ 'min' => 0, 'max' => 20 ],
+					'%'  => [ 'min' => 0, 'max' => 100 ],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .eel-vertical-menu-wrap .sub-menu:not(.eel-vertical-menu-content-part) li > a' => 'padding-top: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'per_item_padding_right',
+			[
+				'label'      => esc_html__( 'Padding Right', 'easy-elements' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', 'em', '%' ],
+				'range'      => [
+					'px' => [ 'min' => 0, 'max' => 200 ],
+					'em' => [ 'min' => 0, 'max' => 20 ],
+					'%'  => [ 'min' => 0, 'max' => 100 ],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .eel-vertical-menu-wrap .sub-menu:not(.eel-vertical-menu-content-part) li > a' => 'padding-right: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'per_item_padding_bottom',
+			[
+				'label'      => esc_html__( 'Padding Bottom', 'easy-elements' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', 'em', '%' ],
+				'range'      => [
+					'px' => [ 'min' => 0, 'max' => 200 ],
+					'em' => [ 'min' => 0, 'max' => 20 ],
+					'%'  => [ 'min' => 0, 'max' => 100 ],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .eel-vertical-menu-wrap .sub-menu:not(.eel-vertical-menu-content-part) li > a' => 'padding-bottom: {{SIZE}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->add_responsive_control(
+			'per_item_padding_left',
+			[
+				'label'      => esc_html__( 'Padding Left', 'easy-elements' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => [ 'px', 'em', '%' ],
+				'range'      => [
+					'px' => [ 'min' => 0, 'max' => 200 ],
+					'em' => [ 'min' => 0, 'max' => 20 ],
+					'%'  => [ 'min' => 0, 'max' => 100 ],
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .eel-vertical-menu-wrap .sub-menu:not(.eel-vertical-menu-content-part) li > a' => 'padding-left: {{SIZE}}{{UNIT}};',
 				],
 			]
 		);

@@ -656,6 +656,11 @@ final class Easyel_Elements_Elementor_Extension {
 				'class' => '\Easyel\EasyElements\Widgets\Easyel_vertical_Menu_Widget',
 				'file'  => EASYELEMENTS_DIR_PATH . '/widgets/vertical-menu/vertical-menu-widget.php',
 				'tab'   => 'widget',
+			],
+			'category_list' => [
+				'class' => '\Easyel\EasyElements\Widgets\Easyel_Category_List_Widget',
+				'file'  => EASYELEMENTS_DIR_PATH . '/widgets/category-list/category-list.php',
+				'tab'   => 'widget',
 			]
 		];
 

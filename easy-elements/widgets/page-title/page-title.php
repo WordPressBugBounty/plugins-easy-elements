@@ -39,170 +39,234 @@ class Easyel_Page_Title_Widget extends \Elementor\Widget_Base {
 
 	protected function register_controls() {
 
-	    $this->start_controls_section(
-	        'content_section',
-	        [
-	            'label' => esc_html__('Page Title Settings', 'easy-elements'),
-	            'tab' => Controls_Manager::TAB_CONTENT,
-	        ]
-	    );
+		// =====================================================================
+		// CONTENT TAB
+		// =====================================================================
+
+		// --- Main Title -----------------------------------------------------
+		$this->start_controls_section(
+			'section_main_title',
+			[
+				'label' => esc_html__( 'Main Title', 'easy-elements' ),
+				'tab'   => Controls_Manager::TAB_CONTENT,
+			]
+		);
 
 		$this->add_control(
-	        'custom_title_show_hide',
-	        [
-	            'label' => esc_html__('Show Page Title', 'easy-elements'),
-	            'type' => Controls_Manager::SWITCHER,
-	            'default' => 'yes',
-	            'label_on' => esc_html__('Show', 'easy-elements'),
-	            'label_off' => esc_html__('Hide', 'easy-elements'),
-	            'return_value' => 'yes',
-	        ]
-	    );
+			'custom_title_show_hide',
+			[
+				'label'        => esc_html__( 'Show Main Title', 'easy-elements' ),
+				'type'         => Controls_Manager::SWITCHER,
+				'default'      => 'yes',
+				'label_on'     => esc_html__( 'Show', 'easy-elements' ),
+				'label_off'    => esc_html__( 'Hide', 'easy-elements' ),
+				'return_value' => 'yes',
+			]
+		);
 
-	    $this->add_control(
-	        'custom_title',
-	        [
-	            'label' => esc_html__('Custom Page Title', 'easy-elements'),
-	            'type' => Controls_Manager::TEXTAREA,
+		$this->add_control(
+			'custom_title',
+			[
+				'label'       => esc_html__( 'Custom Title Text', 'easy-elements' ),
+				'type'        => Controls_Manager::TEXTAREA,
 				'label_block' => true,
-	            'default' => '',
-	            'placeholder' => esc_html__('Enter custom title (leave blank for page title)', 'easy-elements'),
-	            'condition' => [
-	                'custom_title_show_hide' => 'yes',
-	            ],
-	        ]
-	    );
+				'default'     => '',
+				'placeholder' => esc_html__( 'Enter custom title (leave blank for page title)', 'easy-elements' ),
+				'description' => esc_html__( 'Leave blank to use the current page title automatically.', 'easy-elements' ),
+				'condition'   => [
+					'custom_title_show_hide' => 'yes',
+				],
+			]
+		);
+
+		$this->add_control(
+			'title_tag',
+			[
+				'label'   => esc_html__( 'HTML Tag', 'easy-elements' ),
+				'type'    => Controls_Manager::SELECT,
+				'options' => [
+					'h1'   => 'H1',
+					'h2'   => 'H2',
+					'h3'   => 'H3',
+					'div'  => 'Div',
+					'span' => 'Span',
+					'p'    => 'Paragraph',
+				],
+				'default' => 'h1',
+				'condition' => [
+					'custom_title_show_hide' => 'yes',
+				],
+			]
+		);
+
+		$this->add_control(
+			'title_size',
+			[
+				'label'       => esc_html__( 'Title Size Preset', 'easy-elements' ),
+				'type'        => Controls_Manager::SELECT,
+				'label_block' => true,
+				'default'     => 'large',
+				'options'     => [
+					'small' => esc_html__( 'Small', 'easy-elements' ),
+					'large' => esc_html__( 'Large', 'easy-elements' ),
+				],
+				'condition' => [
+					'custom_title_show_hide' => 'yes',
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
+		// --- Sub Heading ----------------------------------------------------
+		$this->start_controls_section(
+			'section_sub_heading',
+			[
+				'label' => esc_html__( 'Sub Heading', 'easy-elements' ),
+				'tab'   => Controls_Manager::TAB_CONTENT,
+			]
+		);
 
 		$this->add_control(
 			'heading_title',
 			[
-				'label' => esc_html__('Custom Heading Title Under Page Title', 'easy-elements'),
-				'type' => Controls_Manager::TEXTAREA,
+				'label'       => esc_html__( 'Sub Heading Text', 'easy-elements' ),
+				'type'        => Controls_Manager::TEXTAREA,
 				'label_block' => true,
-				'description' => esc_html__('Enter heading title (You can show heading title under the title). Use {{Entro}} to highlight specific words with different color.', 'easy-elements'),
+				'description' => esc_html__( 'Shown under the main title. Wrap any words in {{ }} to highlight them — e.g. An {{experienced team}} for your business.', 'easy-elements' ),
 			]
-		);		
-
-	    $this->add_control(
-	        'custom_description',
-	        [
-	            'label' => esc_html__('Custom Description Under Page Title', 'easy-elements'),
-	            'type' => Controls_Manager::TEXTAREA,
-	            'default' => '',
-	            'placeholder' => esc_html__('Enter description', 'easy-elements'),
-	        ]
-	    );
-
-		$this->add_control(
-	        'title_size',
-	        [
-	            'label' => esc_html__('Title Size', 'easy-elements'),
-	            'type' => Controls_Manager::SELECT,
-				'label_block' => true,
-	            'default' => 'large',
-				'options' => [
-					'small' => esc_html__('Small', 'easy-elements'),
-					'large' => esc_html__('Large', 'easy-elements')
-				]
-	        ]
-	    );
-
-
-	    $this->add_control(
-	        'title_tag',
-	        [
-	            'label' => esc_html__('Title HTML Tag', 'easy-elements'),
-	            'type' => Controls_Manager::SELECT,
-	            'options' => [
-	                'h1' => 'H1',
-	                'h2' => 'H2',
-	                'h3' => 'H3',
-	                'div' => 'Div',
-	                'span' => 'Span',
-	                'p' => 'Paragraph',
-	            ],
-	            'default' => 'h1',
-	        ]
-	    );
+		);
 
 		$this->add_control(
 			'heading_title_tag',
 			[
-				'label' => esc_html__('Heading Title HTML Tag', 'easy-elements'),
-				'type' => Controls_Manager::SELECT,
+				'label'   => esc_html__( 'HTML Tag', 'easy-elements' ),
+				'type'    => Controls_Manager::SELECT,
 				'default' => 'h2',
 				'options' => [
-					'h1' => 'H1',
-					'h2' => 'H2',
-					'h3' => 'H3',
-					'div' => 'Div',
+					'h1'   => 'H1',
+					'h2'   => 'H2',
+					'h3'   => 'H3',
+					'div'  => 'Div',
 					'span' => 'Span',
-					'p' => 'Paragraph',
+					'p'    => 'Paragraph',
 				],
+			]
+		);
+
+		$this->end_controls_section();
+
+		// --- Description ----------------------------------------------------
+		$this->start_controls_section(
+			'section_description',
+			[
+				'label' => esc_html__( 'Description', 'easy-elements' ),
+				'tab'   => Controls_Manager::TAB_CONTENT,
+			]
+		);
+
+		$this->add_control(
+			'custom_description',
+			[
+				'label'       => esc_html__( 'Description Text', 'easy-elements' ),
+				'type'        => Controls_Manager::TEXTAREA,
+				'default'     => '',
+				'label_block' => true,
+				'placeholder' => esc_html__( 'Enter description', 'easy-elements' ),
+				'description' => esc_html__( 'Optional short text shown below the headings.', 'easy-elements' ),
+			]
+		);
+
+		$this->end_controls_section();
+
+		// --- Layout (alignment + decorative border) -------------------------
+		$this->start_controls_section(
+			'section_layout',
+			[
+				'label' => esc_html__( 'Layout', 'easy-elements' ),
+				'tab'   => Controls_Manager::TAB_CONTENT,
 			]
 		);
 
 		$this->add_responsive_control(
 			'alignment',
 			[
-				'label' => esc_html__('Alignment', 'easy-elements'),
-				'type' => Controls_Manager::CHOOSE,
+				'label'   => esc_html__( 'Alignment', 'easy-elements' ),
+				'type'    => Controls_Manager::CHOOSE,
 				'options' => [
-					'left' => [
-						'title' => __('Left', 'easy-elements'),
-						'icon' => 'eicon-text-align-left',
+					'left'   => [
+						'title' => __( 'Left', 'easy-elements' ),
+						'icon'  => 'eicon-text-align-left',
 					],
 					'center' => [
-						'title' => __('Center', 'easy-elements'),
-						'icon' => 'eicon-text-align-center',
+						'title' => __( 'Center', 'easy-elements' ),
+						'icon'  => 'eicon-text-align-center',
 					],
-					'right' => [
-						'title' => __('Right', 'easy-elements'),
-						'icon' => 'eicon-text-align-right',
+					'right'  => [
+						'title' => __( 'Right', 'easy-elements' ),
+						'icon'  => 'eicon-text-align-right',
 					],
 				],
-				'default' => 'left',
-				'separator' => 'after',
+				'default'   => 'left',
+				'toggle'    => true,
 				'selectors' => [
 					'{{WRAPPER}} .eel-page-title-wrapper' => 'text-align: {{VALUE}};',
 				],
-				'toggle' => true,
 			]
 		);
 
 		$this->add_control(
 			'border_show_hide',
 			[
-				'label' => esc_html__('Border Show/Hide', 'easy-elements'),
-				'type' => Controls_Manager::SWITCHER,
-				'default' => 'yes',
-				'label_on' => esc_html__('Show', 'easy-elements'),
-				'label_off' => esc_html__('Hide', 'easy-elements'),
+				'label'        => esc_html__( 'Decorative Border', 'easy-elements' ),
+				'type'         => Controls_Manager::SWITCHER,
+				'default'      => 'yes',
+				'label_on'     => esc_html__( 'Show', 'easy-elements' ),
+				'label_off'    => esc_html__( 'Hide', 'easy-elements' ),
 				'return_value' => 'yes',
+				'description'  => esc_html__( 'Adds a small accent bar beside the main title.', 'easy-elements' ),
+				'separator'    => 'before',
 			]
 		);
 
 		$this->add_control(
 			'border_position',
 			[
-				'label' => esc_html__('Border Position', 'easy-elements'),
-				'type' => Controls_Manager::SELECT,
-				'options' => [
-					'left' => esc_html__('Left', 'easy-elements'),
-					'right' => esc_html__('Right', 'easy-elements'),
+				'label'     => esc_html__( 'Border Position', 'easy-elements' ),
+				'type'      => Controls_Manager::SELECT,
+				'options'   => [
+					'left'  => esc_html__( 'Left', 'easy-elements' ),
+					'right' => esc_html__( 'Right', 'easy-elements' ),
 				],
-				'default' => 'left',
+				'default'   => 'left',
 				'condition' => [
 					'border_show_hide' => 'yes',
 				],
 			]
 		);
 
+		$this->end_controls_section();
+
+		// =====================================================================
+		// STYLE TAB
+		// =====================================================================
+
+		// --- General Style (decorative border color) ------------------------
+		$this->start_controls_section(
+			'section_general_style',
+			[
+				'label' => esc_html__( 'General', 'easy-elements' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		// Original misspelled ID preserved on purpose — renaming would orphan
+		// every saved value across existing pages.
 		$this->add_control(
 			'boder_color',
 			[
-				'label' => esc_html__('Border Color', 'easy-elements'),
-				'type' => Controls_Manager::COLOR,
+				'label'     => esc_html__( 'Border Color', 'easy-elements' ),
+				'type'      => Controls_Manager::COLOR,
 				'condition' => [
 					'border_show_hide' => 'yes',
 				],
@@ -212,53 +276,27 @@ class Easyel_Page_Title_Widget extends \Elementor\Widget_Base {
 			]
 		);
 
+		$this->end_controls_section();
 
-	    $this->add_control(
-	        'title_color',
-	        [
-	            'label' => esc_html__('Title Color', 'easy-elements'),
-	            'type' => Controls_Manager::COLOR,
-				'separator' => 'before',
-	            'selectors' => [
-	                '{{WRAPPER}} .eel-page-title' => 'color: {{VALUE}};',
-	            ],
-	        ]
-	    );
-
-	    $this->add_group_control(
-	        \Elementor\Group_Control_Typography::get_type(),
-	        [
-	            'name' => 'title_typography',
-	            'selector' => '{{WRAPPER}} .eel-page-title',
-	        ]
-	    );
-		$this->add_responsive_control(
-	        'title_margin',
-	        [
-	            'label' => esc_html__('Title Margin', 'easy-elements'),
-	            'type' => Controls_Manager::DIMENSIONS,
-	            'size_units' => [ 'px', '%', 'em' ],
-	            'default' => [
-	                'top' => '0',
-	                'right' => '0',
-	                'bottom' => '0',
-	                'left' => '0',
-	                'unit' => 'px',
-	            ],
-	            'selectors' => [
-	                '{{WRAPPER}} .eel-page-title' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-	            ],
-	        ]
-	    );
+		// --- Main Title Style ----------------------------------------------
+		$this->start_controls_section(
+			'section_main_title_style',
+			[
+				'label'     => esc_html__( 'Main Title', 'easy-elements' ),
+				'tab'       => Controls_Manager::TAB_STYLE,
+				'condition' => [
+					'custom_title_show_hide' => 'yes',
+				],
+			]
+		);
 
 		$this->add_control(
-			'heading_title_color',
+			'title_color',
 			[
-				'label' => esc_html__('Heading Title Color', 'easy-elements'),
-				'type' => Controls_Manager::COLOR,
-				'separator' => 'before',
+				'label'     => esc_html__( 'Color', 'easy-elements' ),
+				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .eel-heading-title' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .eel-page-title' => 'color: {{VALUE}};',
 				],
 			]
 		);
@@ -266,18 +304,48 @@ class Easyel_Page_Title_Widget extends \Elementor\Widget_Base {
 		$this->add_group_control(
 			\Elementor\Group_Control_Typography::get_type(),
 			[
-				'name' => 'heading_title_typography',
-				'selector' => '{{WRAPPER}} .eel-heading-title',
+				'name'     => 'title_typography',
+				'selector' => '{{WRAPPER}} .eel-page-title',
 			]
 		);
 
 		$this->add_responsive_control(
-			'heading_title_margin',
+			'title_margin',
 			[
-				'label' => esc_html__('Heading Title Margin', 'easy-elements'),
-				'type' => Controls_Manager::DIMENSIONS,
+				'label'      => esc_html__( 'Margin', 'easy-elements' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => [ 'px', '%', 'em' ],
+				'default'    => [
+					'top'    => '0',
+					'right'  => '0',
+					'bottom' => '0',
+					'left'   => '0',
+					'unit'   => 'px',
+				],
+				'selectors'  => [
+					'{{WRAPPER}} .eel-page-title' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
+		// --- Sub Heading Style ---------------------------------------------
+		$this->start_controls_section(
+			'section_sub_heading_style',
+			[
+				'label' => esc_html__( 'Sub Heading', 'easy-elements' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
+			]
+		);
+
+		$this->add_control(
+			'heading_title_color',
+			[
+				'label'     => esc_html__( 'Color', 'easy-elements' ),
+				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
-					'{{WRAPPER}} .eel-heading-title' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+					'{{WRAPPER}} .eel-heading-title' => 'color: {{VALUE}};',
 				],
 			]
 		);
@@ -285,46 +353,76 @@ class Easyel_Page_Title_Widget extends \Elementor\Widget_Base {
 		$this->add_control(
 			'highlighted_span_color',
 			[
-				'label' => esc_html__('Highlighted Color', 'easy-elements'),
-				'type' => Controls_Manager::COLOR,
-				'description' => esc_html__('Color for text wrapped in {{}} brackets. Example: "An {{experienced team}} for your business"', 'easy-elements'),
-				'selectors' => [
+				'label'       => esc_html__( 'Highlighted Word Color', 'easy-elements' ),
+				'type'        => Controls_Manager::COLOR,
+				'description' => esc_html__( 'Color applied to words wrapped in {{ }} inside the sub heading.', 'easy-elements' ),
+				'selectors'   => [
 					'{{WRAPPER}} .eel-highlighted' => 'color: {{VALUE}};',
 				],
+			]
+		);
+
+		$this->add_group_control(
+			\Elementor\Group_Control_Typography::get_type(),
+			[
+				'name'     => 'heading_title_typography',
+				'selector' => '{{WRAPPER}} .eel-heading-title',
+			]
+		);
+
+		$this->add_responsive_control(
+			'heading_title_margin',
+			[
+				'label'     => esc_html__( 'Margin', 'easy-elements' ),
+				'type'      => Controls_Manager::DIMENSIONS,
+				'selectors' => [
+					'{{WRAPPER}} .eel-heading-title' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				],
+			]
+		);
+
+		$this->end_controls_section();
+
+		// --- Description Style ---------------------------------------------
+		$this->start_controls_section(
+			'section_description_style',
+			[
+				'label' => esc_html__( 'Description', 'easy-elements' ),
+				'tab'   => Controls_Manager::TAB_STYLE,
 			]
 		);
 
 		$this->add_control(
 			'description_color',
 			[
-				'label' => esc_html__('Description Color', 'easy-elements'),
-				'type' => Controls_Manager::COLOR,
-				'separator' => 'before',
+				'label'     => esc_html__( 'Color', 'easy-elements' ),
+				'type'      => Controls_Manager::COLOR,
 				'selectors' => [
 					'{{WRAPPER}} .eel-page-description' => 'color: {{VALUE}};',
 				],
 			]
 		);
-		
+
 		$this->add_group_control(
 			\Elementor\Group_Control_Typography::get_type(),
 			[
-				'name' => 'description_typography',
+				'name'     => 'description_typography',
 				'selector' => '{{WRAPPER}} .eel-page-description',
 			]
-		);	
+		);
 
 		$this->add_responsive_control(
 			'description_margin',
 			[
-				'label' => esc_html__('Description Margin', 'easy-elements'),
-				'type' => Controls_Manager::DIMENSIONS,
+				'label'     => esc_html__( 'Margin', 'easy-elements' ),
+				'type'      => Controls_Manager::DIMENSIONS,
 				'selectors' => [
 					'{{WRAPPER}} .eel-page-description' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				],
 			]
 		);
-	    $this->end_controls_section();
+
+		$this->end_controls_section();
 	}
 
 	/**

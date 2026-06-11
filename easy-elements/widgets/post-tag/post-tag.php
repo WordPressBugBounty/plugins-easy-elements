@@ -317,6 +317,37 @@ class Easyel_Free_Post_Tags_Widget extends \Elementor\Widget_Base {
 		setup_postdata( $post );
 
 		$tags = get_the_tags();
+
+		
+		if ( ( ! $tags || is_wp_error( $tags ) )
+			&& class_exists( '\Elementor\Plugin' )
+			&& \Elementor\Plugin::$instance
+			&& isset( \Elementor\Plugin::$instance->editor, \Elementor\Plugin::$instance->preview )
+			&& ( \Elementor\Plugin::$instance->editor->is_edit_mode() || \Elementor\Plugin::$instance->preview->is_preview_mode() )
+		) {
+			$sample_ids = get_posts( array(
+				'post_type'      => 'post',
+				'post_status'    => 'publish',
+				'posts_per_page' => 1,
+				'fields'         => 'ids',
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Used only to retrieve a single tagged post ID for generating sample data.
+				'tax_query'      => array(
+					array(
+						'taxonomy' => 'post_tag',
+						'operator' => 'EXISTS',
+					),
+				),
+			) );
+			if ( ! empty( $sample_ids ) ) {
+				$sample_post = get_post( $sample_ids[0] );
+				if ( $sample_post instanceof \WP_Post ) {
+					$post = $sample_post;
+					setup_postdata( $post );
+					$tags = get_the_tags();
+				}
+			}
+		}
+
 		if ( ! $tags || is_wp_error( $tags ) ) {
 			wp_reset_postdata();
 			$post = $original_post;

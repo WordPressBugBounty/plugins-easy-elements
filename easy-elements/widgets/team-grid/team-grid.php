@@ -64,6 +64,7 @@ class Easyel_Team_Grid__Widget extends \Elementor\Widget_Base {
                         'skin2' => esc_html__('Skin 02', 'easy-elements'),
                         'skin3' => esc_html__('Skin 03', 'easy-elements'),
                         'skin4' => esc_html__('Skin 04 (Hover Overlay)', 'easy-elements'),
+                        'skin5' => esc_html__('Skin 05', 'easy-elements'),
                     ],
                 ]
             );
@@ -149,7 +150,83 @@ class Easyel_Team_Grid__Widget extends \Elementor\Widget_Base {
                     'description' => esc_html__('Shown below designation on the card (default, Skin 01, Skin 02), as the hover overlay text on Skin 03, and inside the popup when Action Type is set to Popup.', 'easy-elements'),
                 ]
             );
-            
+
+            $this->add_control(
+                'show_contact_info',
+                [
+                    'label' => esc_html__( 'Show Contact Info', 'easy-elements' ),
+                    'type' => \Elementor\Controls_Manager::SWITCHER,
+                    'label_on' => esc_html__( 'Yes', 'easy-elements' ),
+                    'label_off' => esc_html__( 'No', 'easy-elements' ),
+                    'return_value' => 'yes',
+                    'default' => 'yes',
+                    'description' => esc_html__( 'Show the email and phone in the hover contact area. Skin 05 only.', 'easy-elements' ),
+                    'condition' => [ 'team_skin' => 'skin5' ],
+                ]
+            );
+
+            $this->add_control(
+                'team_email',
+                [
+                    'label' => esc_html__( 'Email (Skin 05)', 'easy-elements' ),
+                    'type' => \Elementor\Controls_Manager::TEXT,
+                    'label_block' => true,
+                    'placeholder' => 'info@example.com',
+                    'description' => esc_html__( 'Shown in the contact area on Skin 05.', 'easy-elements' ),
+                    'condition' => [
+                        'team_skin' => 'skin5',
+                        'show_contact_info' => 'yes',
+                    ],
+                ]
+            );
+
+            $this->add_control(
+                'team_phone',
+                [
+                    'label' => esc_html__( 'Phone (Skin 05)', 'easy-elements' ),
+                    'type' => \Elementor\Controls_Manager::TEXT,
+                    'label_block' => true,
+                    'placeholder' => '+1 234 567 890',
+                    'description' => esc_html__( 'Shown in the contact area on Skin 05.', 'easy-elements' ),
+                    'condition' => [
+                        'team_skin' => 'skin5',
+                        'show_contact_info' => 'yes',
+                    ],
+                ]
+            );
+
+            $this->add_control(
+                'team_email_icon',
+                [
+                    'label' => esc_html__( 'Email Icon', 'easy-elements' ),
+                    'type' => \Elementor\Controls_Manager::ICONS,
+                    'default' => [
+                        'value' => 'far fa-envelope',
+                        'library' => 'fa-regular',
+                    ],
+                    'condition' => [
+                        'team_skin' => 'skin5',
+                        'show_contact_info' => 'yes',
+                    ],
+                ]
+            );
+
+            $this->add_control(
+                'team_phone_icon',
+                [
+                    'label' => esc_html__( 'Phone Icon', 'easy-elements' ),
+                    'type' => \Elementor\Controls_Manager::ICONS,
+                    'default' => [
+                        'value' => 'fas fa-phone-alt',
+                        'library' => 'fa-solid',
+                    ],
+                    'condition' => [
+                        'team_skin' => 'skin5',
+                        'show_contact_info' => 'yes',
+                    ],
+                ]
+            );
+
             $this->add_control(
                 'action_type',
                 [
@@ -912,6 +989,206 @@ class Easyel_Team_Grid__Widget extends \Elementor\Widget_Base {
                     'name' => 'designation_typography',
                     'label' => esc_html__( 'Typography', 'easy-elements' ),
                     'selector' => '{{WRAPPER}} .eel-designation, {{WRAPPER}} .eel-team-grid.skin4 .ee--team-img .eel-team-hover-content.overlay2 .eel-designation',
+                ]
+            );
+
+        $this->end_controls_section();
+
+        // Contact Info (Skin 05)
+        $this->start_controls_section(
+            'section_contact_info',
+            [
+                'label' => esc_html__( 'Contact Info', 'easy-elements' ),
+                'tab'   => Controls_Manager::TAB_STYLE,
+                'condition' => [
+                    'team_skin' => 'skin5',
+                    'show_contact_info' => 'yes',
+                ],
+            ]
+        );
+
+            $this->add_responsive_control(
+                'contact_gap',
+                [
+                    'label' => esc_html__( 'Items Gap', 'easy-elements' ),
+                    'type' => \Elementor\Controls_Manager::SLIDER,
+                    'size_units' => [ 'px', 'em' ],
+                    'range' => [ 'px' => [ 'min' => 0, 'max' => 60 ] ],
+                    'selectors' => [
+                        '{{WRAPPER}} .eel-team-grid .ee--team-img.skin5 .eel-author-contact' => 'gap: {{SIZE}}{{UNIT}};',
+                    ],
+                ]
+            );
+
+            $this->add_control(
+                'contact_item_heading',
+                [
+                    'label' => esc_html__( 'Item', 'easy-elements' ),
+                    'type' => \Elementor\Controls_Manager::HEADING,
+                    'separator' => 'before',
+                ]
+            );
+
+            $this->start_controls_tabs( 'contact_item_tabs' );
+
+                $this->start_controls_tab(
+                    'contact_item_tab_normal',
+                    [ 'label' => esc_html__( 'Normal', 'easy-elements' ) ]
+                );
+
+                    $this->add_control(
+                        'contact_text_color',
+                        [
+                            'label' => esc_html__( 'Text Color', 'easy-elements' ),
+                            'type' => \Elementor\Controls_Manager::COLOR,
+                            'selectors' => [
+                                '{{WRAPPER}} .eel-team-grid .ee--team-img.skin5 .eel-author-contact .eel-contact-item' => 'color: {{VALUE}};',
+                            ],
+                        ]
+                    );
+
+                    $this->add_group_control(
+                        \Elementor\Group_Control_Background::get_type(),
+                        [
+                            'name' => 'contact_item_bg',
+                            'label' => esc_html__( 'Background', 'easy-elements' ),
+                            'types' => [ 'classic', 'gradient' ],
+                            'selector' => '{{WRAPPER}} .eel-team-grid .ee--team-img.skin5 .eel-author-contact .eel-contact-item',
+                        ]
+                    );
+
+                $this->end_controls_tab();
+
+                $this->start_controls_tab(
+                    'contact_item_tab_hover',
+                    [ 'label' => esc_html__( 'Hover', 'easy-elements' ) ]
+                );
+
+                    $this->add_control(
+                        'contact_text_hover_color',
+                        [
+                            'label' => esc_html__( 'Text Color', 'easy-elements' ),
+                            'type' => \Elementor\Controls_Manager::COLOR,
+                            'selectors' => [
+                                '{{WRAPPER}} .eel-team-grid .ee--team-img.skin5 .eel-author-contact .eel-contact-item:hover' => 'color: {{VALUE}};',
+                            ],
+                        ]
+                    );
+
+                    $this->add_group_control(
+                        \Elementor\Group_Control_Background::get_type(),
+                        [
+                            'name' => 'contact_item_bg_hover',
+                            'label' => esc_html__( 'Background', 'easy-elements' ),
+                            'types' => [ 'classic', 'gradient' ],
+                            'selector' => '{{WRAPPER}} .eel-team-grid .ee--team-img.skin5 .eel-author-contact .eel-contact-item:hover',
+                        ]
+                    );
+
+                $this->end_controls_tab();
+
+            $this->end_controls_tabs();
+
+            $this->add_group_control(
+                \Elementor\Group_Control_Typography::get_type(),
+                [
+                    'name' => 'contact_typography',
+                    'label' => esc_html__( 'Typography', 'easy-elements' ),
+                    'selector' => '{{WRAPPER}} .eel-team-grid .ee--team-img.skin5 .eel-author-contact .eel-contact-item',
+                ]
+            );
+
+            $this->add_responsive_control(
+                'contact_item_radius',
+                [
+                    'label' => esc_html__( 'Border Radius', 'easy-elements' ),
+                    'type' => \Elementor\Controls_Manager::DIMENSIONS,
+                    'size_units' => [ 'px', '%' ],
+                    'selectors' => [
+                        '{{WRAPPER}} .eel-team-grid .ee--team-img.skin5 .eel-author-contact .eel-contact-item' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                    ],
+                ]
+            );
+
+            $this->add_responsive_control(
+                'contact_item_padding',
+                [
+                    'label' => esc_html__( 'Padding', 'easy-elements' ),
+                    'type' => \Elementor\Controls_Manager::DIMENSIONS,
+                    'size_units' => [ 'px', 'em', '%' ],
+                    'selectors' => [
+                        '{{WRAPPER}} .eel-team-grid .ee--team-img.skin5 .eel-author-contact .eel-contact-item' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                    ],
+                ]
+            );
+
+            $this->add_control(
+                'contact_icon_heading',
+                [
+                    'label' => esc_html__( 'Icon', 'easy-elements' ),
+                    'type' => \Elementor\Controls_Manager::HEADING,
+                    'separator' => 'before',
+                ]
+            );
+
+            $this->add_control(
+                'contact_icon_color',
+                [
+                    'label' => esc_html__( 'Icon Color', 'easy-elements' ),
+                    'type' => \Elementor\Controls_Manager::COLOR,
+                    'selectors' => [
+                        '{{WRAPPER}} .eel-team-grid .ee--team-img.skin5 .eel-author-contact .eel-contact-item .eel-contact-icon' => 'color: {{VALUE}};',
+                        '{{WRAPPER}} .eel-team-grid .ee--team-img.skin5 .eel-author-contact .eel-contact-item .eel-contact-icon svg' => 'fill: {{VALUE}};',
+                    ],
+                ]
+            );
+
+            $this->add_group_control(
+                \Elementor\Group_Control_Background::get_type(),
+                [
+                    'name' => 'contact_icon_bg',
+                    'label' => esc_html__( 'Icon Background', 'easy-elements' ),
+                    'types' => [ 'classic', 'gradient' ],
+                    'selector' => '{{WRAPPER}} .eel-team-grid .ee--team-img.skin5 .eel-author-contact .eel-contact-item .eel-contact-icon',
+                ]
+            );
+
+            $this->add_responsive_control(
+                'contact_icon_size',
+                [
+                    'label' => esc_html__( 'Icon Size', 'easy-elements' ),
+                    'type' => \Elementor\Controls_Manager::SLIDER,
+                    'size_units' => [ 'px', 'em' ],
+                    'range' => [ 'px' => [ 'min' => 8, 'max' => 60 ] ],
+                    'selectors' => [
+                        '{{WRAPPER}} .eel-team-grid .ee--team-img.skin5 .eel-author-contact .eel-contact-item .eel-contact-icon i' => 'font-size: {{SIZE}}{{UNIT}};',
+                        '{{WRAPPER}} .eel-team-grid .ee--team-img.skin5 .eel-author-contact .eel-contact-item .eel-contact-icon svg' => 'font-size: {{SIZE}}{{UNIT}};',
+                    ],
+                ]
+            );
+
+            $this->add_responsive_control(
+                'contact_icon_box_size',
+                [
+                    'label' => esc_html__( 'Icon Box Size', 'easy-elements' ),
+                    'type' => \Elementor\Controls_Manager::SLIDER,
+                    'size_units' => [ 'px', 'em' ],
+                    'range' => [ 'px' => [ 'min' => 24, 'max' => 100 ] ],
+                    'selectors' => [
+                        '{{WRAPPER}} .eel-team-grid .ee--team-img.skin5 .eel-author-contact .eel-contact-item .eel-contact-icon' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
+                    ],
+                ]
+            );
+
+            $this->add_responsive_control(
+                'contact_icon_radius',
+                [
+                    'label' => esc_html__( 'Icon Border Radius', 'easy-elements' ),
+                    'type' => \Elementor\Controls_Manager::DIMENSIONS,
+                    'size_units' => [ 'px', '%' ],
+                    'selectors' => [
+                        '{{WRAPPER}} .eel-team-grid .ee--team-img.skin5 .eel-author-contact .eel-contact-item .eel-contact-icon' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                    ],
                 ]
             );
 

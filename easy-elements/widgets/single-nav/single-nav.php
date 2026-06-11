@@ -915,22 +915,19 @@ class Easyel_Single_Nav_Widget extends \Elementor\Widget_Base {
         if ( isset( $settings['enable_sticky_header'] ) && 'yes' === $settings['enable_sticky_header'] ) {
             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             $GLOBALS['easyel_force_sticky_header'] = true; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-            wp_enqueue_script(
-                'eel-sticky-header',
-                plugin_dir_url( dirname( dirname( __FILE__ ) ) ) . 'widgets/single-nav/js/eel-sticky-header.js',
-                [ 'jquery' ],
-                EASYELEMENTS_VER,
-                true
-            );
 
-            wp_localize_script('eel-sticky-header', 'eelStickyHeaderSettings', [
+            // The sticky-header logic now lives in the always-loaded custom.js
+            // (handle: eel-custom-js). Localizing the settings here is what
+            // switches it on — when sticky is off, eelStickyHeaderSettings is
+            // absent and the script no-ops.
+            wp_localize_script('eel-custom-js', 'eelStickyHeaderSettings', [
                 'enableSticky'  => $enableSticky,
                 'enablePadding' => $enablePadding
             ]);
         }
 
         if ( 'yes' === $settings['fixed_top_sticky'] ) {
-			$this->add_render_attribute( 'eel-main-menu', 'class', 'eel-fixed-top-sticky' );		
+			$this->add_render_attribute( 'eel-main-menu', 'class', 'eel-fixed-top-sticky' );
 			$inline_js = "
 				document.addEventListener('DOMContentLoaded', function() {
 					var header = document.querySelector('header.easy-site-header');
@@ -939,8 +936,8 @@ class Easyel_Single_Nav_Widget extends \Elementor\Widget_Base {
 					}
 				});
 			";
-			wp_add_inline_script( 'eel-sticky-header', $inline_js );
-		}        
+			wp_add_inline_script( 'eel-custom-js', $inline_js );
+		}
         ?>
         <?php $bp_class = ( isset( $settings['mobile_menu_breakpoint'] ) && '' !== $settings['mobile_menu_breakpoint'] ) ? ' eel-mobile-bp-' . esc_attr( $settings['mobile_menu_breakpoint'] ) : ''; ?>
         <nav class="eel-single-nav <?php echo esc_attr( $bp_class ); ?>">

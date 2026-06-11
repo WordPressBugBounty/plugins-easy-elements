@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /*!
  * animate.css -http://daneden.me/animate
  * Version - 3.5.1
@@ -3864,7 +3865,9 @@ body.sticky-enabled-overlap {
   height: 20px;
 }
 
-html,
+/* overflow-x: hidden only on body — applying to html breaks
+   IntersectionObserver behavior on mobile Safari/Chrome, causing
+   Elementor motion fx to detect viewport entry late on scroll. */
 body {
   overflow-x: hidden;
 }
@@ -3896,6 +3899,10 @@ body {
 
 .hover-scale:hover .elementor-widget-image img {
   transform: scale(1.1);
+}
+
+.eel-menu-text-inner > img {
+  margin-right: 6px;
 }
 
 .eel-cursor-hover {
@@ -4005,4 +4012,11 @@ body::-webkit-scrollbar-thumb,
 .easyel-wrapper-link {
   touch-action: pan-y;
   -webkit-tap-highlight-color: transparent;
+}
+
+/* Menu item text wrapper when a custom image/SVG icon is used —
+   align the icon and label on one line. */
+.eel-menu-text-inner.eel-has-icon-image {
+  display: inline-flex;
+  align-items: center;
 }

@@ -88,69 +88,113 @@ class Easyel_Social_Icon_Widget extends \Elementor\Widget_Base {
 			]
 		);
 
+		$repeater = new \Elementor\Repeater();
+
+		// Link Title Field
+		$repeater->add_control(
+			'link_title',
+			[
+				'label'   => esc_html__( 'Link Title', 'easy-elements' ),
+				'type'    => Controls_Manager::TEXT,
+				'default' => esc_html__( 'Social Link', 'easy-elements' ),
+			]
+		);
+
+		// Link URL Field
+		$repeater->add_control(
+			'link_url',
+			[
+				'label'   => esc_html__( 'Link URL', 'easy-elements' ),
+				'type'    => Controls_Manager::URL,
+				'default' => [
+					'url'         => '#',
+					'is_external' => false,
+					'nofollow'    => false,
+				],
+			]
+		);
+
+		// Icon Field
+		$repeater->add_control(
+			'icon',
+			[
+				'label'   => esc_html__( 'Icon', 'easy-elements' ),
+				'type'    => Controls_Manager::ICONS,
+				'default' => [
+					'value'   => 'fab fa-facebook-f',
+					'library' => 'fa-brands',
+				],
+			]
+		);
+
+		// Background Color Field
+		$repeater->add_control(
+			'background_color',
+			[
+				'label'   => esc_html__( 'Background Color', 'easy-elements' ),
+				'type'    => Controls_Manager::COLOR,
+				'default' => '#1877F2',
+			]
+		);
+
+		// Background (classic + gradient)
+		$repeater->add_group_control(
+			\Elementor\Group_Control_Background::get_type(),
+			[
+				'name'     => 'background_color_group',
+				'label'    => esc_html__( 'Background', 'easy-elements' ),
+				'types'    => [ 'classic', 'gradient' ],
+				'selector' => '{{WRAPPER}} {{CURRENT_ITEM}}.eel-social-button',
+			]
+		);
+
+		// Icon Color Field
+		$repeater->add_control(
+			'icon_color',
+			[
+				'label'   => esc_html__( 'Icon Color', 'easy-elements' ),
+				'type'    => Controls_Manager::COLOR,
+				'default' => '#ffffff',
+			]
+		);
+
+		// Hover Background Color Field
+		$repeater->add_control(
+			'hover_background_color',
+			[
+				'label'   => esc_html__( 'Hover Background Color', 'easy-elements' ),
+				'type'    => Controls_Manager::COLOR,
+				'default' => '#166fe5',
+			]
+		);
+
+		// Hover Background (classic + gradient)
+		$repeater->add_group_control(
+			\Elementor\Group_Control_Background::get_type(),
+			[
+				'name'     => 'hover_background_color_group',
+				'label'    => esc_html__( 'Hover Background', 'easy-elements' ),
+				'types'    => [ 'classic', 'gradient' ],
+				'selector' => '{{WRAPPER}} {{CURRENT_ITEM}}.eel-social-button:hover',
+			]
+		);
+
+		// Hover Icon Color Field
+		$repeater->add_control(
+			'hover_icon_color',
+			[
+				'label'   => esc_html__( 'Hover Icon Color', 'easy-elements' ),
+				'type'    => Controls_Manager::COLOR,
+				'default' => '#ffffff',
+			]
+		);
+
 		$this->add_control(
 			'social_links',
 			[
 				'label'       => esc_html__( 'Social Links', 'easy-elements' ),
 				'type'        => Controls_Manager::REPEATER,
-				'fields'      => [
-					// Link Title Field
-					[
-						'name'    => 'link_title',
-						'label'   => esc_html__( 'Link Title', 'easy-elements' ),
-						'type'    => Controls_Manager::TEXT,
-						'default' => esc_html__( 'Social Link', 'easy-elements' ),
-					],
-					// Link URL Field
-					[
-						'name'    => 'link_url',
-						'label'   => esc_html__( 'Link URL', 'easy-elements' ),
-						'type'    => Controls_Manager::URL,
-						'default' => [
-							'url'         => '#',
-							'is_external' => false,
-							'nofollow'    => false,
-						],
-					],
-					// Icon Field
-					[
-						'name'    => 'icon',
-						'label'   => esc_html__( 'Icon', 'easy-elements' ),
-						'type'    => Controls_Manager::ICONS,
-						'default' => [
-							'value'   => 'fab fa-facebook-f',
-							'library' => 'fa-brands',
-						],
-					],
-					// Background Color Field
-					[
-						'name'    => 'background_color',
-						'label'   => esc_html__( 'Background Color', 'easy-elements' ),
-						'type'    => Controls_Manager::COLOR,
-						'default' => '#1877F2',
-					],
-					// Icon Color Field
-					[
-						'name'    => 'icon_color',
-						'label'   => esc_html__( 'Icon Color', 'easy-elements' ),
-						'type'    => Controls_Manager::COLOR,
-						'default' => '#ffffff',
-					],
-					// Hover Background Color Field
-					[
-						'name'    => 'hover_background_color',
-						'label'   => esc_html__( 'Hover Background Color', 'easy-elements' ),
-						'type'    => Controls_Manager::COLOR,
-						'default' => '#166fe5',
-					],
-					// Hover Icon Color Field
-					[
-						'name'    => 'hover_icon_color',
-						'label'   => esc_html__( 'Hover Icon Color', 'easy-elements' ),
-						'type'    => Controls_Manager::COLOR,
-						'default' => '#ffffff',
-					],
-				],
+				'fields'      => $repeater->get_controls(),
 				// Default social links
 				'default'     => [
 					[
@@ -358,6 +402,20 @@ class Easyel_Social_Icon_Widget extends \Elementor\Widget_Base {
 			]
 		);
 
+		// Global Background (classic + gradient)
+		$this->add_group_control(
+			\Elementor\Group_Control_Background::get_type(),
+			[
+				'name'      => 'button_background_color_group',
+				'label'     => esc_html__( 'Background', 'easy-elements' ),
+				'types'     => [ 'classic', 'gradient' ],
+				'selector'  => '{{WRAPPER}} .eel-social-button',
+				'condition' => [
+					'color_mode' => 'global',
+				],
+			]
+		);
+
 		// Global Hover Background Color Control
 		$this->add_control(
 			'button_background_hover_color',
@@ -370,6 +428,20 @@ class Easyel_Social_Icon_Widget extends \Elementor\Widget_Base {
 				],
 				'selectors' => [
 					'{{WRAPPER}} .eel-social-button:hover' => 'background-color: {{VALUE}} !important; border-color: {{VALUE}} !important;',
+				],
+			]
+		);
+
+		// Global Hover Background (classic + gradient)
+		$this->add_group_control(
+			\Elementor\Group_Control_Background::get_type(),
+			[
+				'name'      => 'button_background_hover_color_group',
+				'label'     => esc_html__( 'Hover Background', 'easy-elements' ),
+				'types'     => [ 'classic', 'gradient' ],
+				'selector'  => '{{WRAPPER}} .eel-social-button:hover',
+				'condition' => [
+					'color_mode' => 'global',
 				],
 			]
 		);
@@ -478,6 +550,7 @@ class Easyel_Social_Icon_Widget extends \Elementor\Widget_Base {
 
 			
 			$unique_class = 'eel-social-custom-' . $index;
+			$repeater_class = ! empty( $link['_id'] ) ? 'elementor-repeater-item-' . $link['_id'] : '';
 
 			$hover_bg = '#166fe5';
 			$hover_icon = '#ffffff';
@@ -497,7 +570,7 @@ class Easyel_Social_Icon_Widget extends \Elementor\Widget_Base {
 				esc_attr( $icon_color )
 			);
 
-			echo '<a href="' . esc_url( $link_url ) . '" class="eel-social-button ' . esc_attr( $unique_class ) . '"';
+			echo '<a href="' . esc_url( $link_url ) . '" class="eel-social-button ' . esc_attr( trim( $unique_class . ' ' . $repeater_class ) ) . '"';
 			echo ' target="' . esc_attr( $target ) . '"';
 			if ( $rel ) {
 				echo ' rel="' . esc_attr( $rel ) . '"';

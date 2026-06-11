@@ -40,9 +40,18 @@ class Easyel_Free_Mini_Cart_Widget extends \Elementor\Widget_Base {
 	}
 
 	public function get_style_depends() {
-		return [
-			'eel-mini-cart',
-		];
+		/**
+		 * Allow add-on plugins to register extra stylesheets that must load in
+		 * the document <head> alongside the Free Mini Cart styles. The Pro
+		 * panel / subtotal CSS uses this so it is enqueued in the head (via
+		 * Elementor / the header-footer builder) instead of only during
+		 * render() — which would print it in the page footer and make the
+		 * cart panel and subtotal price flash unstyled before settling.
+		 *
+		 * @param string[] $handles Registered style handles for this widget.
+		 */
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- "eel_" is the Easy Elements plugin prefix.
+		return apply_filters( 'eel_mini_cart_style_depends', [ 'eel-mini-cart' ], $this );
 	}
 
 	public function get_script_depends() {
@@ -155,7 +164,6 @@ class Easyel_Free_Mini_Cart_Widget extends \Elementor\Widget_Base {
 				],
 			]
 		);
-
 		$this->start_controls_tabs( 'wrapper_tabs' );
 
 		$this->start_controls_tab(

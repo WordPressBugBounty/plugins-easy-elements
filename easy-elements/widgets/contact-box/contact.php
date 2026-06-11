@@ -312,13 +312,93 @@ class Easyel_Contact_Box__Widget extends \Elementor\Widget_Base {
             ]
         );
 
-        $this->end_controls_section();        
+        $this->end_controls_section();
+
+        $this->start_controls_section(
+            'section_style_box',
+            [
+                'label' => esc_html__( 'Box', 'easy-elements' ),
+                'tab' => Controls_Manager::TAB_STYLE,
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Background::get_type(),
+            [
+                'name' => 'box_background',
+                'types' => [ 'classic', 'gradient' ],
+                'selector' => '{{WRAPPER}} .ee--contact-box',
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Border::get_type(),
+            [
+                'name' => 'box_border',
+                'selector' => '{{WRAPPER}} .ee--contact-box',
+            ]
+        );
+
+        $this->add_responsive_control(
+            'box_border_radius',
+            [
+                'label' => esc_html__( 'Border Radius', 'easy-elements' ),
+                'type' => \Elementor\Controls_Manager::DIMENSIONS,
+                'size_units' => [ 'px', '%' ],
+                'selectors' => [
+                    '{{WRAPPER}} .ee--contact-box' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Box_Shadow::get_type(),
+            [
+                'name' => 'box_shadow',
+                'selector' => '{{WRAPPER}} .ee--contact-box',
+            ]
+        );
+
+        $this->add_responsive_control(
+            'box_padding',
+            [
+                'label' => esc_html__( 'Padding', 'easy-elements' ),
+                'type' => \Elementor\Controls_Manager::DIMENSIONS,
+                'size_units' => [ 'px', '%', 'em', 'rem' ],
+                'selectors' => [
+                    '{{WRAPPER}} .ee--contact-box' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'box_margin',
+            [
+                'label' => esc_html__( 'Margin', 'easy-elements' ),
+                'type' => \Elementor\Controls_Manager::DIMENSIONS,
+                'size_units' => [ 'px', '%', 'em', 'rem' ],
+                'selectors' => [
+                    '{{WRAPPER}} .ee--contact-box' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->end_controls_section();
 
         $this->start_controls_section(
             'section_style_icon',
             [
                 'label' => esc_html__( 'Icon', 'easy-elements' ),
                 'tab' => Controls_Manager::TAB_STYLE,
+            ]
+        );
+
+        $this->start_controls_tabs( 'icon_color_tabs' );
+
+        $this->start_controls_tab(
+            'icon_color_tab_normal',
+            [
+                'label' => esc_html__( 'Normal', 'easy-elements' ),
             ]
         );
 
@@ -345,6 +425,52 @@ class Easyel_Contact_Box__Widget extends \Elementor\Widget_Base {
                 ],
             ]
         );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Background::get_type(),
+            [
+                'name' => 'icon_bg_color_group',
+                'label' => esc_html__( 'Background', 'easy-elements' ),
+                'types' => [ 'classic', 'gradient' ],
+                'selector' => '{{WRAPPER}} .ee--contact-box .eel-icon',
+            ]
+        );
+
+        $this->end_controls_tab();
+
+        $this->start_controls_tab(
+            'icon_color_tab_hover',
+            [
+                'label' => esc_html__( 'Hover', 'easy-elements' ),
+            ]
+        );
+
+        $this->add_control(
+            'icon_hover_color',
+            [
+                'label' => esc_html__( 'Color', 'easy-elements' ),
+                'type' => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .ee--contact-box:hover .eel-icon' => 'color: {{VALUE}};',
+                    '{{WRAPPER}} .ee--contact-box:hover .eel-icon svg' => 'fill: {{VALUE}};',
+                    '{{WRAPPER}} .ee--contact-box:hover .eel-icon svg path' => 'fill: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            \Elementor\Group_Control_Background::get_type(),
+            [
+                'name' => 'icon_hover_background',
+                'label' => esc_html__( 'Background', 'easy-elements' ),
+                'types' => [ 'classic', 'gradient' ],
+                'selector' => '{{WRAPPER}} .ee--contact-box:hover .eel-icon',
+            ]
+        );
+
+        $this->end_controls_tab();
+
+        $this->end_controls_tabs();
 
         $this->add_group_control(
             \Elementor\Group_Control_Typography::get_type(),
@@ -409,6 +535,31 @@ class Easyel_Contact_Box__Widget extends \Elementor\Widget_Base {
             ]
         );
 
+        $this->add_responsive_control(
+            'icon_content_gap',
+            [
+                'label' => esc_html__('Gap', 'easy-elements'),
+                'type' => \Elementor\Controls_Manager::SLIDER,
+                'size_units' => [ 'px', '%', 'em', 'rem' ],
+                'range' => [
+                    'px'  => [ 'min' => 0, 'max' => 200 ],
+                    'em'  => [ 'min' => 0, 'max' => 20 ],
+                    'rem' => [ 'min' => 0, 'max' => 20 ],
+                ],
+                'default' => [
+                    'size' => 20,
+                    'unit' => 'px',
+                ],
+                'description' => esc_html__('Space between the icon and the content (applies to Left/Right direction).', 'easy-elements'),
+                'selectors' => [
+                    '{{WRAPPER}} .ee--contact-box.left, {{WRAPPER}} .ee--contact-box.right' => 'gap: {{SIZE}}{{UNIT}};',
+                ],
+                'condition' => [
+                    'icon_direction' => [ 'left', 'right' ],
+                ],
+            ]
+        );
+
         $this->end_controls_section();
 
         $this->start_controls_section(
@@ -461,6 +612,15 @@ class Easyel_Contact_Box__Widget extends \Elementor\Widget_Base {
             ]
         );
 
+        $this->start_controls_tabs( 'desc_color_tabs' );
+
+        $this->start_controls_tab(
+            'desc_color_tab_normal',
+            [
+                'label' => esc_html__( 'Normal', 'easy-elements' ),
+            ]
+        );
+
         $this->add_control(
             'desc_color',
             [
@@ -472,16 +632,29 @@ class Easyel_Contact_Box__Widget extends \Elementor\Widget_Base {
             ]
         );
 
+        $this->end_controls_tab();
+
+        $this->start_controls_tab(
+            'desc_color_tab_hover',
+            [
+                'label' => esc_html__( 'Hover', 'easy-elements' ),
+            ]
+        );
+
         $this->add_control(
             'desc_hover_color',
             [
-                'label' => esc_html__( 'Hover Color', 'easy-elements' ),
+                'label' => esc_html__( 'Color', 'easy-elements' ),
                 'type' => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .contact-box-description a:hover' => 'color: {{VALUE}};',
                 ],
             ]
         );
+
+        $this->end_controls_tab();
+
+        $this->end_controls_tabs();
 
         $this->add_group_control(
             \Elementor\Group_Control_Typography::get_type(),
@@ -682,8 +855,11 @@ class Easyel_Contact_Box__Widget extends \Elementor\Widget_Base {
             $end = $start + strlen($number);
             $before = substr($value, 0, $start);
             $after = substr($value, $end);
+            // Preserve a leading "+" (international prefix) while stripping spaces, dashes, etc.
+            $has_plus = strpos(trim($number), '+') === 0;
+            $tel = ($has_plus ? '+' : '') . preg_replace('/\D+/', '', $number);
             echo esc_html($before);
-            echo '<a href="tel:' . esc_attr(preg_replace('/\D+/', '', $number)) . '">' . esc_html($number) . '</a>';
+            echo '<a href="tel:' . esc_attr($tel) . '">' . esc_html($number) . '</a>';
             echo esc_html($after);
         } else {
             echo esc_html($value);

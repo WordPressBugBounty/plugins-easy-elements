@@ -91,9 +91,14 @@ class Easyel_vertical_Menu_Nav_Walker extends \Walker_Nav_Menu {
             $menu_item_badge = '<span class="eel-menu-badge">'. esc_html($settings['content']['badge']) .'</span>';
         }
 
-        // Icon
-        $menu_item_icon = '';
-        if ( isset($settings['content']['menu_icon']) && !empty($settings['content']['menu_icon']) ) {
+        // Icon — a custom uploaded image/SVG takes precedence over an icon font.
+        $menu_item_icon  = '';
+        $icon_image_class = '';
+        if ( isset($settings['content']['menu_icon_image']) && !empty($settings['content']['menu_icon_image']) ) {
+            $menu_item_icon = '<img class="menu-icon menu-icon-image" src="'. esc_url($settings['content']['menu_icon_image']) .'" alt="" style="width:1.1em;height:1.1em;object-fit:contain;vertical-align:middle;">';
+            // Flag the text wrapper so it can align the image and label nicely.
+            $icon_image_class = ' eel-has-icon-image';
+        } elseif ( isset($settings['content']['menu_icon']) && !empty($settings['content']['menu_icon']) ) {
             $menu_item_icon = '<i class="menu-icon '. esc_attr($settings['content']['menu_icon']) .'"></i>';
         }
 
@@ -116,7 +121,7 @@ class Easyel_vertical_Menu_Nav_Walker extends \Walker_Nav_Menu {
                 'the_title',
                 $menu_item_badge .
                 '<div class="eel-menu-text">
-                    <div class="eel-menu-text-inner">' .
+                    <div class="eel-menu-text-inner'. $icon_image_class .'">' .
                         $vertical_menu_custom_icon .
                         $menu_item_icon .
                         $menu_before_icon .

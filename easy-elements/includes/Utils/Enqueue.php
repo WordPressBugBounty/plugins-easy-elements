@@ -327,6 +327,9 @@ class Enqueue {
                 'css' => ['widgets/scroll-to-top/css/scroll.min.css'],
                 'js'  => ['widgets/scroll-to-top/js/scroll.js'],
             ],
+            'eel-category-list' => [
+                'css' => ['widgets/category-list/css/category-list.min.css'],
+            ],
             'eel-search' => [
                 'css' => ['widgets/search/css/search.min.css'],
                 'js'  => ['widgets/search/js/search.js'],

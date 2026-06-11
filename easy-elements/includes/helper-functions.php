@@ -996,14 +996,14 @@ function easyel_element_is_enabled( $setting_key ) {
 }
 
 /**
- * Alias of easyel_element_is_enabled().
+ * Backward compatibility alias.
  *
- * Easy Elements Pro checks `easy_element_is_enabled()` (without the "el"),
- * e.g. to initialise the Mega Menu Builder which loads its nav walker. The
- * canonical helper here is `easyel_element_is_enabled()`, so without this alias
- * the Pro function_exists() check fails, the Mega Menu extension never loads,
- * and rendering a Mega Menu widget fatals with
- * "Class Easyel_Mega_Menu_Nav_Walker not found".
+ * The non-prefixed function name is retained only for compatibility with
+ * previously released Easy Elements Pro versions. Removing this function
+ * would break existing installations that still reference
+ * `easy_element_is_enabled()` and could result in fatal errors.
+ *
+ * New code should use `easyel_element_is_enabled()` instead.
  */
 if ( ! function_exists( 'easy_element_is_enabled' ) ) {
     function easy_element_is_enabled( $setting_key ) {

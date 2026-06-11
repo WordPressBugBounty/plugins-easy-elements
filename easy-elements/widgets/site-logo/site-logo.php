@@ -318,7 +318,7 @@ class Easyel_Site_Logo_Widget extends \Elementor\Widget_Base {
 				echo wp_get_attachment_image( $attachment_id, 'full', false, [
 					'class'    => $main_logo_classes,
 					'alt'      => $alt_text,
-					'loading'  => 'lazy',
+					'loading'  => false,
 					'decoding' => 'async',
 				] );
 			

@@ -11,12 +11,15 @@
   	    var slidesPerView = parseInt($slider.data('slides-per-view'), 10) || 3;
   	    var spvSkin1   = parseInt($slider.data('slides-per-view-skin1'), 10);
         var spvSkin4   = parseInt($slider.data('slides-per-view-skin4'), 10);
+        var spvSkin11  = parseInt($slider.data('slides-per-view-skin11'), 10);
         var spvSpecificDefault = parseInt($slider.data('slides-per-view-default'), 10);
 		var finalSlidesPerView;
 		if (spvSkin1) {
             finalSlidesPerView = spvSkin1;
         } else if (spvSkin4) {
             finalSlidesPerView = spvSkin4;
+        } else if (spvSkin11) {
+            finalSlidesPerView = spvSkin11;
         } else if (spvSpecificDefault) {
             finalSlidesPerView = spvSpecificDefault;
         } else {
@@ -140,7 +143,9 @@
 	    // Loop handling tuned to avoid double-advance on loop edges
 	    var totalSlides = $slider.find('.swiper-slide').length;
 	    var isFade = effect === 'fade';
-	    var visibleSlides = isFade ? 1 : slidesPerView;
+	    // Skin 11 shows one testimonial per view, so use its effective slides-per-view for the loop math.
+	    var isSkin11ForLoop = $slider.find('.ee--tstml-inner-wrap.skin11').length > 0;
+	    var visibleSlides = isFade ? 1 : (isSkin11ForLoop ? finalSlidesPerView : slidesPerView);
 	    var canLoop = totalSlides > visibleSlides;
 	    var loopConfig = {};
 	    if (loop && (canLoop || isFade)) {
@@ -152,7 +157,57 @@
 	    } else {
 	        loopConfig = { loop: false, rewind: !!loop };
 	    }
-  	    
+
+	    // Skin 11 (testimonials): build a looping, clickable avatar thumbnail carousel synced to the main slider.
+	    var eelTstmlSkin11 = $slider.find('.ee--tstml-inner-wrap.skin11').length > 0;
+	    var eelThumbsSwiper = null;
+	    if (eelTstmlSkin11) {
+	        // Remove any thumbnail strip left over from a previous Elementor (re)init,
+	        // so the click/sync wiring always references the live main swiper.
+	        var $eelOldThumbs = $scope.find('.eel-tstml-thumbs');
+	        if ($eelOldThumbs.length) {
+	            if ($eelOldThumbs[0].swiper) { try { $eelOldThumbs[0].swiper.destroy(true, true); } catch (e) {} }
+	            $eelOldThumbs.remove();
+	        }
+	        $scope.find('.eel-tstml-thumb-meta').remove();
+	        var eelTstmlAvatars = [], eelTstmlNames = [], eelTstmlDesigs = [];
+	        $slider.find('.swiper-slide').not('.swiper-slide-duplicate').each(function () {
+	            var src = $(this).find('.eel-picture img').attr('src');
+	            if (src) {
+	                eelTstmlAvatars.push(src);
+	                eelTstmlNames.push(($(this).find('.eel-name').first().text() || '').trim());
+	                eelTstmlDesigs.push(($(this).find('.eel-designation').first().text() || '').trim());
+	            }
+	        });
+	        if (eelTstmlAvatars.length) {
+	            var eelThumbsHtml = '<div class="eel-tstml-thumbs swiper"><div class="swiper-wrapper">';
+	            eelTstmlAvatars.forEach(function (src, i) {
+	                eelThumbsHtml += '<div class="swiper-slide" data-eel-thumb-index="' + i + '"><span class="eel-thumb-img"><img src="' + src + '" alt="" /></span></div>';
+	            });
+	            eelThumbsHtml += '</div></div>';
+	            var $eelThumbs = $(eelThumbsHtml);
+	            $slider.after($eelThumbs);
+	            var $eelThumbMeta = $('<div class="eel-tstml-thumb-meta"><div class="eel-thumb-name"></div><div class="eel-thumb-designation"></div></div>');
+	            $eelThumbs.after($eelThumbMeta);
+	            try {
+	                eelThumbsSwiper = new Swiper($eelThumbs[0], {
+	                    loop: eelTstmlAvatars.length > 3,
+	                    centeredSlides: true,
+	                    slidesPerView: Math.min(3, eelTstmlAvatars.length),
+	                    spaceBetween: 14,
+	                    allowTouchMove: false,
+	                    simulateTouch: false,
+	                    touchStartPreventDefault: false,
+	                    watchSlidesProgress: true,
+	                    breakpoints: {
+	                        0:   { slidesPerView: Math.min(3, eelTstmlAvatars.length) },
+	                        768: { slidesPerView: Math.min(3, eelTstmlAvatars.length) }
+	                    }
+	                });
+	            } catch (e) { eelThumbsSwiper = null; }
+	        }
+	    }
+
 	    var swiper = new Swiper($slider[0], {
 	        ...loopConfig,
   	        speed: speed,
@@ -213,7 +268,38 @@
   	        },
   	        ...effectOptions,
 	    });
-	    
+
+	    // Skin 11: wire avatar thumbnails to control the main slider and keep active state in sync.
+	    if (eelTstmlSkin11 && eelThumbsSwiper) {
+	        var $eelThumbsRoot = $(eelThumbsSwiper.el);
+	        var eelGoToSlide = function (idx) {
+	            if (isNaN(idx)) { return; }
+	            var main = $slider[0] && $slider[0].swiper;
+	            if (!main || !main.params) { return; }
+	            if (loop && (canLoop || isFade)) { main.slideToLoop(idx); }
+	            else { main.slideTo(idx); }
+	        };
+	        $eelThumbsRoot.on('click.eelThumb', '.swiper-slide', function () {
+	            eelGoToSlide(parseInt($(this).attr('data-eel-thumb-index'), 10));
+	        });
+	        var eelSyncThumbs = function () {
+	            var active = swiper.realIndex || 0;
+	            if ( $eelThumbMeta ) {
+	                $eelThumbMeta.find('.eel-thumb-name').text(eelTstmlNames[active] || '');
+	                $eelThumbMeta.find('.eel-thumb-designation').text(eelTstmlDesigs[active] || '');
+	            }
+	            $eelThumbsRoot.find('.swiper-slide').removeClass('swiper-slide-thumb-active')
+	                .filter('[data-eel-thumb-index="' + active + '"]').addClass('swiper-slide-thumb-active');
+	            if (eelThumbsSwiper.params && eelThumbsSwiper.params.loop) {
+	                try { eelThumbsSwiper.slideToLoop(active); } catch (e) {}
+	            } else {
+	                try { eelThumbsSwiper.slideTo(active); } catch (e) {}
+	            }
+	        };
+	        swiper.on('slideChange', eelSyncThumbs);
+	        eelSyncThumbs();
+	    }
+
 	    // Fade: attach custom navigation so Next/Prev work
 	    if (isFade && ($nextButton.length || $prevButton.length)) {
 	        var isTransitioning = false;
@@ -255,7 +341,7 @@
 	                }
 	            });
 	        }
-	    }		
+	    }				
   	}
 	
 
@@ -297,7 +383,7 @@
                 function ($scope) {
                     addWidgetTypeToBody($scope);
                 }
-            );
+            );		
 
         });
     }
@@ -1314,3 +1400,110 @@
 
 
 
+
+// Sticky Header (navigation-menu widget).
+// Only runs when the widget enabled "Sticky Header" — in that case the PHP
+// localizes `eelStickyHeaderSettings` to this handle. When the option is off
+// the variable is absent, so this block no-ops even though custom.js loads on
+// every page.
+(function($) {
+	function initStickyHeaderScript($scope) {
+		// Gate: bail unless the nav widget turned sticky on.
+		if (typeof eelStickyHeaderSettings === 'undefined' || !eelStickyHeaderSettings.enableSticky) {
+			return;
+		}
+
+		// Skip on mobile — the margin-top mutation on scroll causes layout
+		// shift that delays Elementor's IntersectionObserver, making motion
+		// fx widgets load late.
+		if (window.innerWidth < 768) return;
+
+		var header = $('header.easy-site-header');
+		var page = $('#page');
+		var topbar = $('.topbar-sticky-hide-yes');
+		var isFixedHeader = $('body').is('.easyel-fixed-header, .rivora-sidebar-menu');
+
+		if (!header.length || !page.length) {
+			return;
+		}
+
+		header.addClass("eel-sticky-header-on");
+
+		function updatePaddingAndMargin(scrollDirection, scroll) {
+			var headerHeight = header.outerHeight();
+			var topbarHeight = topbar.length ? topbar.outerHeight() : 0;
+			var isTopSticky = header.hasClass('eel-fixed-top-sticky');
+
+			// page padding-top
+			if (typeof eelStickyHeaderSettings !== 'undefined' && eelStickyHeaderSettings.enablePadding) {
+				if (!isFixedHeader) {
+					page.css('padding-top', headerHeight + 'px');
+				} else {
+					page.css('padding-top', '');
+				}
+			}
+
+			// fixed-top-sticky
+			if (isTopSticky) {
+				if (scroll > 100) {
+					header.addClass('eel--fixed-top-sticky');
+					header.css('margin-top', `-${topbarHeight}px`);
+				} else {
+					header.removeClass('eel--fixed-top-sticky');
+					header.css('margin-top', '0px');
+				}
+				return;
+			}
+
+			//  sticky behavior
+			if (header.hasClass('eel-up-scroll')) {
+				header.css('margin-top', `-${topbarHeight}px`);
+			} else {
+				header.css('margin-top', '0px');
+			}
+		}
+
+		let lastScroll = 0;
+		const stickyScrollThreshold = 50;
+
+		function sticky_header() {
+			let scroll = $(window).scrollTop();
+			let isTopSticky = header.hasClass('eel-fixed-top-sticky');
+			let scrollDirection = scroll > lastScroll ? 'down' : 'up';
+
+			if (isTopSticky) {
+				header.addClass('eel-sticky-header');
+				updatePaddingAndMargin(scrollDirection, scroll);
+				lastScroll = scroll;
+				return;
+			}
+
+			if (scroll > stickyScrollThreshold) {
+				header.addClass('eel-sticky-header');
+				if (scroll > lastScroll) {
+					header.removeClass('eel-up-scroll').addClass('eel-down-scroll');
+				} else {
+					header.removeClass('eel-down-scroll').addClass('eel-up-scroll');
+				}
+			} else {
+				header.removeClass('eel-sticky-header eel-up-scroll eel-down-scroll');
+			}
+
+			updatePaddingAndMargin(scrollDirection, scroll);
+			lastScroll = scroll;
+		}
+
+		$(document).ready(function() {
+			updatePaddingAndMargin('up', 0);
+			sticky_header();
+		});
+
+		$(window).on('scroll resize', function() {
+			sticky_header();
+		});
+	}
+
+	$(window).on('elementor/frontend/init', function() {
+		elementorFrontend.hooks.addAction('frontend/element_ready/global', initStickyHeaderScript);
+	});
+})(jQuery);

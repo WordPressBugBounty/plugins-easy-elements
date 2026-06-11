@@ -225,7 +225,7 @@ $this->add_control(
                 'label_off' => esc_html__('No', 'easy-elements'),
                 'return_value' => 'yes',
                 'default' => 'yes',
-                'description' => esc_html__('Off korle sudhu Read More button clickable thakbe.', 'easy-elements'),
+                'description' => esc_html__('If turned off, only the Read More button will be clickable.', 'easy-elements'),
                 'condition' => [
                     'link[url]!' => '',
                 ],
@@ -1883,7 +1883,7 @@ $this->add_control(
                 $target             = ! empty( $settings['link']['is_external'] ) ? ' target="_blank"' : '';
                 $nofollow           = ! empty( $settings['link']['nofollow'] ) ? ' rel="nofollow"' : '';
                 $item_hover_styles  = !empty( $settings['item_bg_hover_styles'] ) ? $settings['item_bg_hover_styles'] : '';
-                // Old widgets settings e ei key thakbe na — tokhon default enabled (backward compat).
+                // Old widget settings won't have this key — default to enabled for backward compatibility.
                 $enable_box_link    = ! isset( $settings['enable_box_link'] ) || $settings['enable_box_link'] === 'yes';
 
             ?>

@@ -404,7 +404,7 @@
                 }
             }
 
-            // Extension tab initialize hobar shomoy run hobe
+            // Run when the Extensions tab initializes
             $extensionsTab.find('.easyel-group-toggle').each(function() {
                 EasyupdateEnableAllText($(this));
             });

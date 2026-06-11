@@ -315,6 +315,7 @@ ul.eel-nav-menu .menu-item-has-children a:hover::before {
   visibility: hidden;
   opacity: 0;
   display: none;
+  line-height: 100%;
 }
 
 .eel-nav-menu-icon {
@@ -454,6 +455,7 @@ ul.eel-nav-menu .menu-item-has-children a:hover::before {
   }
   .eel-nav-menu-icon {
     padding: 0;
+    display: grid;
   }
   .eel-nav-menu .menu-item-has-children .menu-item-has-children .sub-menu {
     left: 0;
